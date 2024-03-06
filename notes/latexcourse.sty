@@ -1,0 +1,67 @@
+\NeedsTeXFormat{LaTeX2e}[2020/02/02]
+\ProvidesPackage{latexcourse}[2024/03/05 latexcourse]
+
+% A simple TODO command, available only when the 'draft' option is set
+\DeclareOption{draft}{
+    \newcommand{\todo}[1]{\textcolor{red}{\textbf{[TODO: #1]}}}
+    \newcommand{\quiettodo}[1]{}
+}
+\ProcessOptions\relax
+
+\RequirePackage[hidelinks]{hyperref}
+\RequirePackage{xcolor}
+\RequirePackage{framed}
+\RequirePackage[hyperref,framed]{ntheorem}
+
+% Remark environments have a shaded margin
+\theoremstyle{nonumberbreak}
+\theorembodyfont{\upshape}
+\theoremprework{
+    % Shade the left margin
+    \renewcommand{\FrameCommand}{{\color{lightgray}{\hspace{-10pt}\vrule width 4pt\hspace{6pt}}}}
+    \MakeFramed{\advance\hsize-\width \FrameRestore}
+}
+\theorempostwork{\endMakeFramed}
+\newtheorem{latexthree}{New in \LaTeX3}[section]
+
+\newcommand{\anothertheorem}[2]{
+    \theoremclass{latexthree}
+    \newtheorem{#1}[latexthree]{#2}
+}
+\anothertheorem{warning}{Warning}
+
+% Macros for referencing commands and environments
+% These automatically add the corresponding index entries
+\RequirePackage{makeidx}
+\newcommand{\cmd}[1]{\texttt{\textbackslash{}#1}\index{#1@\texttt{\textbackslash{}#1}}}
+\newcommand{\env}[1]{\texttt{\textbackslash{}#1}\index{#1@\texttt{#1} environment}}
+\newcommand{\pkg}[1]{\textsf{#1}\index{#1@\textsf{#1} package}}
+
+% Code examples use the fancyvrb package.
+% How this works:
+%   1. Use a \begin{VerbatimOut}{\jobname.tmp} environment
+%      to write the example code to a temporary file
+%   2. Then call \ShowExample
+%      a) It first prints the code verbatim on a minipage
+%      b) And then \input's the same code for evaluation onto another minipage
+\RequirePackage{fancyvrb}
+\newcommand{\ShowExample}{%
+    \begin{center}
+    \hrulefill\\[1em]
+    \begin{minipage}{0.58\textwidth}
+    \VerbatimInput[fontsize=\footnotesize]{\jobname.tmp}
+    \end{minipage}
+    \begin{minipage}{0.4\textwidth}
+    \input{\jobname.tmp}
+    \end{minipage}\\[1em]
+    \hrulefill
+    \end{center}
+}
+
+% Mathematics
+\RequirePackage{mathtools}
+
+% Misc.
+\RequirePackage{csquotes}
+
+\endinput

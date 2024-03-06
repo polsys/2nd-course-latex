@@ -1,0 +1,45 @@
+\chapter{Programming}
+
+
+\begin{latexthree}
+About \cmd{DocumentMetadata}.
+\end{latexthree}
+
+
+\section{Using commands}
+
+\begin{warning}
+Some built-in macros swallow the whitespace that follows them.
+If a word space is actually needed, you can feed the command an empty group \verb|{}|:
+\begin{VerbatimOut}{\jobname.tmp}
+\LaTeX programming\\
+\LaTeX{} programming
+\end{VerbatimOut}
+\ShowExample
+\end{warning}
+
+
+
+\section{Defining commands and environments}
+
+Here is an example of \cmd{newcommand} and \cmd{renewcommand} with arguments.
+The code example below uses the \pkg{verbatim} package
+and \env{VerbatimOut} environment.
+
+\begin{VerbatimOut}{\jobname.tmp}
+\newcommand{\dual}[2]{(#1 \mid #2)}
+Mathematicians: $\dual{a}{b}$.\\
+\renewcommand{\dual}[2]
+  {\langle#2 \mid #1\rangle}
+Physicists: $\dual{a}{b}$.
+\end{VerbatimOut}
+\ShowExample
+
+\section{Document structure}
+
+
+
+\section{Creating your own style file}
+
+\section{Counters}
+

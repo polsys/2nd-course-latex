@@ -1,0 +1,36 @@
+\DocumentMetadata{}
+\documentclass[a4paper, 11pt]{report}
+
+\usepackage[draft]{latexcourse}
+\usepackage{tocbibind}
+\makeindex
+
+\title{A second course in \LaTeX}
+\author{Petri Laarne\\University of Helsinki}
+\date{\today}
+
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+% Each chapter is in its own file.
+% This is commonly discouraged in e.g. article manuscripts,
+% and might be an overkill even for a (short-ish) dissertation,
+% but I personally find it easier in my workflow.
+\input{intro.tex}
+\input{programming.tex}
+\input{layout.tex}
+\input{maths.tex}
+\input{publications.tex}
+\input{customization.tex}
+\input{floats.tex}
+\input{tikz.tex}
+\input{beamer.tex}
+\input{posters.tex}
+
+\printindex
+
+\end{document}

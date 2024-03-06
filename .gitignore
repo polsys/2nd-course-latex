@@ -1,0 +1,53 @@
+# Based on https://github.com/github/gitignore
+# Licensed under CC0 1.0 Public Domain Dedication
+
+## Core latex/pdflatex auxiliary files:
+*.aux
+*.lof
+*.log
+*.lot
+*.fls
+*.out
+*.toc
+*.fmt
+*.fot
+*.cb
+*.cb2
+*.tmp
+.*.lb
+
+## Intermediate documents:
+*.dvi
+*.xdv
+*-converted-to.*
+*.pdf
+
+## TODO: inclusion of picture PDFs, if necessary
+
+## Bibliography auxiliary files (bibtex/biblatex/biber):
+*.bbl
+*.bcf
+*.blg
+*-blx.aux
+*-blx.bib
+*.run.xml
+
+# amsthm
+*.thm
+
+# beamer
+*.nav
+*.pre
+*.snm
+*.vrb
+
+# hyperref
+*.brf
+
+# SyncTeX
+*.synctex.gz
+
+# Index
+*.idx
+*.ilg
+*.ind
