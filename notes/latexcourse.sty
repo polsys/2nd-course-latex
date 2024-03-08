@@ -8,7 +8,11 @@
 }
 \ProcessOptions\relax
 
+
+\RequirePackage{mathtools}
+\RequirePackage{csquotes}
 \RequirePackage[hidelinks]{hyperref}
+\RequirePackage[capitalize]{cleveref}
 \RequirePackage{xcolor}
 \RequirePackage{framed}
 \RequirePackage[hyperref,framed]{ntheorem}
@@ -29,11 +33,18 @@
     \newtheorem{#1}[latexthree]{#2}
 }
 \anothertheorem{warning}{Warning}
+\anothertheorem{gotcha}{Gotcha!}
+\anothertheorem{overleaf}{Note to Overleaf users}
+
+% There are also theorem environments for the examples; these use plain style
+\newtheorem{theorem}{Theorem}
 
 % Macros for referencing commands and environments
 % These automatically add the corresponding index entries
 \RequirePackage{makeidx}
-\newcommand{\cmd}[1]{\texttt{\textbackslash{}#1}\index{#1@\texttt{\textbackslash{}#1}}}
+\newcommand{\cmd}[1]{\texttt{\textbackslash{}#1}\indexcmd{#1}}
+\newcommand{\indexcmd}[1]{\index{#1@\texttt{\textbackslash{}#1}}}
+\newcommand{\obscmd}[1]{\texttt{\textbackslash{}#1}\index{#1@\texttt{\textbackslash{}#1} (avoid)}}
 \newcommand{\env}[1]{\texttt{\textbackslash{}#1}\index{#1@\texttt{#1} environment}}
 \newcommand{\pkg}[1]{\textsf{#1}\index{#1@\textsf{#1} package}}
 
@@ -47,21 +58,15 @@
 \RequirePackage{fancyvrb}
 \newcommand{\ShowExample}{%
     \begin{center}
-    \hrulefill\\[1em]
+    \hrulefill\\*[1em]
     \begin{minipage}{0.58\textwidth}
     \VerbatimInput[fontsize=\footnotesize]{\jobname.tmp}
     \end{minipage}
     \begin{minipage}{0.4\textwidth}
     \input{\jobname.tmp}
-    \end{minipage}\\[1em]
+    \end{minipage}\\*[1em]
     \hrulefill
     \end{center}
 }
-
-% Mathematics
-\RequirePackage{mathtools}
-
-% Misc.
-\RequirePackage{csquotes}
 
 \endinput

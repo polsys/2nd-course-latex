@@ -1,14 +1,187 @@
 \chapter{Programming}
 
+What really is \LaTeX?
+
+It all starts with \TeX, the typesetting system designed by Donald Knuth in late 70s and 80s.
+\TeX{} is a powerful system for laying out text,
+but it puts a lot of responsibility on the writer.
+Essentially, you are responsible for both the content and its presentation.
+
+\LaTeX{} (originally by Leslie Lamport, now maintained by several people)
+extends this core by introducing commands like \cmd{section}:
+this command not only lays out the section title in a bigger font,
+but also adds some vertical whitespace around it, updates the current section number,
+adds an entry to the table of contents, and so on.
+This \emph{separates the content from how it is presented}.
+
+We will try to emphasize this philosophy on this course.
+By using standard constructs, packages, and our own custom commands,
+we can make the \verb|.tex| source code \emph{semantically} meaningful:
+something that you could read aloud.
+The system then makes sure that the output looks great on paper
+-- isn't that why we ever wanted computers to exist!
+
+
+\begin{warning}
+Even when using \LaTeX{}, the old \TeX{} is still there.
+It is possible to use plain-\TeX{} commands in your documents,
+but \emph{this is highly discouraged}.
+These commands sidestep all the enhancements brought by \LaTeX,
+and might cause hard-to-diagnose problems.
+You might need them when writing more complicated packages,
+but then you are already solidly in the ``you are free to shoot your own foot'' territory.
+Some such commands are noted in these Warnings.
+
+Unfortunately, many heritage templates and Stack Exchange answers still mix
+\TeX{}, \LaTeX, and pre-1994 \LaTeX.
+Examples of the latter include the obsolete \obscmd{em}, \obscmd{bf}, and \obscmd{it} commands
+(e.g.\ writing \verb|{\bf bold}| instead of \verb|\textbf{bold}|).
+\end{warning}
+
 
 \begin{latexthree}
-About \cmd{DocumentMetadata}.
+The ``standard'' \LaTeX{} version is $2\varepsilon$, released in 1994.
+\LaTeX3 is a long-running project (started already before $2\varepsilon$, and reactivated around 2018)
+on rewriting the internals of \LaTeX{} to be more extensible.
+
+\LaTeX3 introduces new commands for defining commands and environments.
+We will only discuss the version $2\varepsilon$ methods (which are still valid) here,
+but if you find yourself writing a package, you should consider learning about the new methods.
+
+We will talk about some new features and accessibility improvements brought by \LaTeX3 below,
+starting already in \Cref{sec:document structure}.
 \end{latexthree}
 
 
-\section{Using commands}
+
+%
+%
+%
+\section{Commands and environments}
+
+\subsection{Defining commands}
+\index{macros}
+\TeX{} is a macro language.
+This means that there are special source code tokens (\emph{macros}),
+that are \emph{expanded} into sequences of more tokens
+(including more macros, which are expanded recursively).
+The core system includes only a few commands for manipulating internal state and putting out text,
+and the rest is achieved via macro expansion.
+
+That was a mouthful, so let us see an example.
+In \LaTeX{} macros are defined with the \cmd{newcommand} command.
+
+\begin{VerbatimOut}{\jobname.tmp}
+\newcommand{\hello}{Hello world!}
+
+\hello
+\end{VerbatimOut}
+\ShowExample
+
+Here \cmd{newcommand} takes two arguments:
+the first is the name of the macro to define, and the second is what the macro expands to.
+In \TeX{} things are grouped with the \verb|{}| braces.
+(The first set of braces is technically unnecessary, but it looks cleaner in my opinion.)
+
+Let us see another example where the command is used repeatedly,
+and also expanded inside other commands:
+\indexcmd{MakeUppercase}
+\begin{VerbatimOut}{\jobname.tmp}
+\newcommand{\hello}{Hello world}
+
+--\hello, they whispered.\\
+--I said, \MakeUppercase{\hello}!
+\end{VerbatimOut}
+\ShowExample
+
+Since the macros are expanded recursively until there is nothing more to expand,
+you can write things that are semantically very unclear,
+but comprehensible to a computer:
+\begin{VerbatimOut}{\jobname.tmp}
+\newcommand{\hi}{^\infty}
+\newcommand{\underscore}{_}
+\newcommand{\lo}{\underscore{i=1}}
+
+\[ \sum\lo\hi \]
+\end{VerbatimOut}
+\ShowExample
+%
+The expansion goes something like this:
+\begin{enumerate}
+    \item \verb|\sum\lo\hi|
+    \item \verb|\sum\underscore{i=1}\hi|
+    \item \verb|\sum_{i=1}\hi|
+    \item \verb|\sum_{i=1}^\infty|
+\end{enumerate}
+So the end result is the same as if one had written the sum sensibly from the beginning.
+
+
 
 \begin{warning}
+In plain \TeX{} macros are defined with \obscmd{def} and \obscmd{let}.
+If you see code using either,
+you have entered the ``shoot your own foot'' territory.\footnotemark
+\end{warning}
+\footnotetext{Since you asked, the difference between the two is whether the contents of the macro
+are expanded at usage or definition time.
+Neither protects you against overwriting existing macros.}
+\quiettodo{Keep these on the same page!}
+
+
+%
+\subsection{Arguments to commands}
+
+To pass arguments to macros, we can indicate their number with an optional argument
+between the macro name and definition.
+These arguments can then be accessed in the macro definition with \verb|#1|, \verb|#2|, and so on.
+
+\begin{VerbatimOut}{\jobname.tmp}
+\newcommand{\say}[2]{#1 says ``#2''!}
+
+\say{Petri}{Hi}
+\end{VerbatimOut}
+\ShowExample
+
+Arguments are often wrapped in the \verb|{}| braces,
+but it is not actually necessary -- in a very specific case.
+By default, \LaTeX{} interprets a single letter or a number as an argument.
+The braces extend the argument to a longer stretch.
+
+This means that all of the following are equivalent:
+
+\begin{VerbatimOut}{\jobname.tmp}
+\[
+\frac{1}{2}
+= \frac 1 2
+= \frac12.
+\]
+\end{VerbatimOut}
+\ShowExample
+
+Do note the last one -- \LaTeX{} command names can only consist of letters,
+so the number 1 is not interpreted as part of the command name but an argument.
+There is no requirement to separate the name and a following number.
+(I do find the last example hard to read, though.)
+Conversely, whitespace won't separate longer arguments; you really need the braces:
+
+\begin{VerbatimOut}{\jobname.tmp}
+\[
+\frac 12 34
+\neq \frac {12} {34}.
+\]
+\end{VerbatimOut}
+\ShowExample
+
+However, commands are interpreted as single tokens.
+This happens regardless of whether the command would expand to several tokens.
+
+\begin{VerbatimOut}{\jobname.tmp}
+\newcommand{\magic}{314 159}
+\[ \frac \magic \pi \]
+\end{VerbatimOut}
+\ShowExample
+
+\begin{gotcha}
 Some built-in macros swallow the whitespace that follows them.
 If a word space is actually needed, you can feed the command an empty group \verb|{}|:
 \begin{VerbatimOut}{\jobname.tmp}
@@ -16,15 +189,160 @@ If a word space is actually needed, you can feed the command an empty group \ver
 \LaTeX{} programming
 \end{VerbatimOut}
 \ShowExample
-\end{warning}
+\end{gotcha}
+
+
+%
+\subsection{Groups and scopes}
+
+\index{group}\index{scope}
+More precisely, the braces delimit a \emph{group}.
+A group is handled as a single argument to a command.
+Additionally, they serve as a \emph{scope} for commands that change
+how all the following text is output.
+For example, the font-sizing commands like \cmd{tiny} and \cmd{Large}
+affect the size of all text that follows them.
+However, this effect only lasts until the group is closed with a \verb|}|.
+
+\begin{VerbatimOut}{\jobname.tmp}
+{\tiny I am small}
+and I am normal
+and {\Large I am large}
+\end{VerbatimOut}
+\ShowExample
+
+If you forget about this and just write \cmd{tiny} without any scoping,
+you will have tiny text until the end of document (or the next font size command).
+
+\begin{VerbatimOut}{\jobname.tmp}
+\tiny I am small and
+{\Large I am large}
+and I am tiny again
+\end{VerbatimOut}
+\ShowExample
+
+There is one place where the braces do not delimit a group:
+in the definition of commands.
+In the following example, \verb|\mouse{Squeak}| is expanded into
+\verb|\tiny Squeak| and not into \verb|{\tiny Squeak}|.
+Therefore the effect persists onto the following line.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\newcommand{\mouse}[1]{Mouse: \tiny#1.}
+
+\mouse{Squeak}\\
+I: Oops.
+\end{VerbatimOut}
+\ShowExample
+%
+The scope can be introduced here by adding \verb|{}| into the command definition:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\newcommand{\mouse}[1]{Mouse: {\tiny#1}.}
+
+\mouse{Squeak}\\
+I: Alright.
+\end{VerbatimOut}
+\ShowExample
+
+Scopes also affect things like \cmd{newcommand}:
+the command \verb|\mouse| defined above only exists
+within the example block, and is not accessible beyond it.
+\todo{I want an optional cmd argument for subindex}
 
 
 
-\section{Defining commands and environments}
+%
+\subsection{Optional arguments}
+
+Some commands also have optional arguments.
+Instead of braces, these are passed within brackets \verb|[]|.
+A basic example is the \cmd{sqrt} command
+that produces not only square roots, but general roots:
+\begin{VerbatimOut}{\jobname.tmp}
+$\sqrt{7}$,
+$\sqrt[3]{7}$.
+\end{VerbatimOut}
+\ShowExample
+
+Another example is the optional argument to \cmd{cite} command,
+which indicates a precise position within the cited work:
+\verb|\cite[Page 40]{TLC}| produces \cite[Page 40]{TLC}.
+(Here \verb|TLC| is the bibliography key for \emph{The \LaTeX{} Companion};
+we will discuss this more in \Cref{sec:bibliography})
+
+\begin{gotcha}
+Inside an optional argument, \LaTeX{} interprets the first \verb|]| it sees as the closing bracket.
+This means that if you need to use \verb|[]| \emph{inside} an optional argument
+(say, as an optional argument to an inner command), you need to wrap things in braces.
+Quite often, you might need even \emph{two sets of braces}.
+Compare the two citations:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\cite[{{Page [40] maybe?}}]{TLC}\\
+\cite[Page [40] maybe?]{TLC}
+\end{VerbatimOut}
+\ShowExample
+%
+The first citation is shown correctly.
+In the second, the optional argument is interpreted to be ``\verb|Page [40|''
+and the citation name then ``\verb|m|'' (only a single letter since it was not wrapped in braces).
+The remaining ``\verb|aybe?]{TLC}|'' is then normal body text.
+\end{gotcha}
+
+\begin{gotcha}
+\LaTeX{} ignores whitespace between a command and its optional argument.
+This might sometimes lead to surprising behaviour.
+Here the second list item is interpreted as an optional argument that replaces the bullet symbol:
+\indexcmd{item}
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\begin{itemize}
+\item Cookies
+\item [Maybe cake?]
+\item Drinks
+\end{itemize}
+\end{VerbatimOut}
+\ShowExample
+\end{gotcha}
+
+
+The syntax for optional arguments is not always clear:
+sometimes they precede the real arguments, sometimes they follow them.
+Sometimes they consist of just one thing,
+sometimes they can be a list of things
+(see the discussion of \cmd{usepackage} later in this chapter).
+
+\todo{Defining commands with optional arguments?}
+
+
+%
+\subsection{Replacing existing commands}
+
+Sometimes it is useful to overwrite an existing command.
+One common example is rewriting \cmd{epsilon} to actually mean \cmd{varepsilon},
+since many consider the variant $\varepsilon$ prettier than the regular $\epsilon$.
+
+It is not possible to write \verb|\newcommand{\epsilon}{\varepsilon}|,
+since \LaTeX{} rightly complains about \verb|\epsilon| being already defined.
+You could be accidentally overwriting a command used elsewhere in the document.
+You have to make your intentions clear by using \cmd{renewcommand}:
+
+\begin{VerbatimOut}{\jobname.tmp}
+Old epsilon: $\epsilon$,\\
+\renewcommand{\epsilon}{\varepsilon}
+New epsilon: $\epsilon$.
+\end{VerbatimOut}
+\ShowExample
+%
+Again, the redefinition of a command lasts only for the current scope.
+Once the scope is closed, \verb|\epsilon| again means the old regular symbol.
+To redefine a command within the entire document,
+you need to call \cmd{renewcommand} in the document preamble.
 
 Here is an example of \cmd{newcommand} and \cmd{renewcommand} with arguments.
-The code example below uses the \pkg{verbatim} package
-and \env{VerbatimOut} environment.
+The two commands have matching syntax.
+Note that the new definition is free to have a different number of arguments.
 
 \begin{VerbatimOut}{\jobname.tmp}
 \newcommand{\dual}[2]{(#1 \mid #2)}
@@ -35,11 +353,98 @@ Physicists: $\dual{a}{b}$.
 \end{VerbatimOut}
 \ShowExample
 
-\section{Document structure}
 
+\todo{Advanced: adding to an existing command.}
+
+
+%
+\subsection{Defining environments}
+
+\index{environments}
+Environments encapsulate larger blocks of text.
+They also form implicit groups.
+
+\begin{VerbatimOut}{\jobname.tmp}
+\begin{center}
+\renewcommand{\epsilon}{\varepsilon}
+Centered text and $\epsilon$
+\end{center}
+
+\begin{flushright}
+Right-aligned text.
+Here we have the old $\epsilon$.
+\end{flushright}
+\end{VerbatimOut}
+\ShowExample
+
+To define an environment, we use the \cmd{newenvironment} command.
+This command takes three arguments: the name of the environment
+and code to expand at the beginning and the end of the environment.
+
+\begin{VerbatimOut}{\jobname.tmp}
+\newenvironment{cool}
+    {A mathmo enters the lab.\par}
+    {\par The mathmo leaves the lab.}
+
+\begin{cool}
+A massive explosion occurs.
+\end{cool}
+\end{VerbatimOut}
+\ShowExample
+%
+(If you're wondering about the \cmd{par} commands,
+they are used to ensure that the first and last lines are their own paragraphs.)
+
+There is also \cmd{renewenvironment} that works like \verb|\renewcommand|.
+
+Since environments are groups,
+it is possible to change font characteristics for the duration of the environment:
+
+\begin{VerbatimOut}{\jobname.tmp}
+\newenvironment{mouse}{\tiny}{}
+
+Ordinary text.
+\begin{mouse}
+Very small and very squeaky text.
+\end{mouse}
+Again ordinary text.
+\end{VerbatimOut}
+\ShowExample
+%
+Note that here the end code is empty;
+the font properties are reset automatically as the group ends.
+
+\todo{Parameter form; improvements in L3}
+
+
+%
+%
+%
+\section{Diagnosing errors}
+
+Macro languages were popular in the 1980s, back when 640 kilobytes was enough memory for anyone.
+An unfortunate consequence of \TeX's stability is that the compiler still operates under this worldview.
+The source code is read exactly once from top to bottom,
+and if the code is not correct, error messages can be extremely cryptic.
+
+\begin{overleaf}
+Some \LaTeX{} distributions are set up to ignore some errors.
+For example, Overleaf is quite good at ignoring missing \verb|$| signs and other small typos.
+You should really pay attention to red symbols in the source code margin
+and next to the \emph{Recompile} button!
+\end{overleaf}
+
+\todo{Understanding error messages}
+
+
+\section{Document structure}\label{sec:document structure}
+
+\todo{Finding documentation for packages}
 
 
 \section{Creating your own style file}
 
+
 \section{Counters}
+
 
