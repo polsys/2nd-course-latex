@@ -36,6 +36,7 @@
 \anothertheorem{gotcha}{Gotcha!}
 \anothertheorem{overleaf}{Note to Overleaf users}
 \anothertheorem{practices}{Good practices}
+\anothertheorem{technote}{Technical side note}
 
 % There are also theorem environments for the examples; these use plain style
 \newtheorem{theorem}{Theorem}
@@ -60,12 +61,13 @@
 %   2. Then call \ShowExample
 %      a) It first prints the code verbatim on a minipage
 %      b) And then \input's the same code for evaluation onto another minipage
+% The optional argument to \ShowExample is the first line to show
 \RequirePackage{fancyvrb}
-\newcommand{\ShowExample}{%
+\NewDocumentCommand{\ShowExample}{o}{%
     \begin{center}
     \hrulefill\\*[1em]
     \begin{minipage}{0.58\textwidth}
-    \VerbatimInput[fontsize=\footnotesize]{\jobname.tmp}
+    \VerbatimInput[fontsize=\footnotesize,firstline=\IfValueTF{#1}{#1}{1}]{\jobname.tmp}
     \end{minipage}
     \begin{minipage}{0.4\textwidth}
     \input{\jobname.tmp}

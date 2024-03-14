@@ -680,9 +680,122 @@ Otherwise, you might get non-functioning hyperlinks.
 \section{Creating your own style file}
 
 
+
+%
+%
+%
 \section{Counters}
 
+\LaTeX{} keeps a lot of internal state in variables called \emph{counters}\index{counters}.
 
+\begin{VerbatimOut}{\jobname.tmp}
+We are in Chapter~\arabic{chapter}
+and its Section~\arabic{section}.
+
+\begin{enumerate}
+\item This is item~\arabic{enumi}.
+\item This is item~\arabic{enumi}.
+  \begin{enumerate}
+  \item Subitem~\arabic{enumii}.
+  \item Subitem~\arabic{enumii}.
+  \end{enumerate}
+\end{enumerate}
+\end{VerbatimOut}
+\ShowExample
+
+The counters seen in the above example are automatically stepped by the sectioning and list commands.
+They can be manually manipulated with the \cmd{setcounter} command.
+One such example is seen in Väisälä's topology textbook:
+
+\begin{ExampleCode}
+\setcounter{chapter}{-1}
+\chapter{Prerequisites}
+
+% The chapter name is printed as "0. Prerequisites"
+% Note: the counter is set to -1 to compensate for \chapter stepping it
+\end{ExampleCode}
+
+It is also possible to add/subtract a value to a counter:
+\indexcmd{stepcounter}\indexcmd{addtocounter}%
+\begin{VerbatimOut}{\jobname.tmp}
+\begin{enumerate}
+\item Add one and step:
+  \stepcounter{enumi}
+\item Add seven and step:
+  \addtocounter{enumi}{7}
+\item Minus one + step:
+  \addtocounter{enumi}{-1}
+\item Same as above!
+\end{enumerate}
+\end{VerbatimOut}
+\ShowExample
+
+There are many ways to output the value of a counter:\index{counters!displaying}
+%
+\begin{VerbatimOut}{\jobname.tmp}
+Section~\arabic{section}\\
+Section~\alph{section}\\
+Section~\Alph{section}\\
+Section~\Roman{section}\\
+Section~\fnsymbol{section}
+\end{VerbatimOut}
+\ShowExample
+The last command \verb|\fnsymbol| is used for footnote symbols.
+Note that the letter-based styles can be capitalized
+by using \verb|\Roman| instead of \verb|\roman| etc.
+
+To define your own counters, you can use \cmd{newcounter}:
+\index{counters!defining}%
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\newcounter{fact}
+\newcommand{\axiom}[1]{\stepcounter{fact}%
+    \textbf{Rule \arabic{fact}.} #1\par}
+
+\axiom{Don't use plain \TeX.}
+\axiom{See the above.}
+\end{VerbatimOut}
+\ShowExample
+
+If you want the counter to reset when another counter is stepped,
+you can pass an optional argument to \cmd{newcounter}.
+An example use case is to reset the counter every time a new section is started
+(in which case the optional argument would be \verb|[section]|).
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\setcounter{fact}{0}
+\newcommand{\axiom}[1]{\stepcounter{fact}%
+    \textbf{Rule \arabic{fact}.} #1\par}
+\newcounter{exc}[fact]
+\newcommand{\except}[1]{\stepcounter{exc}%
+  {\tiny Exception~\roman{exc}. #1}\par}
+
+\axiom{Don't use plain \TeX.}
+\except{Unless Don Knuth passes by.}
+\except{Or you're a masochist.}
+\axiom{See the above.}
+\except{No exceptions.}
+\end{VerbatimOut}
+\ShowExample[4]
+
+\begin{gotcha}
+This only sees the effect of \verb|\stepcounter| on the another counter;
+if you use \verb|\setcounter| to change it, the dependent counter is not reset.
+\end{gotcha}
+
+\begin{technote}
+Counters are always in a global scope.\index{scope!counters}
+That is, the definition of a counter does not disappear as the group is closed.
+If you would like to use the same counter name again in a later context,
+you can (or rather, must) reset and reuse the previous counter.
+
+Due to this, you should probably define your counters in the preamble.
+\end{technote}
+
+
+%
+%
+%
 \section{\emph{Further topics*}}
 
 \todo{Say something about robustness}
