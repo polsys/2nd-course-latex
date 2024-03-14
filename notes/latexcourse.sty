@@ -35,18 +35,23 @@
 \anothertheorem{warning}{Warning}
 \anothertheorem{gotcha}{Gotcha!}
 \anothertheorem{overleaf}{Note to Overleaf users}
+\anothertheorem{practices}{Good practices}
 
 % There are also theorem environments for the examples; these use plain style
 \newtheorem{theorem}{Theorem}
 
 % Macros for referencing commands and environments
 % These automatically add the corresponding index entries
+% Here we use \NewDocumentCommand, the new method introduced in LaTeX3,
+% to simplify the handling of optional arguments.
 \RequirePackage{makeidx}
-\newcommand{\cmd}[1]{\texttt{\textbackslash{}#1}\indexcmd{#1}}
-\newcommand{\indexcmd}[1]{\index{#1@\texttt{\textbackslash{}#1}}}
-\newcommand{\obscmd}[1]{\texttt{\textbackslash{}#1}\index{#1@\texttt{\textbackslash{}#1} (avoid)}}
-\newcommand{\env}[1]{\texttt{\textbackslash{}#1}\index{#1@\texttt{#1} environment}}
-\newcommand{\pkg}[1]{\textsf{#1}\index{#1@\textsf{#1} package}}
+\NewDocumentCommand{\cmd}{o m}{\texttt{\textbackslash{}#2}\indexcmd[#1]{#2}}
+\NewDocumentCommand{\indexcmd}{o m}{\index{#2@\texttt{\textbackslash{}#2}\IfValueT{#1}{!#1}}}
+\NewDocumentCommand{\obscmd}{m}{\texttt{\textbackslash{}#1}\index{#1@\texttt{\textbackslash{}#1} \emph{(do not use)}}}
+\NewDocumentCommand{\indexenv}{o m}{\index{#2@\texttt{#2} environment\IfValueT{#1}{!#1}}}
+\NewDocumentCommand{\env}{o m}{\texttt{#2}\indexenv[#1]{#2}}
+\NewDocumentCommand{\indexpkg}{o m}{\index{#2@\textsf{#2} package\IfValueT{#1}{!#1}}}
+\NewDocumentCommand{\pkg}{o m}{\textsf{#2}\indexpkg[#1]{#2}}
 
 % Code examples use the fancyvrb package.
 % How this works:
@@ -68,5 +73,8 @@
     \hrulefill
     \end{center}
 }
+
+% Also an environment for code examples that are not executed
+\DefineVerbatimEnvironment{ExampleCode}{Verbatim}{frame=lines, framesep=1em, fontsize=\footnotesize}
 
 \endinput

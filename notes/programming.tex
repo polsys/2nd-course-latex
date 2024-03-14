@@ -1,3 +1,6 @@
+% !TeX root = 2nd-course-in-latex.tex
+% (The appearance of \documentclass in the examples confuses LaTeX Workshop for VS Code)
+
 \chapter{Programming}
 
 What really is \LaTeX?
@@ -58,6 +61,23 @@ starting already in \Cref{sec:document structure}.
 %
 %
 \section{Commands and environments}
+
+\begin{practices}
+When should you define your own commands?
+Generally, the less customization you have,
+the easier your manuscript is for the journal publication process and your coauthors.
+At the same time, good commands make the code semantically meaningful.
+
+I personally find \verb&\norm{...}& easier to read than \verb&\left\|...\right\|&,
+and \verb|\Prob| certainly better than \verb|\mathbb P|,
+but others could find those an overkill.
+This is a hard balance to strike.
+
+There is just one strict rule:
+never repurpose the name of an existing base \LaTeX{} command.
+It will cause endless trouble when some part of the journal style tries to use the original command.
+\end{practices}
+
 
 \subsection{Defining commands}
 \index{macros}
@@ -238,14 +258,14 @@ I: Oops.
 The scope can be introduced here by adding \verb|{}| into the command definition:
 %
 \begin{VerbatimOut}{\jobname.tmp}
-\newcommand{\mouse}[1]{Mouse: {\tiny#1}.}
+\newcommand{\mouse}[1]{{Mouse: \tiny#1.}}
 
 \mouse{Squeak}\\
 I: Alright.
 \end{VerbatimOut}
 \ShowExample
 
-Scopes also affect things like \cmd{newcommand}:
+Scopes also affect things like \cmd[scope]{newcommand}:
 the command \verb|\mouse| defined above only exists
 within the example block, and is not accessible beyond it.
 \todo{I want an optional cmd argument for subindex}
@@ -414,6 +434,24 @@ Again ordinary text.
 Note that here the end code is empty;
 the font properties are reset automatically as the group ends.
 
+\begin{gotcha}
+If the begin/end code of your environment spans multiple lines,
+you need to be careful with line breaks.
+The extra whitespace might cause \LaTeX{} to output an unintended empty space
+or even a paragraph break.
+To avoid line breaks to be interpreted as line breaks,
+you can end each line in the environment definition with \verb|%|
+-- the comment character shallows the line break.
+
+This same thing applies to empty lines before and after environment usage
+-- the usual paragraph-breaking rules apply.
+If you don't want to start a new paragraph after the environment ends,
+do not leave an empty line between \verb|\end{...}| and the following text.
+(For visual separation in the code, I prefer a line containing just \verb|%|.)
+\end{gotcha}
+
+
+
 \todo{Parameter form; improvements in L3}
 
 
@@ -437,14 +475,220 @@ and next to the \emph{Recompile} button!
 \todo{Understanding error messages}
 
 
+
+%
+%
+%
 \section{Document structure}\label{sec:document structure}
 
-\todo{Finding documentation for packages}
+Let us then look at the basic structure of a \verb|.tex| file.
+Everyone reading these notes is assumed to have seen such a file more than once,
+but we will spend some time on some nuances.
+Bear with me even if this sounds trivial!
+
+\begin{practices}
+I would advocate for starting every project from a minimal \verb|.tex| file, like the one below.
+The problem with ``heritage'' templates is that they accumulate a lot
+of unnecessary package dependencies and custom commands.
+I've seen files where the same package is loaded three times.
+
+By starting from an empty file
+and only adding the customizations you need for the particular project,
+you help maintain your ``code hygiene''.
+\end{practices}
+
+Let us start with the minimal example below.
+
+\begin{ExampleCode}[numbers=left]
+\documentclass[a4paper]{article}
+
+\usepackage[hidelinks]{hyperref}
+
+\title{My first document}
+\author{Firstname Lastname}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+% Rest of content here...
+
+\end{document}
+\end{ExampleCode}
+
+On the first line, we load a \LaTeX{} document class.
+The document class determines the basic layout of your document,
+and it is where several basic commands like \cmd{maketitle} are defined.
+We will look at some different document classes and arguments in the next subsection.
+
+Lines 1--8 are collectively known as the \emph{preamble}.\index{preamble}
+This is the best place to define new commands and do other setup.
+Additional packages are also loaded here; see \Cref{sec:loading packages}.
+
+Trying to output any text before the \verb|\begin{document}| line is an error.
+\indexenv{document}%
+When the compiler reaches that line,
+a lot of stuff happens behind the scenes to prepare \LaTeX{} for actually outputting pages.
+
+Similarly, the \verb|\end{document}| line is necessary.
+At that point, a lot of code is executed to make sure that everything is output properly.
+Any text written below that line is ignored.
+(I do not recommend writing anything there!)
+
+\begin{latexthree}
+An important part of the \LaTeX3 project is revising the PDF output
+to include accessibility information:
+for example, tagging section headings as headings and not just bold text in big font.
+Since this might cause issues with some packages, the new behaviour is opt-in.
+
+If you write \indexcmd{DocumentMetadata}\verb|DocumentMetadata{}|
+before the \verb|\documentclass| declaration, you opt in to these new features.
+This command also enables new functionality in e.g.\ the \pkg{hyperref} package.
+\end{latexthree}
+
+
+%
+\subsection{Document classes}
+
+\begin{practices}
+Journals commonly define their own document classes, based on one of the standard classes.
+The discussion below only applies to the documents where you are in charge of the style.
+Always look at the journal instructions for preparing the published version of your article.
+\end{practices}
+
+\index{document classes}
+There are three document classes of interest included in base \LaTeX{}:
+
+\begin{description}
+\item[article] As the name suggests, this should be used for articles, short notes, and such.
+    The \cmd{maketitle} command does not create a separate title page,
+    and the highest-level sectioning command is \cmd{section}.
+    There is no page break between sections.
+\item[report] This class is suitable for e.g.\ a thesis, lecture notes, or a longer article.
+    The present notes use this class.
+    There is a separate title page,
+    and the highest-level sectioning command is \cmd{chapter}.
+    Each chapter begins on a new page.
+\item[book] This is the heaviest of all the classes.
+    You get a lot of empty pages, just like in a real printed book.
+    If you find yourself using this class,
+    you have agreed to something monumental.
+\end{description}
+%
+There is also a \textbf{letter} document class,
+which understandably sees little use nowadays.
+But it is still there if you need it!
+
+Options passed to document classes are interesting in that
+\emph{they are also passed to all packages}.
+If you pass \verb|a4paper| to the document class (as you should),
+then you don't need to pass it again to the \pkg{geometry} package.
+
+Some options are supported by all the basic document classes:
+
+\begin{description}
+\item[a4paper] This is self-explanatory.
+    By default, \LaTeX{} assumes the American letter paper size.
+\item[a5paper] At least University of Helsinki uses A5 as the thesis format.
+\item[10pt, 11pt, 12pt] Sets the body font size.
+    Fonts for section headers, footnotes, etc.\ are scaled accordingly.
+    The default is 10~points.
+\item[oneside, twoside] Whether the margins are equal
+    or alternating between odd and even pages.
+    For example this document (which is aimed for consuption on a screen)
+    uses \verb|oneside|, but a printed report should specify \verb|twoside|.
+\item[openright, openany]
+    Whether chapters always begin on a right-hand side page (default for book)
+    or any page (default for report).
+    You should consider \verb|openright| for a printed thesis.
+    Not applicable to the article class where chapters are not supported at all.
+\item[notitlepage, titlepage] Whether the title is set on a separate page.
+\item[fleqn] Instead of centering, left-aligns display formulas.
+\item[twocolumn] Sets the text in two columns.
+\end{description}
+
+
+A very common alternative document class is \textbf{amsart}.\indexpkg{amsart}
+It is developed by the American Mathematical Society,
+and some prefer its style to that of \textbf{article}.
+It is a drop-in replacement for \textbf{article} and supports the same options.
+
+Other common classes include those from \pkg{koma-script}
+(drop-in replacements for all standard classes)
+and \pkg{memoir} (intended for longer documents),
+which both provide a lot of flexibility.
+They both come with extensive documentation for those who wish to venture into that rabbit hole.
+
+
+%
+\subsection{Loading packages}\label{sec:loading packages}
+
+In the previous example, we loaded the \pkg{hyperref} package with:
+\begin{ExampleCode}
+\usepackage[hidelinks]{hyperref}
+\end{ExampleCode}
+Options can be passed to packages inside the brackets.
+Here we pass the \verb|hidelinks| option that suppresses the coloured boxes around clickable links.
+Some packages also take options with a \verb|key=value| notation.
+
+In addition to the options passed explicitly,
+all the options passed to the document class are also forwarded to the package.
+
+\begin{practices}
+You should always load \pkg{hyperref}.
+It not only turns cross-references into clickable links,
+but also adds section headers to the PDF table of contents
+(usually found in the sidebar of any reader application).
+Your readers will appreciate this navigation aid.
+\end{practices}
+
+\index{packages!finding}
+CTAN, the \emph{Comprehensive \TeX{} Archive Network},
+is the repository for \LaTeX{} packages.
+It can be browsed at \url{www.ctan.org}.
+
+Generally \LaTeX{} distributions either contain the whole CTAN,
+or are able to download packages from there as needed.
+You should check out how you can keep your distribution up to date,
+as new versions of packages are continually released.
+
+Most importantly, all major packages listed on CTAN have good documentation there.
+The documentation typically includes usage examples, a complete reference,
+and possible compatibility issues with other packages.
+For example, you can find the (very extensive!) documentation of \pkg{hyperref}
+at \url{www.ctan.org/pkg/hyperref}.
+
+\todo{Other common packages}
+
+
+\begin{gotcha}\index{packages!loading order}
+Quite a few packages modify the standard \LaTeX{} commands
+and even the commands defined by each other.
+This means that sometimes it is important to load packages in the correct order,
+so that the modifications are applied sensibly.
+The core packages are usually compatible with each other,
+but you should always check the package documentation for possible conflicts.
+
+For example, it is important to load \pkg{ntheorem} before \pkg{hyperref},
+since the former modifies the label commands that are also touched by the latter.
+Otherwise, you might get non-functioning hyperlinks.
+\end{gotcha}
+
 
 
 \section{Creating your own style file}
 
 
 \section{Counters}
+
+
+\section{\emph{Further topics*}}
+
+\todo{Say something about robustness}
+
+\todo{ifthen, loops, ?}
+
+\todo{Adding options to own packages}
 
 
