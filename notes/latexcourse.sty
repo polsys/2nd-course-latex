@@ -16,6 +16,7 @@
 \RequirePackage{xcolor}
 \RequirePackage{framed}
 \RequirePackage[hyperref,framed]{ntheorem}
+\RequirePackage[normalem]{ulem}
 
 % Remark environments have a shaded margin
 \theoremstyle{nonumberbreak}
@@ -53,6 +54,7 @@
 \NewDocumentCommand{\env}{o m}{\texttt{#2}\indexenv[#1]{#2}}
 \NewDocumentCommand{\indexpkg}{o m}{\index{#2@\textsf{#2} package\IfValueT{#1}{!#1}}}
 \NewDocumentCommand{\pkg}{o m}{\textsf{#2}\indexpkg[#1]{#2}}
+\NewDocumentCommand{\obspkg}{m}{\textsf{#1}\index{#1@\textsf{#1} package \emph{(do not use)}}}
 
 % Code examples use the fancyvrb package.
 % How this works:

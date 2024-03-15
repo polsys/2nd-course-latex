@@ -1,49 +1,12 @@
-\chapter{Page and paragraph layout}
-
-\section{Text styles}
-
-\subsection{Colour}
-
-\subsection{Footnotes}
-
-\todo{Gotcha with whitespace}
-
-\subsection{Text alignment}
-
-\subsection{List structures}
-
-
-
-%
-%
-%
-\section{Sectioning commands}
-
-\begin{gotcha}
-If your section title contains mathematical symbols
-and you have \pkg{hyperref} loaded (as you do, right?),
-you will probably get a warning.
-This is because the PDF navigation bar format does not support mathematical symbols.
-
-To solve this issue, you can use the \cmd{texorpdfstring} command.
-It takes two arguments: the first is the one to show in the document,
-and the second is the (non-mathematical) alternative to show in PDF navigation.
-\begin{ExampleCode}
-\section{The \texorpdfstring{$\phi^4$}{phi4} measure}
-\end{ExampleCode}
-This code displays ``The $\phi^4$ measure'' in the document
-but ``The phi4 measure'' in the navigation bar.
-\end{gotcha}
-
-\todo{Front, main, back matter}
+\chapter{Page layout and whitespace}
 
 \section{Units of measure and whitespace}
-
-\section{Hyphenation and when it goes wrong}
-
 \section{Page geometry}
 
 \todo{Landscape pages}
+
+
+\section{Paragraph alignment}
 
 \section{Headers and footers}
 

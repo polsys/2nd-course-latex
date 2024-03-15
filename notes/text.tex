@@ -1,0 +1,170 @@
+\chapter{Styling text}
+
+%
+%
+%
+\section{The not so minor characters}
+
+
+%
+%
+%
+\section{Style and size}
+
+\subsection{Styles}
+\LaTeX{} provides three independent attributes for modifying the appearance of text.
+These are:
+
+\begin{description}
+\item[Family] The basic shape of the font.
+    There are three families by default: serif, \textsf{sans serif}, and \texttt{typewriter}.
+    In these notes, the sans serif font is used to highlight package names,
+    and the typewriter font is used for \LaTeX{} code.
+
+\item[Series] This is the combination of weight and width of the font.
+    Generally, one only needs to care about the normal and \textbf{bold} series.
+    Those into graphical design know that this is only the tip of the iceberg;
+    see \todo{talk about this in the font customization section?}
+
+\item[Shape] Usual choices include upright, \textit{italic}, and \textsc{small capitals}.
+    Technically, small caps is not a shape variant but an independent style altogether,
+    but we are simplifying things here.
+\end{description}
+
+These can be freely combined (although non-default fonts might not support all combinations):
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\textsf{\textit{italic sans serif}}\\
+\textbf{\texttt{bold typewriter}}
+\end{VerbatimOut}
+\ShowExample
+
+The following table shows the most common font commands.
+These come in two forms: the first takes the text as its argument,
+and the second applies the change to all the following text
+(until end of scope; see p.~\pageref{ex:font scope}).
+
+\begin{figure}[h]
+\centering
+% What happens below is TeX magic, and something you should only use in
+% an advanced context like showing off inside the code of a LaTeX lecture note.
+% To understand how this works, look up \csname in the index of Knuth's TeXbook.
+\newcommand{\example}[3]{\cmd{#1}\texttt{\{...\}} &%
+    \texttt{\{}\cmd{#2}\texttt{ ...\}} & \csname#1\endcsname{#3}}
+\begin{tabular}{l|l|l}
+Command form & Declarative form & Output\\
+\hline
+\example{textrm}{rmfamily}{Serif family (default)}\\
+\example{textsf}{sffamily}{Sans serif}\\
+\example{texttt}{ttfamily}{Typewriter}\\[1em]
+\example{textbf}{bfseries}{Bold series}\\[1em]
+\example{textit}{itshape}{Italic shape}\\
+\example{textsc}{scshape}{Small capitals}
+\end{tabular}
+\end{figure}
+
+There are two important points to remember:
+First, you should keep the semantics and the styling separate.
+For example, these notes define a \verb|\pkg| command to highlight package names;
+there are no \verb|\textsf| commands sprinkled around the code.%
+\footnote{Moreover, this command adds an entry to the index.
+Thus the code is not only semantically meaningful but also benefits the reader.}
+
+Another is that you should not use \verb|\textit| to emphasize text.
+It is much better to use \cmd{emph}:
+first, it is semantically meaningful, and second, it supports nesting:%
+\begin{VerbatimOut}{\jobname.tmp}
+Sometimes you need to
+\emph{emphasize} a point.
+\emph{And sometimes your emphasis
+contains \emph{an even more important}
+point to consider.}
+\end{VerbatimOut}
+\ShowExample
+%
+If you need a declarative form (for use in an environment), it is \cmd{em}.
+
+
+\subsection{But what about underlining?}
+
+\LaTeX{} does not provide a command to underline text.
+Many typography enthusiasts consider underlining bad style,
+an unfortunate byproduct of mechanical typewriters where you could not (easily) change the font.
+
+If you still want to underline things, there is the \pkg{ulem} package.
+By default, it rewrites \cmd[underline]{emph} to use (nested) underlining instead of italic,
+so you might want to load it as \verb|\usepackage[normalem]{ulem}|,
+which keeps \verb|\emph| as it usually is.
+
+In addition to \cmd{uline}, this package also provides the \cmd{sout} command
+that lets you strike out text.\index{strike-out text}
+There are also several styles of underlines:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\uline{Underlined}\\
+\uuline{Doubly so}\\
+\sout{Struck out}\\
+\uwave{Waves}\\
+\dashuline{Dashes}\\
+\dotuline{Dots}
+\end{VerbatimOut}
+\ShowExample
+
+
+\subsection{Size}
+
+\subsection{Verbatim text}
+
+
+
+%
+%
+%
+\section{Colour}\label{sec:colour}
+
+
+%
+%
+%
+\section{Footnotes}
+
+\todo{Gotcha with whitespace}
+
+
+\section{List structures}
+
+
+
+%
+%
+%
+\section{Sectioning commands}
+
+\begin{gotcha}
+If your section title contains mathematical symbols
+and you have \pkg{hyperref} loaded (as you do, right?),
+you will probably get a warning.
+This is because the PDF navigation bar format does not support mathematical symbols.
+
+To solve this issue, you can use the \cmd{texorpdfstring} command.
+It takes two arguments: the first is the one to show in the document,
+and the second is the (non-mathematical) alternative to show in PDF navigation.
+\begin{ExampleCode}
+\section{The \texorpdfstring{$\phi^4$}{phi4} measure}
+\end{ExampleCode}
+This code displays ``The $\phi^4$ measure'' in the document
+but ``The phi4 measure'' in the navigation bar.
+\end{gotcha}
+
+\todo{Front, main, back matter}
+
+%
+%
+%
+\section{Hyphenation, language, and overfull hboxes}
+
+\todo{Font encodings}
+
+\todo{Special characters}
+
+\todo{Do we need to talk about boxes somewhere?}

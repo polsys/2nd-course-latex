@@ -37,7 +37,7 @@ Some such commands are noted in these Warnings.
 
 Unfortunately, many heritage templates and Stack Exchange answers still mix
 \TeX{}, \LaTeX, and pre-1994 \LaTeX.
-Examples of the latter include the obsolete \obscmd{em}, \obscmd{bf}, and \obscmd{it} commands
+Examples of the latter include the obsolete \obscmd{bf} and \obscmd{it} commands
 (e.g.\ writing \verb|{\bf bold}| instead of \verb|\textbf{bold}|).
 \end{warning}
 
@@ -216,6 +216,7 @@ If a word space is actually needed, you can feed the command an empty group \ver
 \subsection{Groups and scopes}
 
 \index{group}\index{scope}
+\label{ex:font scope}
 More precisely, the braces delimit a \emph{group}.
 A group is handled as a single argument to a command.
 Additionally, they serve as a \emph{scope} for commands that change
@@ -268,7 +269,6 @@ I: Alright.
 Scopes also affect things like \cmd[scope]{newcommand}:
 the command \verb|\mouse| defined above only exists
 within the example block, and is not accessible beyond it.
-\todo{I want an optional cmd argument for subindex}
 
 
 
@@ -526,6 +526,25 @@ Lines 1--8 are collectively known as the \emph{preamble}.\index{preamble}
 This is the best place to define new commands and do other setup.
 Additional packages are also loaded here; see \Cref{sec:loading packages}.
 
+\begin{latexthree}
+What's interesting in the above example is the one package that is \emph{not} loaded.
+The \pkg{inputenc} package used to be very important to load,
+since it told \LaTeX{} about the encoding of non-English characters.
+Since 2018 \LaTeX{} has followed the rest of the world
+and uses UTF-8 encoding by default.
+
+What does this mean for you?
+If you create a new file in any reasonably modern \LaTeX{} editor,
+you get the correct encoding and don't need to load \pkg{inputenc}.
+
+However, if you modify a sufficiently aged file that contains non-English characters,
+you might stumble upon legacy encodings like \texttt{latin1} or \texttt{cp1252}.
+In such files, the \pkg{inputenc} package must be loaded with the proper optional argument.
+\end{latexthree}
+
+\todo{Font encoding, reference to coming section}
+
+
 Trying to output any text before the \verb|\begin{document}| line is an error.
 \indexenv{document}%
 When the compiler reaches that line,
@@ -660,6 +679,12 @@ For example, you can find the (very extensive!) documentation of \pkg{hyperref}
 at \url{www.ctan.org/pkg/hyperref}.
 
 \todo{Other common packages}
+\begin{description}
+\item[xcolor] Support for setting text and symbols in colour.
+    Replaces the old \obspkg{color} package included in early nineties \LaTeX{};
+    do not confuse the two.
+    See \Cref{sec:colour}.
+\end{description}
 
 
 \begin{gotcha}\index{packages!loading order}
