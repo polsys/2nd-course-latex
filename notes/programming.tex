@@ -472,7 +472,83 @@ You should really pay attention to red symbols in the source code margin
 and next to the \emph{Recompile} button!
 \end{overleaf}
 
-\todo{Understanding error messages}
+The compiler gives three forms of output: information, warnings and errors.
+Graphical \LaTeX{} editors usually only show the latter two.
+(Information is printed in the console output.
+It includes the current source file and page number that the compiler is processing,
+which can help diagnose a stuck compilation.)
+
+Warnings are just as the name says: the document can still be compiled,
+but you should check whether you have gotten what you intended.
+Generally, the warning messages are very descriptive:
+
+\medskip\noindent\emph{Overfull or underfull hbox.}\\*
+A line could not be breaked in a nice way.
+See \Cref{sec:overfull} for how to solve this.
+
+\medskip\noindent\emph{Citation or label undefined.}\\*
+\LaTeX{} could not recognize a label that you tried to reference.
+If the label or bibliography entry was newly added, a recompilation might fix this.
+Otherwise you have forgotten to define it at all, or just forgotten how to spell it.
+See \Cref{sec:crossref,sec:bibliography}.
+
+\medskip\noindent\emph{Label(s) may have changed. Rerun to get cross-references right.}\\*
+Indeed, you have added a new label since the last compilation.
+Just recompile the file.
+
+\medskip\noindent\emph{Temporary extra page added at the end. Rerun to get it removed.}\\*
+This can happen if the document becomes shorter than in the last compilation.
+\LaTeX{} tries to place the processing that happens at \verb|\end{document}|
+to the final page, but it does not know the final number of pages until it is too late
+(hence it looks at the previous compilation for a hint).
+As the message says, there is an extra page explaining the issue at the end.
+Recompile and it goes away.
+
+
+\begin{practices}
+You should always check for warnings before submitting a document.
+It's a bit embarrassing to publish a document with [\textbf{?}] citations, after all.
+
+Overfull and underfull hboxes are usually \emph{not worth fixing}
+until the final typesetting phase,
+since very small changes to the text or style can drastically change the line breaking.
+\end{practices}
+
+
+Errors, on the other hand, halt the compiler altogether.
+The compiler can try to ignore errors and recover itself,
+but at that point \emph{it is guessing} what you tried to mean,
+and might get even more confused.
+Quite often the internal state is so messed up, \TeX{} can only spew more errors.
+
+
+\begin{practices}
+Recompile often.
+It is much easier to locate an error when you have modified only a small region of the code.
+
+Always recompile after you modify a command definition
+or do a find-and-replace operation.
+These are risky.
+
+If your document takes a long time to compile,
+find a way to speed it up
+(skip complicated TikZ pictures in draft mode, comment out chapters you're not working on, etc.).
+If recompilation breaks your flow, you won't do it often enough.
+
+\todo{Practical way to do the TikZ trick.}
+\end{practices}
+
+
+\medskip\noindent\emph{[100+ error messages]}\\*
+Did you just modify the definition of a command?
+If so, then you probably introduced a typo there.
+
+If not, this is a strong sign that \TeX{} failed to recover from an error.
+Scroll to the \emph{very first} error message and fix it.
+The later error messages are misleading,
+and will go away once the actual error is fixed.
+
+\todo{Common error messages}
 
 
 
@@ -487,7 +563,7 @@ but we will spend some time on some nuances.
 Bear with me even if this sounds trivial!
 
 \begin{practices}
-I would advocate for starting every project from a minimal \verb|.tex| file, like the one below.
+I would advocate for starting every project from an empty \verb|.tex| file.
 The problem with ``heritage'' templates is that they accumulate a lot
 of unnecessary package dependencies and custom commands.
 I've seen files where the same package is loaded three times.
@@ -500,6 +576,7 @@ you help maintain your ``code hygiene''.
 Let us start with the minimal example below.
 
 \begin{ExampleCode}[numbers=left]
+\DocumentMetadata{}
 \documentclass[a4paper]{article}
 
 \usepackage[hidelinks]{hyperref}
@@ -517,12 +594,13 @@ Let us start with the minimal example below.
 \end{document}
 \end{ExampleCode}
 
-On the first line, we load a \LaTeX{} document class.
+We discuss the first line in a \LaTeX3 note below.
+On the second line, we load a \LaTeX{} document class.
 The document class determines the basic layout of your document,
 and it is where several basic commands like \cmd{maketitle} are defined.
 We will look at some different document classes and arguments in the next subsection.
 
-Lines 1--8 are collectively known as the \emph{preamble}.\index{preamble}
+Lines 1--9 are collectively known as the \emph{preamble}.\index{preamble}
 This is the best place to define new commands and do other setup.
 Additional packages are also loaded here; see \Cref{sec:loading packages}.
 
@@ -561,7 +639,7 @@ to include accessibility information:
 for example, tagging section headings as headings and not just bold text in big font.
 Since this might cause issues with some packages, the new behaviour is opt-in.
 
-If you write \indexcmd{DocumentMetadata}\verb|DocumentMetadata{}|
+If you write \indexcmd{DocumentMetadata}\verb|\DocumentMetadata{}|
 before the \verb|\documentclass| declaration, you opt in to these new features.
 This command also enables new functionality in e.g.\ the \pkg{hyperref} package.
 \end{latexthree}
@@ -601,7 +679,7 @@ But it is still there if you need it!
 
 Options passed to document classes are interesting in that
 \emph{they are also passed to all packages}.
-If you pass \verb|a4paper| to the document class (as you should),
+If you pass \verb|a4paper| to the document class,
 then you don't need to pass it again to the \pkg{geometry} package.
 
 Some options are supported by all the basic document classes:
@@ -783,9 +861,9 @@ To define your own counters, you can use \cmd{newcounter}:
 \ShowExample
 
 If you want the counter to reset when another counter is stepped,
-you can pass an optional argument to \cmd{newcounter}.
+you can pass an optional argument (\emph{after} the counter name!) to \cmd{newcounter}.
 An example use case is to reset the counter every time a new section is started
-(in which case the optional argument would be \verb|[section]|).
+(in which case the optional argument would be \verb|[section]|):
 %
 \begin{VerbatimOut}{\jobname.tmp}
 \setcounter{fact}{0}
