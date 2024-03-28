@@ -60,6 +60,17 @@ starting already in \Cref{sec:document structure}.
 %
 %
 %
+\section{How \LaTeX{} processes files}
+
+\todo{Write this}
+
+\todo{Maybe introduce \texttt{input} here}
+
+
+
+%
+%
+%
 \section{Commands and environments}
 
 \begin{practices}
@@ -478,6 +489,7 @@ Graphical \LaTeX{} editors usually only show the latter two.
 It includes the current source file and page number that the compiler is processing,
 which can help diagnose a stuck compilation.)
 
+\index{warnings}
 Warnings are just as the name says: the document can still be compiled,
 but you should check whether you have gotten what you intended.
 Generally, the warning messages are very descriptive:
@@ -515,6 +527,7 @@ since very small changes to the text or style can drastically change the line br
 \end{practices}
 
 
+\index{errors}
 Errors, on the other hand, halt the compiler altogether.
 The compiler can try to ignore errors and recover itself,
 but at that point \emph{it is guessing} what you tried to mean,
@@ -646,7 +659,7 @@ This command also enables new functionality in e.g.\ the \pkg{hyperref} package.
 
 
 %
-\subsection{Document classes}
+\subsection{Document classes}\label{sec:document classes}
 
 \begin{practices}
 Journals commonly define their own document classes, based on one of the standard classes.

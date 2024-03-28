@@ -111,10 +111,123 @@ There are also several styles of underlines:
 \ShowExample
 
 
+%
+%
 \subsection{Size}
 
+Coming from any graphical word processor or layout program,
+you have seen fonts being measured in \emph{points}.
+\LaTeX{} does support it (see \Cref{sec:typefaces} where we talk about font customization),
+but again it works against separating content from presentation.
+
+Instead, \LaTeX{} offers a range of sizes relative to the default document font
+passed as the class option (\Cref{sec:document classes}).
+These are as follows:
+%
+\begin{figure}[h]
+\centering
+% Again, this level of magic is unadvisable outside LaTeX lecture notes.
+\newcommand{\example}[1]{\cmd{#1}\texttt &%
+    \csname#1\endcsname{Example text}}
+\begin{tabular}{l|l}
+\example{tiny}\\
+\example{scriptsize}\\
+\example{footnotesize}\\
+\example{small}\\
+\example{normalsize}\\
+\example{large}\\
+\example{Large}\\
+\example{LARGE}\\
+\example{huge}\\
+\example{Huge}
+\end{tabular}
+\end{figure}
+
+You mostly need these when making figures/tables/source code listings
+or customizing heading styles.
+In a manuscript for a journal you probably should not mess around with font sizes.
+Putting {\huge huge text} in the middle of a paragraph
+breaks the line spacing and might cause you enemies in graphical design circles.
+
+
+%
+%
 \subsection{Verbatim text}
 
+If you need to display source code in your work,
+the \pkg{listings} package is your friend.
+This package offers a lot of customization,
+so you should check out its documentation on CTAN.
+We content ourselves with a very \emph{meta} example,
+displaying the first lines of this lecture note itself:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\lstset{basicstyle=\tiny\ttfamily,
+  commentstyle=\color{gray},
+  breaklines=true,
+  prebreak=\mbox{\tiny$\searrow$}}
+
+\lstinputlisting
+  [language={[LaTeX]TeX}, lastline=11]
+  {2nd-course-in-latex.tex}
+\end{VerbatimOut}
+\ShowExample
+%
+It is possible to either embed the source code within your \verb|.tex| file
+by using the \env{lstlisting} environment,
+or to input the contents directly from a source code file like above.
+
+The package offers some support for making listings float like figures,
+or alternatively you could define your own float environment (see \Cref{sec:custom floats}).
+Computer science journals typically have their own instructions for this.
+
+The \env{lstlisting} environment is a special variant of the \env{verbatim} environment.
+All contents inside this environment are printed verbatim
+in the typewriter font: \LaTeX{} commands and special characters are printed as is.
+(Except of course for the \verb|\end{verbatim}|.
+It would be silly not to evaluate that.)
+
+\begin{VerbatimOut}{\jobname.tmp}
+\begin{verbatim}
+Printed as is, including
+  whitespace.
+\LaTeX & $math$
+\end{verbatim}
+\end{VerbatimOut}
+\ShowExample
+
+There is also the \verb|\verb| command for short spans of verbatim text.
+This command has a special syntax:
+it must be followed by a special character (or a number, but not \verb|*|).
+This special character ends the verbatim span.
+Obviously, you need to choose a character that does not appear in the text!
+There is also a starred form that makes the whitespace visible.
+
+\begin{VerbatimOut}{\jobname.tmp}
+\verb+\LaTeX{}+ \\
+\verb|$1 + 1$| \\
+\verb*|$1 + 1$|
+\end{VerbatimOut}
+\ShowExample
+%
+These notes use a lot of \verb+\verb|...|+ in the code
+(and the preceding was coded as
+\verb!\verb+\verb|...|+!, which in turn was coded as\dots).
+
+The \env{verbatim} environment is a more lightweight way to display source code,
+but it offers no customization at all.
+The \pkg{fancyvrb} package provides a lot of that customization.
+However, the \pkg{listings} package additionally provides automatic syntax highlighting
+for many common programming languages, so it should be your first choice.
+
+\begin{technote}
+Verbatim environments are implemented with dark \TeX{} magic:
+essentially, they need to override the entire \TeX{} parser to do their work.
+This causes a lot of limitations:
+for example, you cannot use \cmd[as argument]{verb} as an argument to a command.
+There are ways to override these issues;
+see \verb|\SaveVerb| and \verb|\UseVerb| in \pkg{fancyvrb} documentation.
+\end{technote}
 
 
 %
