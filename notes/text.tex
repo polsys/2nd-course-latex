@@ -235,26 +235,26 @@ see \verb|\SaveVerb| and \verb|\UseVerb| in \pkg{fancyvrb} documentation.
 %
 \section{Colour}\label{sec:colour}
 
-Due to historical and technical reasons, \TeX{} does not natively support colors.
+Due to historical and technical reasons, \TeX{} does not natively support colours.
 The \pkg{xcolor} package adds this support.
 Many other packages load \pkg{xcolor} automatically
-and support the color syntax (for example \pkg{tikz}).
+and support the colour syntax (for example \pkg{tikz}).
 
 \begin{gotcha}
 Be careful with the spelling: the \obspkg{color} package is the original 90s implementation,
 and its use is discouraged.
 \end{gotcha}
 
-Like with the font commands, there are two forms of the color specification:
-\cmd{textcolor} that colors only its (second) argument,
-and \cmd{color} that colors everything until the current scope ends.
+Like with the font commands, there are two forms of the colour specification:
+\cmd{textcolor} that colours only its (second) argument,
+and \cmd{color} that colours everything until the current scope ends.
 There are two basic ways and several advanced ones to define colors:
 
 \begin{description}
 \item[By name] \verb|\textcolor{blue}{...}| prints the text in \textcolor{blue}{blue}.
     By default, only a few basic names are loaded.
     If you load the package with \verb|[svgnames]| option,
-    you get a lot more colors such as \textcolor{DarkOrange}{\texttt{DarkOrange}}.
+    you get a lot more colours such as \textcolor{DarkOrange}{\texttt{DarkOrange}}.
     Check out the \href{https://en.wikipedia.org/wiki/Web_colors}{Wikipedia article ``Web colors''}
     or the package documentation for a full list.
     The capitalization is significant!
@@ -272,21 +272,21 @@ There are two basic ways and several advanced ones to define colors:
     to approximate \textcolor[wave]{410}{the light at 410~nm wavelength}.
 \end{description}
 
-The package also offers a lot of ways to mix colors together.
+The package also offers a lot of ways to mix colours together.
 As you should have learned in primary school,
 this is a great way to produce shades of mainly brown, so we do not talk about it here.%
-\footnote{Another reason is that the result depends on the specific color model.
+\footnote{Another reason is that the result depends on the specific colour model.
 Taking averages of RGB values can yield a very different result to averaging HSB values.
 There is no `true' way to do this;
-in fact, trying to understand what color \emph{really is}
+in fact, trying to understand what colour \emph{really is}
 leads you to a rabbit hole of mathematics and questioning the reality.}
 The only exception is the syntax \verb|\textcolor{blue!60}{...}|
 which blends \textcolor{blue}{blue} with \textcolor{blue!60}{40~\%~white}.
 
-It is possible to define custom color names with \cmd{definecolor}.
+It is possible to define custom colour names with \cmd{definecolor}.
 This can be useful e.g.\ when creating TikZ pictures with recurring elements.
 Here we follow the University of Helsinki style guide
-and define the brand color of the Faculty of Science:
+and define the brand colour of the Faculty of Science:
 %
 \begin{VerbatimOut}{\jobname.tmp}
 \definecolor{Sciency}{cmyk}{0,0.46,1,0}
@@ -295,13 +295,13 @@ and define the brand color of the Faculty of Science:
 \ShowExample
 
 \begin{practices}
-Never use color as the sole means of indicating information.
+Never use colour as the sole means of indicating information.
 Many people read papers in black-and-white prints
 or on ebook reader with grayscale screen.
-Additionally about 1 in 12 males is red-green colorblind,
-the most common form of color vision deficiency.
+Additionally about 1 in 12 males is red-green colourblind,
+the most common form of colour vision deficiency.
 
-Even then, pay attention to the color contrast.
+Even then, pay attention to the colour contrast.
 Low-contrast text might be impossible to read e.g.\ on screen in bright sunlight,
 or for a person with a vision deficiency.
 \end{practices}
