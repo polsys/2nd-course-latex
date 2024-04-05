@@ -800,7 +800,7 @@ Otherwise, you might get non-functioning hyperlinks.
 %
 %
 %
-\section{Counters}
+\section{Counters}\label{sec:counters}
 
 \LaTeX{} keeps a lot of internal state in variables called \emph{counters}\index{counters}.
 
@@ -846,7 +846,7 @@ It is also possible to add/subtract a value to a counter:
 \end{VerbatimOut}
 \ShowExample
 
-There are many ways to output the value of a counter:\index{counters!displaying}
+There are many ways to output the value of a counter:\index{counters!displaying}\label{par:counter format}
 %
 \begin{VerbatimOut}{\jobname.tmp}
 Section~\arabic{section}\\
@@ -898,6 +898,8 @@ An example use case is to reset the counter every time a new section is started
 This only sees the effect of \verb|\stepcounter| on the another counter;
 if you use \verb|\setcounter| to change it, the dependent counter is not reset.
 \end{gotcha}
+
+\todo{Using counterwithin to customize standard counters}
 
 \begin{technote}
 Counters are always in a global scope.\index{scope!counters}

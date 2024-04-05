@@ -5,6 +5,87 @@
 %
 \section{The not so minor characters}
 
+This is not a style guide, but let us still first talk about punctuation.
+There are some characters that look very similar but are actually different.
+
+\begin{practices}
+Stylish use of punctuation makes your text look so much more professional.
+Some (but not nearly all) journals employ copy editors
+who have a keen eye for these issues.
+\end{practices}
+
+\noindent\emph{The hyphen -, coded as} \verb|-|\\*
+Use this in hyphenated compound words (quasi-invariant)
+and when a single person's name has many parts (Eric Vanden-Eijnden).
+
+\medskip\noindent\emph{The en dash --, coded as} \verb|--|\\*
+Slightly longer than the humble hyphen,
+this is used for numeric intervals (2017--2021)
+and separating several persons' names (Cauchy--Schwarz inequality).
+
+\medskip\noindent\emph{The em dash ---, coded as} \verb|---|\\*
+The longest of them all, used generally only for parenthetical remarks.%
+\footnote{Parenthetical remarks are usually written---such as here---with an em~dash and no space,
+or -- like here -- with en~dash and spaces,
+but please consult a style guide.}
+
+\medskip\noindent\emph{The apostrophe ', coded as} \verb|'|\\*
+Used in English to indicate omission of letters (I've)
+and possessive form (Grönwall's inequality).
+
+\medskip\noindent\emph{The single quotes `', coded as} \verb|` '|\\*
+Note this: when a single word is `quoted',
+the opening and closing quotes look slightly different.
+On a Finnish keyboard, you get the opening character by pressing
+\fbox{Shift}+\fbox{\makebox[1pt]{\raisebox{3pt}{\textasciigrave}}\makebox[0pt]{\raisebox{-3pt}{\textasciiacute}}}.
+
+\medskip\noindent\emph{The double quotes ``'', coded as} \verb|`` ''|\\*
+This effect is even more exaggerated with ``double quotes'';
+if you use the \verb|"| symbol on your keyboard,
+you get "not as nice" quotes.
+
+Moreover, different languages have different quoting styles;
+these commands map to correct quotes when the \pkg[quotes]{babel} package is loaded
+(we talk about this in \Cref{sec:babel}).
+
+
+%
+%
+\subsection{Special characters}
+
+Most characters reserved for \LaTeX{} commands can be produced by prefixing them with a backslash:
+\% is produced by \verb|\%|, \# by \verb|\#|, \$ by \verb|\$|, and \& by \verb|\&|.
+The only exception is \textbackslash, which is given by \verb|\textbackslash|.\index{backslash!in text}
+
+There is also a whole lot of special characters and symbols accessible
+through special commands: for example, \textcopyright{} via \verb|\textcopyright{}|.
+To find these, I highly recommend the Detexify tool.
+\footnote{\url{https://detexify.kirelabs.org/classify.html}}
+
+\bigskip\noindent%
+Since \LaTeX{} is nowadays Unicode-native,
+you can write letters like \verb|åäö| directly into your source code.
+If you can't find the specific letter on your keyboard,
+or the journal you're submitting to uses age-old tools,
+the old commands for producing accents are still there.
+These are useful for e.g.\ author names in bibliographies.
+You can find the full list online;
+some common examples are here:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\r{A}bo Akademi\\
+Wac\l{}aw Sierpi\'{n}ski\\
+Bernt \O{}ksendal\\
+Besan\c{c}on\\
+\v{S}koda
+\end{VerbatimOut}
+\ShowExample
+
+
+%
+%
+\todo{Font Awesome and maybe even emoji}
+
 
 %
 %
@@ -273,13 +354,13 @@ There are two basic ways and several advanced ones to define colors:
 \end{description}
 
 The package also offers a lot of ways to mix colours together.
-As you should have learned in primary school,
-this is a great way to produce shades of mainly brown, so we do not talk about it here.%
+As you probably learned in primary school,
+this generally procudes mainly shades of greyish brown, so we do not talk about it here.%
 \footnote{Another reason is that the result depends on the specific colour model.
-Taking averages of RGB values can yield a very different result to averaging HSB values.
-There is no `true' way to do this;
+Taking averages of RGB values can yield a very different result to averaging equivalent HSB values.
+There is no `correct' way to do this;
 in fact, trying to understand what colour \emph{really is}
-leads you to a rabbit hole of mathematics and questioning the reality.}
+leads you to a rabbit hole of mathematics, human perception, and questioning the reality.}
 The only exception is the syntax \verb|\textcolor{blue!60}{...}|
 which blends \textcolor{blue}{blue} with \textcolor{blue!60}{40~\%~white}.
 
@@ -298,8 +379,9 @@ and define the brand colour of the Faculty of Science:
 Never use colour as the sole means of indicating information.
 Many people read papers in black-and-white prints
 or on ebook reader with grayscale screen.
-Additionally about 1 in 12 males is red-green colourblind,
-the most common form of colour vision deficiency.
+Red-green colourblindness,
+the most common form of colour vision deficiency,
+affects about 1 in 12 males.
 
 Even then, pay attention to the colour contrast.
 Low-contrast text might be impossible to read e.g.\ on screen in bright sunlight,
@@ -312,11 +394,173 @@ or for a person with a vision deficiency.
 %
 \section{Footnotes}
 
-\todo{Gotcha with whitespace}
+Footnotes are produced with the imaginatively named \cmd{footnote} command.
+The command itself needs no explanation,
+but we remark on a few points on placement and styling of footnotes.
+
+\begin{gotcha}
+Whitespace immediately preceding the footnote command is interpreted as a word space as usual.
+If you put a footnote on a separate code line,
+the line break is interpreted as a space.
+This causes separation between the preceding word or punctuation.
+
+The easy fix is to put a \verb|%| before the whitespace,
+since it causes the whitespace and line break to be swallowed.
+\begin{VerbatimOut}{\jobname.tmp}
+An ugly space.
+\footnote{First note!}\\
+
+Tightly together.%
+\footnote{Second note!}
+\end{VerbatimOut}
+\ShowExample
+\end{gotcha}
+
+Footnotes cannot be placed everywhere.
+For example, footnotes cannot be nested:
+the footnote mark appears but the text is placed nowhere.
+In these cases the footnote mark can be placed with \cmd{footnotemark}
+and the footnote text defined outside the environment with \cmd{footnotetext}.
+Do note that now you are responsible for keeping the footnote symbols and texts in sync!
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\renewcommand{\footnotemark}{\mpfootnotemark} % Fake how it is used
+Some text.%
+\footnote{A footnote.\footnotemark}
+\footnotetext{A nested footnote.}
+\end{VerbatimOut}
+\ShowExample[2]
+
+Another potentially surprising behaviour is that \env[footnotes]{minipage} environments
+have independent footnote numbering.
+You can see this with the examples in these lecture notes;
+their footnotes are marked alphabetically whereas standard footnotes are numeric.
+You can use \cmd{footnotemark} to create a ``standard footnote'' reference inside the environment,
+and define the footnote contents with \cmd{footnotetext} immediately after the environment.
+
+If you want to customize the style and placement of footnotes,
+the \pkg{footmisc} package should be your first stop.
+It offers a range of footnote symbols, possibility for per-page footnotes,
+and even placement of the footnotes in page margin instead.
+In two-page layout, the \pkg{ftnright} package can be used to gather
+footnotes in the right column.
+
+Generally, footnotes are avoided in mathematical literature.
+In some fields, such as law and linguistics,
+it is common to have extremely long and nested footnotes.
+In those cases the \pkg{manyfoot} and \pkg{bigfoot} packages can be used;
+they are similar with slight differences, but I cannot comment on those.
+
+Finally, there is the \pkg{enotez} package for printing end notes or chapter notes.
 
 
+%
+%
+%
 \section{List structures}
 
+\LaTeX{} provides three kinds of list structures by default:\index{lists!standard}
+\begin{description}
+\item[\env{itemize}] A bulleted list.
+\item[\env{enumerate}] A numbered list.
+\item[\env{description}] This style of list.
+\end{description}
+
+The optional argument to the \cmd{item} command provides the content for the ``bullet symbol'':
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\begin{itemize}
+\item[$\clubsuit$] Club
+\item[$\spadesuit$] Spade
+\item[$\heartsuit$] Heart
+\item[$\diamondsuit$] Diamond
+\end{itemize}
+\end{VerbatimOut}
+\ShowExample
+
+List elements may contain multiple paragraphs,
+and lists can be nested.
+As we discuss in \Cref{sec:counters}, the running numbers can be accessed
+with the \verb|enumi|, \verb|enumii|, and \verb|enumiii| counters
+(corresponding to levels of nesting).\index{counters!list}
+
+The \pkg{enumitem} package offers a lot of customization for the standard environments.
+It adds an optional argument with key-value syntax to the standard environments.
+\index{lists!styling}
+\begin{VerbatimOut}{\jobname.tmp}
+\begin{enumerate}
+\item Default list
+\item Nothing to see here
+\end{enumerate}
+
+Some text in between.
+
+\begin{enumerate}[resume,noitemsep]
+\item Numbering continued!
+\item Tighter spacing!
+\end{enumerate}
+
+\begin{description}[labelwidth=2cm]
+\item[Label] Extra space
+\item[Long label] Aligned!
+\item[Very long label] Uh-oh.
+\end{description}
+\end{VerbatimOut}
+\ShowExample
+
+You can also use the package to customize labels.
+Note that you need to use a starred form of the counter command
+(these were defined on page~\pageref{par:counter format}).\index{counters!format in lists}
+\begin{VerbatimOut}{\jobname.tmp}
+\begin{enumerate}[noitemsep,
+  format=\bfseries,
+  label={Rule~\arabic*.}]
+\item Don't use plain \TeX.
+\item See the above.
+\end{enumerate}
+\end{VerbatimOut}
+\ShowExample
+
+Instead of repeating yourself at every list environment,
+you can use the \cmd{setlist} command to customize all of the lists:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\setlist[enumerate]{noitemsep}
+
+\begin{enumerate}
+\item Tightly\dots
+\item \dots{}spaced.
+\end{enumerate}
+
+Some text
+
+\begin{enumerate}
+\item Same\dots
+\item \dots{}here.
+\end{enumerate}
+\end{VerbatimOut}
+\ShowExample
+
+It is also possible to define your own customized list environments.\index{lists!custom}
+Here the starred \verb|label*| argument means: ``append this to the label of the previous list level''.
+We then use the \verb|\setlist[rules,1]| command to further customize the first level.
+\begin{VerbatimOut}{\jobname.tmp}
+\newlist{rules}{enumerate}{2}
+\setlist[rules]{noitemsep,
+    format=\bfseries,
+    label*=\arabic*.}
+\setlist[rules,1]{noitemsep,
+    label={Rule~\arabic*.}}
+
+\begin{rules}
+\item Don't use plain \TeX.
+\item See the above.
+\begin{rules}
+\item Unless Don Knuth passes by.
+\end{rules}
+\end{rules}
+\end{VerbatimOut}
+\ShowExample
 
 
 %
@@ -345,7 +589,7 @@ but ``The phi4 measure'' in the navigation bar.
 %
 %
 %
-\section{Hyphenation, language, and overfull hboxes}\label{sec:overfull}
+\section{Hyphenation, language, and overfull hboxes}\label{sec:overfull}\label{sec:babel}
 
 \todo{Font encodings}
 
