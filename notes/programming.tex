@@ -592,6 +592,7 @@ Let us start with the minimal example below.
 \DocumentMetadata{}
 \documentclass[a4paper]{article}
 
+\fontencoding{OT1} % Read note below!
 \usepackage[hidelinks]{hyperref}
 
 \title{My first document}
@@ -613,7 +614,7 @@ The document class determines the basic layout of your document,
 and it is where several basic commands like \cmd{maketitle} are defined.
 We will look at some different document classes and arguments in the next subsection.
 
-Lines 1--9 are collectively known as the \emph{preamble}.\index{preamble}
+Lines 1--10 are collectively known as the \emph{preamble}.\index{preamble}
 This is the best place to define new commands and do other setup.
 Additional packages are also loaded here; see \Cref{sec:loading packages}.
 
@@ -633,7 +634,13 @@ you might stumble upon legacy encodings like \texttt{latin1} or \texttt{cp1252}.
 In such files, the \pkg{inputenc} package must be loaded with the proper optional argument.
 \end{latexthree}
 
-\todo{Font encoding, reference to coming section}
+The \verb|\fontencoding| command tells \LaTeX{} that Unicode characters will appear
+not only in the source code, but also the final output
+-- thus the font must be interpreted in a compatible way.
+However, this command should only be used with the traditional pdfTeX compiler;
+if you use the newer LuaLaTeX or XeLaTeX compilers,
+this command might cause subtly worse output.
+See page~\pageref{rem:font encoding} for more explanation.
 
 
 Trying to output any text before the \verb|\begin{document}| line is an error.
@@ -711,7 +718,8 @@ Some options are supported by all the basic document classes:
 \item[openright, openany]
     Whether chapters always begin on a right-hand side page (default for book)
     or any page (default for report).
-    You should consider \verb|openright| for a printed thesis.
+    You should consider \verb|openright| for a printed thesis
+    and \verb|openany| for electronic version.
     Not applicable to the article class where chapters are not supported at all.
 \item[notitlepage, titlepage] Whether the title is set on a separate page.
 \item[fleqn] Instead of centering, left-aligns display formulas.
@@ -771,6 +779,10 @@ at \url{www.ctan.org/pkg/hyperref}.
 
 \todo{Other common packages}
 \begin{description}
+\item[babel] Support for languages other than English.
+    See \Cref{sec:babel}.
+\item[enumitem] Customization of list structures.
+    See \Cref{sec:lists}.
 \item[xcolor] Support for setting text and symbols in colour.
     Replaces the old \obspkg{color} package included in early nineties \LaTeX{};
     do not confuse the two.
@@ -794,6 +806,16 @@ Otherwise, you might get non-functioning hyperlinks.
 
 
 \section{Creating your own style file}
+
+\todo{Fill in this}
+
+\todo{When to create a style file?}
+
+\todo{Basic syntax}
+
+\todo{Requiring packages}
+
+\todo{Options}
 
 
 
