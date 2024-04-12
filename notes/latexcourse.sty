@@ -13,6 +13,7 @@
 \RequirePackage{csquotes}
 \RequirePackage[finnish,french,english]{babel}
 \RequirePackage[hidelinks]{hyperref}
+\RequirePackage[backend=bibtex]{biblatex}
 \RequirePackage[capitalize]{cleveref}
 \RequirePackage[svgnames]{xcolor}
 \RequirePackage{framed}
@@ -23,7 +24,10 @@
 % These packages are used in the examples
 \RequirePackage[normalem]{ulem}
 \RequirePackage{listings}
-\lstloadlanguages{[LaTeX]TeX}
+\lstloadlanguages{[LaTeX]TeX,Pascal}
+\RequirePackage{graphicx}
+\RequirePackage{subcaption}
+\RequirePackage{float}
 
 % Remark environments have a shaded margin
 \theoremstyle{nonumberbreak}
@@ -76,7 +80,7 @@
     \begin{center}
     \hrulefill\\*[1em]
     \begin{minipage}{0.58\textwidth}
-    \VerbatimInput[fontsize=\footnotesize,firstline=\IfValueTF{#1}{#1}{1}]{\jobname.tmp}
+    \VerbatimInput[fontsize=\footnotesize,firstline=\IfValueTF{#1}{#1}{1},samepage=true]{\jobname.tmp}
     \end{minipage}
     \begin{minipage}{0.4\textwidth}
     \input{\jobname.tmp}
@@ -84,8 +88,13 @@
     \hrulefill
     \end{center}
 }
+% This variant \inputs the code directly into the document, with no minipages
+\NewDocumentCommand{\ExecuteExample}{}{%
+    \VerbatimInput[frame=lines, framesep=1em, fontsize=\footnotesize, samepage=true]{\jobname.tmp}
+    \input{\jobname.tmp}}
 
 % Also an environment for code examples that are not executed
-\DefineVerbatimEnvironment{ExampleCode}{Verbatim}{frame=lines, framesep=1em, fontsize=\footnotesize}
+\DefineVerbatimEnvironment{ExampleCode}{Verbatim}
+    {frame=lines, framesep=1em, fontsize=\footnotesize, samepage=true}
 
 \endinput
