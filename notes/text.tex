@@ -335,7 +335,7 @@ and its use is discouraged.
 Like with the font commands, there are two forms of the colour specification:
 \cmd{textcolor} that colours only its (second) argument,
 and \cmd{color} that colours everything until the current scope ends.
-There are two basic ways and several advanced ones to define colors:
+There are three basic ways and several advanced ones to define colors:
 
 \begin{description}
 \item[By name] \verb|\textcolor{blue}{...}| prints the text in \textcolor{blue}{blue}.
@@ -352,8 +352,13 @@ There are two basic ways and several advanced ones to define colors:
 \item[By CMYK value] This one is only for those into printing presses;
     the optional argument is \verb|[cmyk]| and syntax is similar to the RGB model.
     The four parameters correspond to cyan, magenta, yellow and key (black) inks on white paper.
+\item[By grayness] \verb|\textcolor[gray]{0.6}{...}|
+    where 0 is black and 1 is white;
+    \textcolor[gray]{0.6}{for example, 60\% lightness}.
 \item[By HSB value] Here the keyword is \verb|[hsb]|
     and the parameters are hue, saturation, and brightness.
+\item[By HTML code] This takes the six-letter hexadecimal string colour string,
+    such as {\color[HTML]{2ABC4D} \verb|\color[HTML]{2ABC4D}|}.
 \item[By wavelength]
     Science nerds can use \verb|\textcolor[wave]{410}|
     to approximate \textcolor[wave]{410}{the light at 410~nm wavelength}.
@@ -398,7 +403,7 @@ or for a person with a vision deficiency.
 %
 %
 %
-\section{Footnotes}
+\section{Footnotes}\label{sec:footnotes}
 
 Footnotes are produced with the imaginatively named \cmd{footnote} command.
 The command itself needs no explanation,
@@ -425,6 +430,9 @@ Tightly together.%
 Footnotes cannot be placed everywhere.
 For example, footnotes cannot be nested:
 the footnote mark appears but the text is placed nowhere.
+Similarly, they cannot be used with most table environments
+(but see \Cref{sec:table footnotes} for more on this!).
+
 In these cases the footnote mark can be placed with \cmd{footnotemark}
 and the footnote text defined outside the environment with \cmd{footnotetext}.
 Do note that now you are responsible for keeping the footnote symbols and texts in sync!

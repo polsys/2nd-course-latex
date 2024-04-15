@@ -28,6 +28,10 @@
 \RequirePackage{graphicx}
 \RequirePackage{subcaption}
 \RequirePackage{float}
+\RequirePackage{array}
+\RequirePackage{colortbl}
+\RequirePackage{diagbox}
+\RequirePackage{threeparttable}
 
 % Remark environments have a shaded margin
 \theoremstyle{nonumberbreak}
@@ -83,6 +87,20 @@
     \VerbatimInput[fontsize=\footnotesize,firstline=\IfValueTF{#1}{#1}{1},samepage=true]{\jobname.tmp}
     \end{minipage}
     \begin{minipage}{0.4\textwidth}
+    \input{\jobname.tmp}
+    \end{minipage}\\*[1em]
+    \hrulefill
+    \end{center}
+}
+% This variant shows the two examples
+\NewDocumentCommand{\ShowExampleBelow}{o}{%
+    \begin{center}
+    \hrulefill\\*[1em]
+    \begin{minipage}{\textwidth}
+    \VerbatimInput[fontsize=\footnotesize,firstline=\IfValueTF{#1}{#1}{1},samepage=true]{\jobname.tmp}
+    \end{minipage}\\*[1em]
+    \hrulefill\\[1em]
+    \begin{minipage}{\textwidth}
     \input{\jobname.tmp}
     \end{minipage}\\*[1em]
     \hrulefill

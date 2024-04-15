@@ -335,7 +335,9 @@ Note how the lines of figures need to be broken by a paragraph break (empty line
 one could put a vertical spacing command here.
 For the third subfigure (\Cref{fig:subcaption small dog}),
 the width is set manually so that the caption is not broken into two lines.
-Note that \cmd[subfigures]{label} can be used, but it needs to be inside the caption argument.
+Note that \cmd[subfigures]{label} can be used, but it needs to be inside the caption argument.%
+\footnote{To reference the subfigure letter without the main figure number,
+the package provides a \cmd{subref} command.}
 %
 \begin{VerbatimOut}{\jobname.tmp}
 \begin{figure}
@@ -361,15 +363,6 @@ Note that \cmd[subfigures]{label} can be used, but it needs to be inside the cap
 \end{figure}
 \end{VerbatimOut}
 \ExecuteExample
-
-
-%
-%
-\subsection{Customizing captions}
-
-\todo{Starred command}
-
-\todo{Is this actually necessary?}
 
 
 %
@@ -422,6 +415,22 @@ end.
 \ExecuteExample
 
 
+%
+%
+\subsection{Landscape floats}
+
+\todo{Especially useful for tables}
+
+
+%
+%
+\subsection{Customizing captions}
+
+\todo{Starred command}
+
+\todo{Is this actually necessary?}
+
+
 
 %
 %
@@ -432,10 +441,12 @@ The \env{tabular} environment offered by \LaTeX{} is sufficient for simple table
 It consists of table contents and certain special elements:
 \begin{itemize}
 \item In the beginning, there is a \emph{column specification}.
-    The number of columns is fixed, and for each column the alignment of text is indicated:
+    The number of columns is fixed here, and for each column the alignment of text is indicated:
     \verb|l| for left-aligned, \verb|c| for centered, and \verb|r| for right-aligned.
-    Additionally, vertical lines can be specified with \verb+|+.
-    \todo{Are there others?}
+    Fixed width can be given with \verb|p{...}|.
+
+    Additionally, vertical lines can be specified with \verb+|+ and
+    other inter-column material with \verb|@{...}|.
 \item On each line, columns are separated by \verb|&|.
 \item Each line is ended with \verb|\\|.
     If you forget to end a line, you will get an error at the next \verb|&|.
@@ -446,18 +457,218 @@ It consists of table contents and certain special elements:
 Let us illustrate these with a simple example:
 %
 \begin{VerbatimOut}{\jobname.tmp}
-\begin{tabular}{l|cc}
-Dog & Rating & Drops fur\\
+\begin{tabular}{l| c p{3cm} c @{ $\Rightarrow$ } r}
+Breed & Drops fur & Notes & Rating & Conclusion\\
 \hline
-Corgi & 13/10 & Not so\\
-Labrador & 13/10 & A lot
+Corgi & Somewhat & Has fairly short legs but a lot of attitude
+    & 13/10 & Good dog\\
+Labrador & Very much & Excitable about other dogs, humans, playing in water
+    & 13/10 & Good dog
 \end{tabular}
 \end{VerbatimOut}
-\ShowExample
+\ShowExampleBelow
 
-\todo{Floats, placement}
+The \env{table} environment acts exactly like its figure counterpart,
+and should be used for tables where the exact placement is not so important.
+The following code produces \Cref{tbl:dogs}:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\begin{table}[ht]
+\centering
+\begin{tabular}{l|ccc}
+  Breed & Drops fur & Tall & Long\\
+  \hline
+  Corgi & Somewhat & Very not & Quite\\
+  Labrador & Very much & Yes & Yes
+\end{tabular}
+\caption{An extensive comparison of dog breeds.}
+\label{tbl:dogs}
+\end{table}
+\end{VerbatimOut}
+\ExecuteExample
 
-\todo{More customization}
 
-\todo{Accessibility of tables}
+If you need more customization for your tables, then the \pkg{array} package is the starting point.
+First off, it adds the following format specifiers:
+\begin{description}
+\item[\texttt{m}] Fixed-width column like \verb|p|, but centered vertically.
+\item[\texttt{w}] This takes two parameters: alignment and width.
+    There is \emph{no} automatic line breaking,
+    so the contents may overprint adjacent cells!
+\item[\texttt{W}] Like above, but tries to squeeze the text a bit and if still fails,
+    at least raises an overfull hbox warning.
+\item[\texttt{>}] Takes one argument, which is inserted in front of each entry.
+\item[\texttt{<}] Like above, but after the entry.
+\item[\texttt{!}] Like the \verb|@| specifier,
+    but preserves the horizontal space that would surround a vertical line.
+\end{description}
 
+The previous example can be customized as follows.
+We use the \verb|>| and \verb|<| specifiers to set the rating in a bold font
+and to remove the duplicated \verb|/10| texts.
+Since \verb|!| preserves the whitespace,
+we no longer need spaces around the arrow symbol.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\begin{tabular}{l| c m{3cm} >{\bfseries}c<{/10} !{$\Rightarrow$} r}
+Breed & Drops fur & Notes & Stars & Conclusion\\
+\hline
+Corgi & Somewhat & Has fairly short legs but a lot of attitude
+    & 13 & Good dog\\
+\hline
+Labrador & Very much & Excitable about other dogs, humans, playing in water
+    & 13 & Good dog
+\end{tabular}
+\end{VerbatimOut}
+\ShowExampleBelow
+%
+Note that the change from \texttt{p} to \texttt{m} does not improve legibility here;
+that's why I added a horizontal line to separate the two rows.
+There would also be several methods to add vertical whitespace to the table:
+\begin{itemize}
+\item Optional argument to \verb|\\|:
+    however, the value is interpreted as the desired \emph{total height} of the row,
+    and not as a skip.
+    If the value is smaller than the current height, this has no effect.
+\item The \verb|\extrarowheight| length specified by \pkg{array}
+    is added to the beginning of each row.
+    By default it is \verb|0pt|;
+    see the example on page~\pageref{ex:extrarowheight} for a different value.
+\item The \pkg{cellspace} package can be used to ensure top and bottom vertical clearances
+    when the cell contents are taller than usual characters.
+    This package defines a modifier for cell styles.
+\end{itemize}
+
+
+%
+%
+\subsection{Special cells}
+
+If you need a cell to span several columns,
+you can use the \cmd{multicolumn} command.
+It takes three arguments: the number of columns to extend to,
+a new column specification for the internal contents, and finally the contents.\label{ex:extrarowheight}
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\setlength\extrarowheight{2pt}
+\centering
+\begin{tabular}{l| c c @{ $\Rightarrow$ } r}
+Breed & Drops fur & Rating & Conclusion\\
+\hline
+Corgi & Somewhat & 13/10 & Good dog\\
+Labrador & Very much & 13/10 & Good dog\\
+Roomba & Negatively?! &
+    \multicolumn{2}{c}{\emph{We're not quite sure}}
+\end{tabular}
+\end{VerbatimOut}
+\ShowExampleBelow
+%
+In this example, the last two columns (specified \verb|c r|)
+were replaced by a single \verb|c| cell.
+
+To use colours, one can use the \pkg{colortbl} package.
+Remember to use colour only moderately and to maintain a good colour contrast.
+(The following example fails at any artistic merits for illustrative purposes.)
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\centering
+\begin{tabular}{>{\columncolor{green!15}}l | c c @{ $\Rightarrow$ } r}
+\rowcolor{blue!15} Breed & Drops fur & Rating & Conclusion\\
+\hline
+Corgi & Somewhat & 13/10 & Good dog\\
+Labrador & Very much & 13/10 & Good dog\\
+Roomba & \cellcolor{orange!20} Negatively?! &
+    \multicolumn{2}{c}{\emph{We're not quite sure}}
+\end{tabular}
+\end{VerbatimOut}
+\ShowExampleBelow
+%
+Here the \cmd{columncolor} command goes into the column specifier.
+As you can see, it is not fully compatible with custom separators.
+The \cmd{rowcolor} command goes into the beginning of each row.
+As each cell forms a scope, you can also use \cmd[in table]{color} to set the text color in a cell.
+
+The \pkg{diagbox} makes it possible to split cells diagonally.
+It has quite a lot of configuration options as optional arguments,
+but we refer the reader to the package documentation.
+It also has a somewhat esoretic syntax that accepts \emph{two or three} required arguments,
+meaning that the two-argument version cannot be followed by a \verb|{|.
+(This is quite unlikely in a table cell.)
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\centering
+\begin{tabular}{l|ccc}
+  \diagbox{Breed}{Property} & Drops fur & Tall & Long\\
+  \hline
+  Corgi & Somewhat & Not & Quite\\
+  Labrador & Very much & Yes & Yes\\
+  Roomba & Negatively & Very not & It's round
+\end{tabular}
+\end{VerbatimOut}
+\ShowExampleBelow
+
+
+
+%
+%
+\subsection{Footnotes in tables}\label{sec:table footnotes}
+
+Finally, let us talk about footnotes in tables,
+as sometimes mandated by scientific style.
+As discussed in \Cref{sec:footnotes},
+\cmd[in tables]{footnote} commands inside a \verb|tabular| environment
+do not print the footnote text anywhere.
+
+A simple fix is to place the table inside a \env{minipage} environment.
+Often, an easier alternative is to use the \pkg{threeparttable} package
+that provides its own footnote command.
+You are required to take care of the numbering,
+but this is actually useful since commonly the same footnote is used for several locations.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\centering
+\begin{threeparttable}
+\begin{tabular}{l|ccc}
+  Breed & Drops fur & Tall & Long\\
+  \hline
+  Corgi & Somewhat\tnote{a} & Not\tnote{b} & Quite\tnote{b}\\
+  Labrador & Very much\tnote{c} & Yes\tnote{b,c} & Yes\tnote{b,c}\\
+  Roomba & Negatively\tnote{d} & Very not\tnote{b} & It's round\tnote{b}
+\end{tabular}
+\begin{tablenotes}[para]
+  \item[] Sources:
+  \item[a] Googling.
+  \item[b] General knowledge.
+  \item[c] Having lived with some.
+  \item[d] Rumours.
+\end{tablenotes}
+\caption{Some extensive research into things.}
+\end{threeparttable}
+\end{VerbatimOut}
+\ShowExampleBelow
+
+
+If you ever need to set a table that spans multiple pages,
+the \pkg{supertabular} and \pkg{longtable} packages are your friends.
+The first one is simpler but the second is more extensible and more maintained.
+
+
+
+%
+%
+\subsection{Final words}
+
+There are several more useful packages for controlling the layout of tabular material.
+Most mathematicians will probably not need them,
+but \cite{TLC} has over 70~pages on this topic if the need arises.
+
+\begin{latexthree}
+As of this writing in April~2024,
+PDF tagging of tables has recently entered testing.
+This means that tables should no longer be completely meaningless jumbles of text and numbers
+to a screen reader.
+
+The syntax for annotating tables is still being worked out.
+In a future \LaTeX{} version, there should be syntax for annotating column headers.
+Follow the news on \LaTeX{} homepage to know what's happening!
+\end{latexthree}
