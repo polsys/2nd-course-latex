@@ -9,6 +9,7 @@ and moreover many other packages are built with TikZ.
 TikZ has bit of a learning curve
 and its documentation spreads over no less than 1321~pages (as of April~2024).
 We are able to only cover the essentials here.
+An unofficial web version of the manual can be accessed at \url{https://tikz.dev/}.
 
 \begin{technote}
 TikZ is an acronym for \emph{TikZ ist kein Zeichenprogramm}
@@ -72,6 +73,7 @@ There are several coordinate systems, of which I believe the next four are most 
     These are with respect to unit vectors defined in the environment options.
     By default, the $x$ and $y$ unit vectors are 1~cm long and along the usual axes.
     The $z$ axis is skewed towards the reader.
+    See the example on page~\pageref{ex:tikz basis}.
 
     It is possible to use mathematical syntax like \verb|+|, \verb|/|, and \verb|sqrt(...)|
     to give more complicated coordinate expressions.
@@ -135,7 +137,7 @@ in which case the current position is not updated.}
 \subsection{Nodes}
 
 Nodes can be thought of as text placed in the picture.
-The text can contain mathematics and formatting commands.
+The text can contain mathematics and formatting commands, and even pictures.
 
 A node can be placed either as part of a path, or separately with a \cmd{node} command.
 In the latter case, it is possible to refer to the node later.
@@ -188,6 +190,26 @@ It can be combined with other specifiers as in here:
 \end{tikzpicture}
 \end{VerbatimOut}
 \ShowExample
+
+To embed pictures,
+you can use \cmd[in TikZ]{includegraphics} as usual inside a node.
+To illustrate this once more with our fur-shedding assistants:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\centering
+\newcommand{\dogfile}{pictures/TheDogs.jpg}
+\begin{tikzpicture}
+  \node[draw] (Both) at (0,0)
+    {\includegraphics[height=3cm]{\dogfile}};
+  \node[draw] (Netta) at (-5,0)
+    {\includegraphics[bb=1cm 2cm 3cm 5cm, clip, height=2cm]{\dogfile}};
+  \node[draw] (Cira) at (5,0)
+    {\includegraphics[bb=2.8cm 1.4cm 7cm 6cm, clip, height=2cm]{\dogfile}};
+  \draw[->] (Both.west) -- (Netta.east) node[pos=0.5, above] {Netta};
+  \draw[->] (Both.east) -- (Cira.west) node[pos=0.5, above] {Cira};
+\end{tikzpicture}
+\end{VerbatimOut}
+\ShowExampleBelow[2]
 
 
 %
@@ -314,11 +336,102 @@ the order of which you can probably guess.
 \end{VerbatimOut}
 \ShowExample
 
-\todo{Rectangles, circles, arcs, etc.}
+To draw rectangles, there is the \verb|rectangle| shorthand
+that is put between coordinates of the two opposite corners.
+Similarly, there is the \verb|circle| command that is put after the centre coordinate
+and takes the radius as an optional parameter.
+It is possible to specify \verb|x radius| and \verb|y radius| separately to get an ellipse
+(which can be further rotated with the \verb|rotate| parameter).
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\begin{tikzpicture}
+  \draw (0,0) rectangle (3,2);
+  \draw[red] (3/2,1) circle
+    [x radius=3/2, y radius=1];
+  \draw[blue] (4,1) circle [radius=0.5];
+\end{tikzpicture}
+\end{VerbatimOut}
+\ShowExample
 
-\todo{Graphs}
+There are also commands for drawing arcs, parabolas, and even Bézier curves;
+see \cite[Section~14]{tikz}.
 
-\todo{Embedding pictures}
+There is a helper command for drawing coordinate grids.
+TikZ provides a shorthand style \verb|help lines|
+that can be customized as in \Cref{sec:tikz styles}.
+Here we overlay two grids with different step sizes (default is one unit).
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\centering
+\begin{tikzpicture}
+  \draw[help lines, xstep=0.5, ystep=0.5] (0,0) grid (4,3);
+  \draw (0,0) grid (4,3);
+  \draw[red,very thick,->] (0,0) -- (2,1);
+\end{tikzpicture}
+\end{VerbatimOut}
+\ShowExampleBelow[2]
+
+Now that we know how to draw a coordinate grid,
+it is very natural to draw some functions on it!
+TikZ includes a reasonably complex calculation engine,
+which makes it possible to draw some complicated functions.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\centering
+\begin{tikzpicture}
+  \draw[help lines] (0,0) grid (8,3);
+  \draw[red, domain=0:8, samples=100] plot (\x, {1+sin(\x r)})
+    node[right] {$1+\sin(x)$};
+  \draw[blue, domain=0:8, samples=100] plot (\x, {exp(\x/8)})
+    node[right] {$\exp(x/8)$};
+\end{tikzpicture}
+\end{VerbatimOut}
+\ShowExampleBelow[2]
+Some notes on the usage:
+\begin{itemize}
+\item The domain is specified using the syntax \verb|lower:upper|.
+\item The number of samples is optional to specify, but the default value is quite small.
+\item The variable $x$ is written with a backslash \verb|\x|,
+    but the mathematical commands are spelled without a backslash.
+\item Mathematical expressions should be wrapped inside \verb|{}|.
+\item Trigonometric functions assume degrees by default;
+    the suffix \verb|r| after \verb|\x| converts the variable into radians.
+\end{itemize}
+
+Note that the plot is still defined as a pair of $(x,y)$ coordinates.
+This makes it possible to draw parametric plots.
+The name of the variable can be customized.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\centering
+\begin{tikzpicture}
+  \draw[help lines] (-2,-1) grid (2,2);
+  \draw[red, domain=1:15, samples=150, variable=\t]
+    plot ({2*cos(\t r) / \t}, {2*sin(\t r) / \t});
+\end{tikzpicture}
+\end{VerbatimOut}
+\ShowExampleBelow[2]
+
+It is also possible to plot individual points or bar graphs,
+or to even load a dataset from an external file.
+See \cite[Section~22]{tikz} for more,
+but also note the warnings below.
+
+\begin{warning}
+``Division by zero'' and ``number too big`` errors
+can sometimes lead to confusing (and repeated!) error messages.
+\end{warning}
+
+\begin{practices}
+TikZ is excellent for producing small and simple function plots
+in a style consistent with the rest of the document.
+However, compilation times can get quite long for even slightly complicated functions.
+
+I would therefore not recommend using TikZ for complex graphics.
+If you still need it, consider disabling the plots in \verb|draft| mode
+(by some conditional evaluation; see \Cref{sec:if}).
+\end{practices}
+
 
 
 %
@@ -335,7 +448,7 @@ the order of which you can probably guess.
 
 %
 %
-\section{Setting styles}
+\section{Setting styles}\label{sec:tikz styles}
 
 
 %
