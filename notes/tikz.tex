@@ -342,16 +342,26 @@ Similarly, there is the \verb|circle| command that is put after the centre coord
 and takes the radius as an optional parameter.
 It is possible to specify \verb|x radius| and \verb|y radius| separately to get an ellipse
 (which can be further rotated with the \verb|rotate| parameter).
+
+Moreover, the command \cmd{fill} does exactly what you would expect it to;
+it fills the enclosed region.
+The combination \cmd{filldraw} both fills and draws.
+If you have defined the path through line segments,
+the path is automatically closed.%
+\footnote{If the lines cross, the definition of interior can be customized with optional arguments
+\texttt{nonzero rule} and \texttt{even odd rule}.
+These are defined in \cite[Section~15.5.2]{tikz}.}
 %
 \begin{VerbatimOut}{\jobname.tmp}
+\centering
 \begin{tikzpicture}
   \draw (0,0) rectangle (3,2);
   \draw[red] (3/2,1) circle
     [x radius=3/2, y radius=1];
-  \draw[blue] (4,1) circle [radius=0.5];
+  \filldraw[blue, fill=blue!20] (4,1) circle [radius=0.5];
 \end{tikzpicture}
 \end{VerbatimOut}
-\ShowExample
+\ShowExampleBelow[2]
 
 There are also commands for drawing arcs, parabolas, and even Bézier curves;
 see \cite[Section~14]{tikz}.
@@ -438,21 +448,196 @@ If you still need it, consider disabling the plots in \verb|draft| mode
 %
 \section{Transformations}
 
-\todo{useasboundingbox}
+The \verb|xshift|, \verb|yshift|, \verb|rotate|, and \verb|scale| optional arguments
+can be used to locally change the coordinate system.%
+\footnote{There are some more; see \cite[Section~25.3]{tikz} for details.
+A particular example is \texttt{rotate around}, which rotates around a specified point.}
+You can use a \env{scope} environment within the picture
+to pass the transformation to multiple drawing operations:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\centering
+\begin{tikzpicture}
+  \draw (0,0) rectangle (2,1);
+  \begin{scope}[xshift=3cm]
+    \draw[dotted] (0,0) rectangle (2,1);
+  \end{scope}
+  \begin{scope}[xshift=6.2cm, scale=0.5, rotate=30]
+    \draw[blue] (0,0) rectangle (2,1);
+  \end{scope}
+\end{tikzpicture}
+\end{VerbatimOut}
+\ShowExampleBelow[2]
+%
+Note that the \verb|xshift| parameter should be specified with a unit
+(otherwise the unit is assumed to be \verb|pt|).
+The \env{scope} environment can be used to pass any optional arguments to enclosed commands;
+for example, color or line style declarations can be passed as well.
+
+Sometimes it is necessary to extend or to shrink the bounding box of the picture.
+For this, the \cmd{useasboundingbox} command is useful.%
+\footnote{Let us note that this is a shorthand for
+\texttt{\textbackslash{}path[use as bounding box]};
+TikZ certainly has many ways to do common operations.}
+(This is especially useful in a Beamer slide where you gradually reveal parts of the picture.
+You can use this command to reserve enough space for the full picture.)
+
+Here we instead shrink the bounding box
+so that the picture contents extend beyond the reserved space.
+The dramatic effect is somewhat ruined by displaying the bounding box.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\centering
+Then a huge seagull
+\begin{tikzpicture}
+  \useasboundingbox[draw,dotted,gray] (-1em,-0.7em) rectangle (1em,0.8em);
+
+  \draw (0,0) circle [radius=0.7em];
+  \fill[orange] (-0.3em,-0.1em)--(0.3em,-0.1em)--(0em,-1em)--cycle;
+  \draw (0.7em,0em) parabola bend (5em,1em) (6em,0.8em);
+  \draw (-0.7em,0em) parabola bend (-5em,1em) (-6em,0.8em);
+\end{tikzpicture}
+came swooping down.
+\end{VerbatimOut}
+\ShowExampleBelow[2]
+
 
 
 %
 %
 \section{Loops}
 
+TikZ automatically loads the \pkg{pgffor} package that provides a useful \cmd{foreach} command.
+It can be used in two ways.
+The first is to loop over a given set:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\centering
+\begin{tikzpicture}
+  \foreach \x in {0,1,2,3}
+    \draw (\x, 0) circle [radius=0.5] node {$\x$};
+\end{tikzpicture}
+\end{VerbatimOut}
+\ShowExampleBelow[2]
+%
+Loops can be nested:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\centering
+\begin{tikzpicture}
+  \foreach \x in {1,2,3}
+    \foreach \y in {1,2,3}
+      \draw (\x, -\y) circle [radius={(\x+\y)/15}];
+\end{tikzpicture}
+\end{VerbatimOut}
+\ShowExampleBelow[2]
+With \verb|{}|, it is possible to define several commands to be executed.
+It is also possible to define several variables in one loop:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\centering
+\begin{tikzpicture}
+  \foreach \x/\col in {1/red, 3/black, 5/blue} {
+    \draw[\col] (\x, 0) circle [radius=0.5] node {$\x$};
+    \draw[->] (\x,-0.2) -- (\x,-1) node[below] {\col};
+  }
+\end{tikzpicture}
+\end{VerbatimOut}
+\ShowExampleBelow[2]
+
+Another way to use \cmd{foreach} is to specify a range.
+It takes the first, second, and last element, and \verb|...| before the final element.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\centering
+\begin{tikzpicture}
+  \foreach \x in {0,1,...,5}
+    \draw (\x, 0) circle [radius=0.5] node {$\x$};
+\end{tikzpicture}
+\end{VerbatimOut}
+\ShowExampleBelow[2]
+
+Finally, let us note that the \cmd{foreach} command can freely be used outside TikZ.
+(If you do not need full TikZ, you can just load the \pkg{pgffor} package.)
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\foreach \dog/\yr in {Cira/2009, Netta/2016}
+  {\dog{} was born in \yr{}.\\}
+\end{VerbatimOut}
+\ShowExample
+
 
 %
 %
-\section{Setting styles}\label{sec:tikz styles}
+\section{\emph{Setting styles*}}\label{sec:tikz styles}
+
+In the grid example, we saw the \verb|help lines| style that produced thin, gray lines.
+TikZ provides a general facility for setting up such shorthand styles.
+If you find yourself repeating graphical options,
+you should consider using a style instead.%
+\footnote{Those familiar with web development notice that this system is similar to
+Cascading Style Sheets (CSS); indeed, the TikZ style system is inspired by it.}
+
+To customize the style,
+you use the \verb|/.style={}| syntax in the optional argument to the picture environment:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\centering
+\begin{tikzpicture}[help lines/.style={very thick,blue}]
+  \draw[help lines] (0,0) grid (3,2);
+\end{tikzpicture}
+\end{VerbatimOut}
+\ShowExampleBelow[2]
+
+If you only want to customize part of the style,
+you can keep the previous elements in place by using \verb|/.append style={}| instead.
+Here we keep the lines thin and gray, but also make them dashed:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\centering
+\begin{tikzpicture}[help lines/.append style={dashed}]
+  \draw[help lines] (0,0) grid (3,2);
+\end{tikzpicture}
+\end{VerbatimOut}
+\ShowExampleBelow[2]
+
+You can define your own styles with the \verb|/.style| syntax.
+To reuse them across multiple TikZ environments,
+you can put the definition in a \cmd{tikzset} command.
+Such a command could go into the preamble.
+It is still possible to override styles locally.
+Here we define a style called \verb|highlight|:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\centering
+\tikzset{highlight/.style={draw,very thick,orange}}
+\newcommand{\dogfile}{pictures/TheDogs.jpg}
+
+\begin{tikzpicture}
+  \node[highlight] at (-2,0)
+    {\includegraphics[bb=1cm 2cm 3cm 5cm, clip, height=2cm]{\dogfile}};
+  \node[highlight, blue] at (2,0)
+    {\includegraphics[bb=2.8cm 1.4cm 7cm 6cm, clip, height=2cm]{\dogfile}};
+\end{tikzpicture}
+\end{VerbatimOut}
+\ShowExampleBelow[2]
+
+
+\begin{practices}
+Do note that this idea goes very well with the separation of content and presentation.
+If your document contains a lot of TikZ graphics with repeated graphical styles,
+you should use styles with descriptive names.
+Not only is the code semantically meaningful, but also easier to change.
+\end{practices}
 
 
 %
 %
 \section{Some extensions}
+
+TikZ comes with several extension libraries that are not loaded by default.
+They can be enabled with \cmd{usetikzlibrary}.
+Their full documentation fills \cite[Section~V]{tikz},
+but let us briefly show some of the more useful packages.
 
 \todo{Think about what to cover here: angles, decorations, graphs, trees, spy?}
