@@ -2,16 +2,483 @@
 
 \section{Cross-references and hyperlinks}\label{sec:crossref}
 
+One of the main benefits of a programmable typesetting system is
+that it takes care of numbering for you.
+I can say ``We talk about floats in \Cref{sec:floats}, which starts on page~\pageref{sec:floats}'',
+and be sure that the numbers are correct.
+Moreover, the numbers are clickable hyperlinks in the PDF version.
+
+The basic infrastructure consists of two parts.
+First, the \cmd{label} command is used to annotate points that we want to refer to.
+This command points to the latest numbered thing:
+it could be a sectioning command, a numbered list item, a theorem environment,
+or a numbered equation.
+
+\begin{practices}
+Put the \cmd{label} command immediately after the numbered thing.
+This is both for readability and for maintainability.
+\end{practices}
+
+The \cmd{ref} command reproduces the number that the label was associated to.
+There is also a \cmd{pageref} command that outputs the page number instead.
+Finally, \cmd{eqref} puts the number inside parentheses just like in the equation tag.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\begin{equation}\label{eq:pythagoras}
+  a^2 + b^2 = c^2.
+\end{equation}
+
+As we see from Equation~\ref{eq:pythagoras},
+that is \eqref{eq:pythagoras},
+on page~\pageref{eq:pythagoras}\dots
+\end{VerbatimOut}
+\ShowExample
+%
+(Note the \verb|~| that keeps the prefix and number on the same line.
+This is a good practice.)
+
+\begin{practices}
+The label can be quite free-form,
+and I do not dare give any advice on how things should be named.
+I personally use a quite verbose style with spaces,
+like \texttt{eq:2d variational formula},
+but you could also argue against that.
+
+However, one nice and common practice is to prefix the label with a type.
+Above, I have used \verb|eq:| to denote equations.
+Other common ones are
+\verb|def|(inition), \verb|fig|(ure), \verb|rem|(ark), \verb|sec|(tion),
+\verb|tbl| (table), and \verb|thm| (theorem).
+\end{practices}
+
+In the writing phase, it is useful to see the keys in PDF output.
+The \pkg{showkeys} package does just that:
+wherever a \cmd[shown in margin]{label} is defined,
+the key is printed to the page margin.
+Check out the package documentation for options;
+in particular, the \verb|notref| and \verb|notcite| options
+suppress the display of keys at \verb|\ref| and \verb|\cite| commands respectively.
+
+
+
+%
+%
+\subsection{Keeping them correct}\label{sec:cleveref}
+
+So you go about writing, adding references to Theorem~4.1 or something similar.
+Then near the end of your writing process,
+you decide to call it a Lemma instead.
+\LaTeX{} takes care of the numbering,
+but what about all those references coded as \verb|Theorem~\ref{...}|?
+Chances are, you forget to change some of them to \verb|Lemma~\ref{...}|,
+and get referee feedback regarding non-existent results\dots%
+\footnote{On a positive note: such a referee has really read the paper.}
+
+Shouldn't \LaTeX{} also take care of the reference types?
+Isn't that exactly the kind of problem computers are supposed to solve?
+Enter the little package called \pkg{cleveref}.
+
+\begin{practices}
+If the preceding paragraph sounded like a true story that has happened to the present author,
+you are absolutely right.
+
+Almost all journal styles are compatible with \pkg{cleveref}.
+Use it.
+\end{practices}
+
+This package adds two more commands: \cmd{cref} and \verb|\Cref|.
+They do exactly what you would expect them to:
+you write \verb|\Cref{thm:pythagoras}| or \verb|\cref{...}|,
+and it outputs ``Theorem~4.1'' or respectively ``theorem~4.1''.
+That is, the two commands differ on the casing of the first letter.
+
+The command automatically supports all standard \LaTeX{} labels.
+Theorem types are recognized if you define theorems with
+\pkg[with cleveref]{amsthm} or \pkg[with cleveref]{ntheorem} (as you should).
+See the package documentation for extension options.
+
+A nice feature of this package is that you can also pass several references,
+and \pkg{cleveref} sorts out how to present them.
+That is,
+\begin{ExampleCode}
+\Cref{thm:first, thm:second, thm:third}
+\end{ExampleCode}
+might produce something like ``Theorems~4.1 to~4.3''
+or ``Theorems~4.1, 4.7, and~5.1''.
+Again, see the package documentation for how to customize this
+(for example, if the plural form is not formed by just appending `s').
+
+There are also the \cmd{cpageref} and \verb|\Cpageref|
+commands to produce page references (with the same support for ranges),
+and a few other more specialized commands.
+
+\begin{gotcha}
+Since \pkg[should be loaded last]{cleveref} modifies the referencing mechanism,
+it should be loaded after any other packages that do so.
+\end{gotcha}
+
+\begin{gotcha}
+The \pkg{cleveref} package has some support for non-English languages;
+you can pass a language name as an option when you load the package.
+However, label names are always output in the nominative case,
+so the usefulness of the package may be limited for most other languages.
+\end{gotcha}
+
+
+
+%
+%
+%
 \section{Bibliography management}\label{sec:bibliography}
 
+There are three technologies to create bibliographies,
+so let us go over them in the order of increasing preferability.
+Finally, we also mention an unfortunate hack that some journals apparently require.
 
+%
+\subsection{Citation commands and the manual way}
+
+Regardless of the method of creating a bibliography,
+citations are inserted into the text with the \cmd{cite} command.
+It takes one argument, the citation key.
+Several citations can be combined by separating the keys with commas.
+An optional argument can be used to specify a location within the citation.
+
+\begin{VerbatimOut}{\jobname.tmp}
+Documentation can be found in
+\cite{TLC, tikz}.
+
+See \cite[Chapter~8]{TLC}.
+\end{VerbatimOut}
+\ShowExample
+(Note again the use of \verb|~| to keep the location on one line.)
+
+\todo{Customizing citation styles}
+
+The bibliography is then created within a \env{bibliography} environment.
+This environment takes a single parameter,
+which is the maximum length of a citation number.
+Interestingly, it is given as a string where the length is used as the parameter.
+That is, \verb|9| means that 1~character is reserved,
+and \verb|99| means that 2~characters are reserved.
+
+The bibliography is effectively a list environment
+where entries are created by the \cmd{bibitem} command.
+It takes the citation key as its sole parameter.
+Any text following this command is the bibliography entry,
+and you are free to format it as you like.
+
+\begin{ExampleCode}
+\begin{thebibliography}{9}
+
+\bibitem{Oksendal}
+    Bernt \O{}ksendal,
+    \textit{Stochastic Differential Equations:
+    An Introduction with Applications},
+    Springer,
+    6\textsuperscript{th} edition, 5\textsuperscript{th} corrected printing,
+    2010.
+
+\end{thebibliography}
+\end{ExampleCode}
+
+\begin{practices}
+This method is only advisable for short throwaway notes
+when collecting a \verb|.bib| file would be too much of an effort.
+If you use a proper reference management application,
+this is almost never the case.
+\end{practices}
+
+\begin{technote}
+It might be useful to wrap the bibliography in a \env{flushleft} environment.
+Bibliography entries are often hard to justify nicely,
+so this might give a visually more pleasing appearance.
+\end{technote}
+
+
+
+%
+\subsection{BibTeX: the automatic way}
+
+Already in Lamport's \LaTeX2$\varepsilon$ book \cite{lamport} a better way is described.
+The \prg{bibtex} compiler whose working we discussed on page~\pageref{bibtex process}
+automates the process of bibliography creation.
+In a nutshell:
+\begin{itemize}
+\item You collect bibliographic data into a special \verb|.bib| file.
+    \index{bib file@.bib file}
+\item You write citations as usual.
+\item BibTeX takes care of formatting the bibliography in your preferred style,
+    only including the references you have cited.
+\end{itemize}
+%
+For this to work, you need to run \prg{bibtex} as part of the compilation.
+(This only needs to be done when the bibliography is changed.)
+
+\begin{practices}
+You should also automate the process of collecting the bibliography.
+Reference management applications can help you organize your references
+and are able to download information from bibliographic databases.
+
+Most reference managers support exporting in the \verb|.bib| format.
+One good, free application is Zotero\footnotemark.
+
+A small note as a Zotero user (as of April 2024):
+unfortunately, the \verb|.bib| export escapes \LaTeX{} commands like \verb|$| into \verb|\$|,
+and \verb|^| into even more horrendous \verb|\textasciicircum|.
+You need to manually correct mathematical symbols in titles.
+\end{practices}
+\footnotetext{\url{www.zotero.org}}
+
+The \verb|.bib| file format consists of entries that begin with a \verb|@type| declaration,
+followed by \verb|{}| that contains the citation key
+and further data in key-value format.
+This is probably easiest to explain with examples,
+so let us see some common entry types.
+
+\todo{Capitalization}
+
+\todo{bib file format}
+
+\todo{What is the authoritative reference?}
+
+\todo{Bibliography styles}
+
+\todo{nocite}
+
+\todo{Submission to arXiv}
+
+
+
+%
+\subsection{BibLaTeX: the next generation}
+\todo{The differences to BibTeX: `von', doi, etc.}
+
+\todo{Backreferences}
+
+
+
+%
+\subsection{Embedding the bibliography}
 \todo{Embedding the bibliography for a published version}
 
-\section{Table of contents}
 
 
+
+%
+%
+%
+\section{Tables of contents}
+
+A table of contents is printed by the \cmd{tableofcontents} command.
+If you have used the standard \LaTeX{} sectioning commands,
+everything works as it should.
+See the notes in \Cref{sec:sectioning}
+for how to abbreviate the section titles in the table of contents.
+
+\todo{Starred sectioning commands}
+
+If you need to manually add something to the table of contents,
+you can use \cmd{addcontentsline}.
+It takes three arguments:
+the name of the contents list (here \verb|toc|), the sectioning level, and the entry to add.
+For example:
+\begin{ExampleCode}
+\addcontentsline{toc}{section}{A phantom section}
+\end{ExampleCode}
+
+By default, the bibliography does not appear in the table of contents.
+The easiest way to fix this is to load the \pkg{tocbibind} package.
+
+It is also possible to create lists of tables and figures.
+These are produced by the \cmd{listoftables} and \cmd{listoffigures} commands.
+To add entries manually, you need to pass \verb|lot| and \verb|lof|
+respectively to the \cmd{addcontentsline} command.
+
+
+%
+\subsection{\emph{Indexing*}}
+
+In the uncommon case that you need to prepare an index,
+let us very briefly go over the basic syntax.
+You need to put \cmd{makeindex} in the preamble,
+and the index is printed with \cmd{printindex}.
+
+As with bibliographies, an external program is used to compile the index.
+This used to be done with \prg{makeindex},
+but nowadays a better option is \prg{upmendex};
+the latter is fully compatible with \prg{makeindex} syntax
+but additionally supports Unicode.
+
+Index entries are added with the \cmd{index} command.
+At the simplest, it takes the text to be inserted to the index.
+The index will point to the page where command is executed.
+However, the syntax also supports subindex entries
+and customizing the look of the entry.
+
+A subindex entry like ``counters, list''
+is created by putting \verb|!| between the index key and the subindex key.
+If you need to control the placement of the key,
+or want to apply styling,
+you can put \verb|@| between the sorting key and the visual appearance.
+
+See the examples below for how this is done.
+\begin{ExampleCode}
+\index{counters} % Basic index entry for 'counters'
+\index{counters!list} % Entry for 'counters, list'
+\index{tex file@\texttt{.tex} file} % Sorted with the letter 'T', not '.'
+\end{ExampleCode}
+
+As a final note, there is also the \cmd{see} command
+that yield ``\emph{see} \dots'' entries.
+These index entries do not feature a page number,
+so the command can be placed anywhere.
+As a real example from these notes:
+\begin{ExampleCode}
+\index{dots per inch!\see{DPI}}
+\end{ExampleCode}
+
+
+\begin{practices}
+A good index is hard to make, but extremely useful for a reader.
+There are even books on the art of indexing.
+
+These notes are not to be looked as a model for good indexing;
+most of the index is created automatically by the commands
+that format command, environment, and package names.
+The manually created part of the index has not received the love it would deserve.
+\end{practices}
+
+
+
+%
+%
+%
 \section{Tools for the editing process}
 
-\todo{Line numbers?}
+%
+\subsection{Line numbers}
 
+Some journals require line numbers for the referee copy of a submitted work.
+\todo{Also double spacing.}
+This is usually achieved with the \pkg{lineno} package.
+
+The syntax is very simple.
+Load the package and specify \cmd{linenumbers} in the preamble or beginning of the document.
+You can pause the numbering with \cmd{nolinenumbers} and resume it with \cmd{linenumbers} again.
+
+You can specify the \cmd{modulolinenumbers} command to print a number only every fifth line;
+the gap can be specified as an optional argument like \verb|\modulolinenumbers[2]|
+(for a number on every other line).
+
+By default, equation environments are not numbered.
+Load the package with \verb|[mathlines]| optional argument to enable this.
+
+\begin{gotcha}
+Built-in support for \pkg[with lineno]{amsmath}
+was only included in July~2022,
+so you may need to update packages in your \LaTeX{} distribution.
+\end{gotcha}
+
+There is also the \verb|[pagewise]| package option
+to reset the line numbers for each page, but be advised:
+it might require two \LaTeX{} runs to be correct.
+
+\begin{technote}
+This package needs to do some deep magic,
+since line numbers get fixed very late in the typesetting process.
+\end{technote}
+
+
+%
 \subsection{latexdiff}
+
+The \prg{latexdiff} program is an external script that is immensely useful in editing.
+It compares two \verb|.tex| files and outputs a \verb|.tex| file
+where any differences between the two are highlighted.
+
+\begin{practices}
+Many referees and journal editors really appreciate getting a latexdiff along with a revised version.
+They are also useful to pass between coauthors,
+and sometimes even for your own reference.
+
+To make this work, you should preserve a copy of each submitted version for later diffing.
+(This combines really well with version control software,
+but that is a topic for a different course.)
+\end{practices}
+
+The \prg{latexdiff} program is a Perl script,
+so you will need a Perl interpreter installed.
+It is usually installed by default on Linux and macOS systems,
+but for Windows you will need to install it.%
+\footnote{There is also a ``portable'' distribution called Strawberry Perl,
+if you are uncomfortable about installing things.}
+
+On Linux and macOS the usage is as simple as
+\begin{ExampleCode}
+perl path/to/latexdiff.pl old.tex new.tex > diff.tex
+\end{ExampleCode}
+It could be that \prg{latexdiff} is even on your search path,
+in which case it suffices to execute \verb|latexdiff|.
+\todo{Check how this usually is}
+
+On Windows, things are slightly more complicated.
+Windows writes the output of the script (through the \verb|>| operator)
+in the UTF-16 encoding, which is not compatible with UTF-8.
+If your document contains Unicode characters,
+they will be garbled and probably fail to compile.
+To fix this, we need to tell Windows to produce output in UTF-8.%
+\footnote{The reason for this mismatch is historical.
+The Windows command-line interface was introduced with Windows~NT in 1993,
+and UTF-8 saw the light at around the same time.
+It took some more years for UTF-8 to become the standard choice.
+The developers of Windows have been as serious as the \LaTeX{} developers about backwards compatibility,
+so the default is stuck to be UTF-16.}
+
+In the legacy Command Prompt, you should execute the following commands:
+\begin{ExampleCode}
+chcp 65001
+perl path/to/latexdiff.pl old.tex new.tex > diff.tex
+\end{ExampleCode}
+Here the \verb|chcp| command stands for ``choose code page'',
+and UTF-8 is numbered to be 65001.
+(Code pages are synonymous for \LaTeX{} encodings like \verb|latin1|.)
+
+In Windows PowerShell, you can enter the legacy Command Prompt by executing \verb|cmd|.
+(The present author is not aware of a robust PowerShell-native method that would work across
+all the versions in active use.)
+
+The new \verb|.tex| file produced by \prg{latexdiff}
+is a merged copy of the two input files,
+with additions wrapped inside \verb|\DIFadd|
+and deletions wrapped inside \verb|\DIFdel| commands.
+By default, these produce coloured and underlined text.
+
+\begin{gotcha}
+Unfortunately, \prg[problems]{latexdiff} sometimes produces \LaTeX{} code that fails to compile.
+For example, a subscript and the text preceding it might be separated by a \verb|\DIFadd| command.
+
+You need to manually fix up these issues,
+which makes for an exercise in \LaTeX{} debugging.
+If you keep your lines reasonably short,
+at least you get some assistance from the line numbers.
+
+\todo{How to avoid the problems}
+\end{gotcha}
+
+\begin{gotcha}
+Sometimes the differencing algorithm also produces non-obvious results:
+If you delete some text and add new text in its place,
+you might not get two neat ``deletion'' and ``insertion'' blocks.
+Instead, the diff is a salad of deleted, inserted, and kept-intact pieces.
+
+It is impossible to develop perfect heuristics for detecting the intended changes.
+In principle, you could manually edit the diff,
+but most likely you should just keep it as is.
+One can always look at the two versions side by side;
+what is important is that the diff shows that \emph{something big} has changed at that position.
+\end{gotcha}
+
+If your document is split into multiple \verb|.tex| files,
+you only need to give the paths to the main files.
+The algorithm is clever enough to parse \verb|\input| and \verb|\include| commands.
