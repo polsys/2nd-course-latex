@@ -131,7 +131,13 @@ so the usefulness of the package may be limited for most other languages.
 %
 \section{Bibliography management}\label{sec:bibliography}
 
-There are three technologies to create bibliographies,
+It seems that every journal has a slightly different preferred style for bibliographic references.
+Some require full author names, some only initials
+-- some put \emph{et al.} already after one author, some only after three.
+Not to speak about numbered, author-year, and abbreviated citations.
+Again, something for computers to do.
+
+There are three standard technologies to create bibliographies,
 so let us go over them in the order of increasing preferability.
 Finally, we also mention an unfortunate hack that some journals apparently require.
 
@@ -153,13 +159,10 @@ See \cite[Chapter~8]{TLC}.
 \ShowExample
 (Note again the use of \verb|~| to keep the location on one line.)
 
-\todo{Customizing citation styles}
-
 The bibliography is then created within a \env{bibliography} environment.
 This environment takes a single parameter,
-which is the maximum length of a citation number.
-Interestingly, it is given as a string where the length is used as the parameter.
-That is, \verb|9| means that 1~character is reserved,
+which is the largest expected citation number.
+That is, \verb|9| means that 1~character is reserved for indentation,
 and \verb|99| means that 2~characters are reserved.
 
 The bibliography is effectively a list environment
@@ -213,7 +216,19 @@ In a nutshell:
 \end{itemize}
 %
 For this to work, you need to run \prg{bibtex} as part of the compilation.
+This program creates a \verb|.bbl| file that contains the actual bibliography.
 (This only needs to be done when the bibliography is changed.)
+
+\begin{remark}
+When you submit your work to arXiv, you need to send the compiled \verb|.bbl| file.
+\index{bbl file@.bbl file!arXiv}
+The arXiv processing system does not run the \prg[arXiv]{bibtex} compiler.
+This means that you should run it manually,
+verify that the resulting bibliography is up to date,
+and then send both the \verb|.tex| and \verb|.bbl| files.
+You should then check that the bibliography and citations
+appear correctly in the version compiled by arXiv.
+\end{remark}
 
 \begin{practices}
 You should also automate the process of collecting the bibliography.
@@ -230,37 +245,326 @@ You need to manually correct mathematical symbols in titles.
 \end{practices}
 \footnotetext{\url{www.zotero.org}}
 
+\begin{gotcha}
+The \prg[Unicode]{bibtex} compiler is not Unicode-aware,
+so you need to write non-English characters with \TeX{} special commands.
+If an author name begins with a non-English character,
+it may be sorted into an odd position.
+(You can use the \verb|key| entry to provide an alternative sorting key.)
+\end{gotcha}
+
 The \verb|.bib| file format consists of entries that begin with a \verb|@type| declaration,
 followed by \verb|{}| that contains the citation key
 and further data in key-value format.
 This is probably easiest to explain with examples,
 so let us see some common entry types.
 
-\todo{Capitalization}
+\begin{ExampleCode}
+@article {OnPyth,
+    author = {Firstname Lastname and Secondauthor, Also},
+    title = {On {Pythagoras'} Theorem},
+    journal = {Journal of Fake Mathematics},
+    year = {2024},
+    month = {jan},
+    volume = {13},
+    number = {1},
+    pages = {653--675},
+    note = {Redacted in Feb~2024.},
+    doi = {10.1234/5678}
+}
+\end{ExampleCode}
 
-\todo{bib file format}
+Let us dissect this example a bit:
+\begin{itemize}
+\item BibTeX keywords are not case-sensitive,
+    so you could just as well write \verb|@ARTICLE| or \verb|aUtHoR| (please don't).
+\item This example is of type \verb|@article|, which means a published journal article.
+\item It can be cited with \verb|\cite{OnPyth}|.
+\item Values for entries can be wrapped in \verb|{...}| like here or in \verb|"..."|.
+\item The two authors (F.~Lastname and A.~Secondauthor) are separated with \verb|and|.
+    Author names can be written in three formats:
+    \begin{itemize}
+        \item ``First von Last'',
+        \item ``von Last, First'',
+        \item ``von Last, Jr, First''.
+    \end{itemize}
+    The bibliography style defines how the name will be printed.
+\item The bibliography style also defines if \emph{Each Word in The Title Will Be Capitalized},
+    or if \emph{The title should follow sentence case}.
+    To protect words from automatic (de-)capitalization, wrap them inside \verb|{}|;
+    here \emph{Pythagoras} is protected from becoming \emph{pythagoras}.
+\item Publication month should be given as a three-letter abbreviation.
+\item The page range should have the \verb|--| en dash as per good style!
+\item The \verb|note| entry can be used for anything else that should be printed in the bibliography.
+\item The \verb|doi| entry is not understood by original BibTeX styles,
+    but newer styles (such as those provided by \pkg{natbib}) display them as clickable links.
+    Similarly, there is an \verb|eid| entry type for electronic article IDs
+    used by purely electronic journals.
+\end{itemize}
+%
+Let us then see what a bibliographic entry for a book could look like.
 
-\todo{What is the authoritative reference?}
+\begin{ExampleCode}
+@book {Pyth2,
+    author = {von Lastname, Firstname},
+    title = {Pythagoras Reloaded},
+    year = {2024},
+    publisher = {Fake Press},
+    address = {Kumpula, Finland},
+    edition = {Third},
+    series = {Misunderstanding Historical Mathematics},
+    number = {17}
+}
+\end{ExampleCode}
 
-\todo{Bibliography styles}
+Now it is also necessary to specify the publisher.
+The optional \verb|address| field can be used to give the city of the publisher.
+The edition of the book should be specified in words for BibTeX
+(but as a number or a complete string like ``Third edition'' for BibLaTeX\dots).
+There are also keys for book series.
 
-\todo{nocite}
+If you want to cite an article that appears as part of a book,
+you can use the \verb|@incollection| type.
+This is similar to \verb|@book|,
+but now the name of the article is specified with \verb|title|
+and the name of book with \verb|booktitle|.
+You should include both the authors of the article
+and editors of the book in the data.
+There is also the \verb|@inproceedings| variant for conference proceedings.
 
-\todo{Submission to arXiv}
+There are also the self-explanatory \verb|@mastersthesis| and \verb|@phdthesis| types;
+the precise type can be specified with a \verb|type| key.
+There are also \verb|@techreport| for volumes in a report series,
+and \verb|@manual| for technical documentation.
+See \Cref{tbl:bib entries} for the typical entry keys in these types.
+
+How to cite a preprint?
+Unfortunately, BibTeX is quite a bit older than arXiv and friends,
+so there is no built-in support for referencing online repositories.
+The best bet is to use the \verb|@unpublished| entry type
+and write something like ``arXiv preprint yyyy.xxxxx'' in the \verb|note| field.
+
+\begin{practices}
+As mentioned above, the built-in BibTeX styles have no support for DOI codes either.
+Even if your current style does not show them,
+you should still include \verb|doi| entries in article data, since
+\begin{enumerate}
+\item The style used by a journal might understand DOIs;
+\item BibLaTeX (presented below) understands them very well;
+\item They are very useful when you need to cross-check the data.
+\end{enumerate}
+\end{practices}
+
+\todo{When there is no natural author}
+
+\begin{table}
+\centering
+\begin{tabular}{>{\small} p{2.6cm}
+    |>{\raggedright\small\ttfamily} p{4cm}
+    |>{\raggedright\arraybackslash\small\ttfamily} p{4cm}}
+\textbf{Entry type} & \textrm{\textbf{Required}} & \textrm{\textbf{Optional}}\\
+\hline
+{\verb|@article|}
+& {author, title, journal, year}
+& {volume, number, pages, month, \textrm{and preferably also} doi, eid}\\
+\hline
+{\verb|@book|}
+& {author \textrm{or} editor, title, publisher, year}
+& {volume \textrm{or} number, series, address, edition, month}\\
+\hline
+{\verb|@incollection|}
+& {author, title, booktitle, publisher, year}
+& {pages, chapter, \textrm{and those in \texttt{@book}}}\\
+\hline
+{\verb|@inproceedings|}
+& {author, title, booktitle, year}
+& {pages, organization, \textrm{and those in \texttt{@book}}}\\
+\hline
+{\verb|@manual|}
+& {title}
+& {author, organization, address, edition, year, month}\\
+\hline
+{\verb|@mastersthesis|\newline\verb|@phdthesis|}
+& {author, title, school, year}
+& {type, address, month}\\
+\hline
+{\verb|@techreport|}
+& {author, title, institution, year}
+& {number, address, month}\\
+\hline
+{\verb|@unpublished|}
+& {author, title, note}
+& {year, month}\\
+\hline
+{\verb|@misc|}
+& {\textrm{At least one of} author, title, howpublished, year, month, note}
+& {}
+\end{tabular}
+\caption{Some common BibTeX entry types and recommended fields.
+All entry types also support the \texttt{note} field.}
+\label{tbl:bib entries}
+\end{table}
+
+To print the bibliography, you put a \cmd{bibliography} command at the expected position.
+This command takes the name of the \verb|.bib| file as its argument.
+The command must be accompanied with a \cmd{bibliographystyle} command;
+see below for some common values.
+
+If you want to make a reference appear in the bibliography even though it is not cited in the text,
+you can use the \cmd{nocite} command.
+Putting \verb|\nocite{key}| anywhere creates an invisible reference to the key.
+You can also specify \verb|\nocite{*}| to include all entries from the \verb|.bib| file.
+
+The magic of BibTeX is with the bibliography styles.
+These customize the look of the final output.
+The simplest style is \verb|plain|, produced with \verb|\bibliographystyle{plain}|
+somewhere in the document.
+This style has numeric labels and references sorted by author and year.
+A basic bibliography would thus be produced by:
+\begin{ExampleCode}
+\bibliography{my-refs}
+\bibliographystyle{plain}
+\end{ExampleCode}
+
+Another built-in style is \verb|alpha|,
+which produces short labels from author names and year;
+for example [Mit23].
+Most journals have their own preferred style.
+
+If you prefer author-year type citations (Mittelbach 2023),
+the cleanest way is to load the package \pkg{natbib} with the \verb|authoryear| option.
+This requires replacing the bibliography style with \verb|plainnat| or other compatible style.
+
+This package also provides some new citation commands:
+\cmd{citep} puts the full citation in parentheses, whereas \cmd{citet} wraps only the year;
+the additional \cmd{citeauthor} and \cmd{citeyear} should be quite self-descriptive.
+See the package documentation for more details.
+
+\begin{practices}
+Even if you don't use author-year citations,
+the \verb|plainnat| style is useful in its support for DOIs and URLs.
+\end{practices}
+
+There is a wide variety of pre-built styles in different packages.
+If you still cannot find a good enough style,
+you can build your own.
+The style language is quite complicated, but there is a nice \prg{custom-bib} program
+that does the effort for you.
+It is a command-line application (often included in the \LaTeX{} distribution)
+that asks a series of questions and then outputs a \verb|.bst| file
+that you can reference with \cmd{bibliographystyle}.
 
 
 
 %
 \subsection{BibLaTeX: the next generation}
-\todo{The differences to BibTeX: `von', doi, etc.}
 
-\todo{Backreferences}
+As good as BibTeX is, it has its drawbacks:
+no support for Unicode, Internet support only depending on the style,
+and limited understanding of names outside the ``First (von) Last (Jr.)'' pattern.
 
+Enter BibLaTeX, an extremely versatile replacement.
+Its documentation \cite{biblatex} is quite extensive,
+so let us just compare the essential differences to BibTeX.
+The \verb|.bib| database format is unchanged,
+but BibLaTeX adds a lot of new entry and key types.
+
+\begin{gotcha}
+BibLaTeX is quite backwards-compatible and BibTeX ignores unrecognized keys,
+so it is quite easy to write a database compatible with both.
+
+However, there are minor differences in e.g.\ how the \verb|edition| key is handled.
+Check the bibliography carefully before submitting!
+\end{gotcha}
+
+Most importantly, the \verb|doi|, \verb|eid| (electronic article ID), and \verb|url| keys
+understood by \pkg{natbib} are natively supported by BibLaTeX.
+If you don't need BibTeX compatibility,
+you can specify a preprint with the new syntax:
+\begin{ExampleCode}
+@unpublished{Pyth,
+    title = {On {Pythagoras'} relativity theory},
+    author = {Firstname Lastname},
+    year = {2022},
+    eprint = {2211.16111v4},
+    eprinttype = {arxiv}
+}
+\end{ExampleCode}
+%
+Supported \verb|eprinttype| values include \verb|arxiv|, \verb|jstor|, \verb|pubmed|, and \verb|hdl|.
+These all produce clickable hyperlinks.
+
+The syntax to using BibLaTeX is quite different.
+The package is loaded with \verb|\usepackage{biblatex}|.
+Here it is possible to pass customization options like the style (see below).
+Then the \verb|.bib| files are specified with \cmd{addbibresource} commands.
+Finally, \cmd{printbibliography} outputs the bibliography in the specified place.
+
+That is, a complete minimal example would be:
+\begin{ExampleCode}
+% In the preamble
+\usepackage{biblatex}
+\addbibresource{my-refs}
+
+% ... in the document
+\printbibliography
+\end{ExampleCode}
+
+Moreover, to compile the bibliography you need to use the \prg{biber} program.
+If you cannot use \prg{biber}, it is possible to pass \verb|backend=bibtex|
+as a package option to use legacy \prg[with BibLaTeX]{bibtex} instead.
+Do note that Unicode support is then unavailable,
+and some more advanced features might not work.
+
+Bibliography styles are customized with package options.
+(When converting a project to BibLaTeX,
+you should also remove any references to \pkg[do not use with BibLaTeX]{natbib} and friends.)
+To use the author-year style, you only need to pass \verb|style=authoryear|.
+The \pkg[do not use with BibLaTeX]{natbib} commands like \cmd{citep}
+are also implemented by BibLaTeX.
+
+There are quite a few built-in styles \cite[Section~3.3]{biblatex},
+and even more can be found in extension packages.
+
+Let us finally comment on one cool feature provided by BibLaTeX,
+if you are not yet convinced to convert to it: back-references.
+Just put \verb|backref=true| as a package option,
+and the bibliography now contains references to pages where the corresponding entries have been cited.
+This is surprisingly useful!
+(See the bibliography of these notes for an example.)
+
+\begin{practices}
+Joking aside, unfortunately many journals are still to adopt BibLaTeX.
+This means that one still also needs to work with legacy BibTeX as well.
+\end{practices}
 
 
 %
 \subsection{Embedding the bibliography}
-\todo{Embedding the bibliography for a published version}
+
+Some journals require you to submit only one \verb|.tex| file,
+with the bibliography embedded in the text.
+This is no reason to go to the manual entry;
+instead, you can copy and paste the BibTeX output:
+
+\begin{enumerate}
+\addtocounter{enumi}{-1}
+\item Do all your editing, and only do the following as the last step.
+\item Compile the bibliography with \prg[embedding]{bibtex}.
+\item Open the produced \verb|.bbl| file.
+    Observe that it contains a \env[produced by BibTeX]{bibliography} environment!
+\item Select all and copy.
+\item Replace the \verb|\bibliography| command in your document
+    with the pasted environment.
+\end{enumerate}
+
+If you use BibLaTeX, there are some good news and some bad news.
+Good news: you can use BibLaTeX with all its benefits,
+since the journal system is not in your way!
+Bad news: the \verb|.bbl| file is not readily copy-pasteable.
+
+There is a hack for doing this in the form of \pkg{biblatex2bibitem} package.
+Check out the package page on CTAN for more information.
 
 
 

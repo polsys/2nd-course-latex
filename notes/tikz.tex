@@ -3,8 +3,10 @@
 There are several methods for producing line graphics in \LaTeX.
 We cover here TikZ, which is quite portable across compilers and extremely versatile.
 It is contained in the \pkg{tikz} package.
-There are several extension libraries that are loaded with the \cmd{usetikzlibrary} command,
-and moreover many other packages are built with TikZ.
+
+There are several extension libraries that are bundled with TikZ and loaded with the \cmd{usetikzlibrary} command.
+Moreover, many other packages are built with TikZ.
+One such package is \pkg{pgfplots}, which provides much more tools for plotting data.
 
 TikZ has bit of a learning curve
 and its documentation spreads over no less than 1321~pages (as of April~2024).
@@ -436,9 +438,9 @@ TikZ is excellent for producing small and simple function plots
 in a style consistent with the rest of the document.
 However, compilation times can get quite long for even slightly complicated functions.
 
-I would therefore not recommend using TikZ for complex graphics.
-If you still need it, consider disabling the plots in \verb|draft| mode
-(by some conditional evaluation; see \Cref{sec:if}).
+If you need to plot lots of complex functions,
+you should precompute the function values in a file
+and use the data plotting facility of TikZ; see \cite[Section~22]{tikz}.
 \end{practices}
 
 

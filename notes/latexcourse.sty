@@ -13,7 +13,7 @@
 \RequirePackage{csquotes}
 \RequirePackage[finnish,french,english]{babel}
 \RequirePackage[hidelinks]{hyperref}
-\RequirePackage[backend=bibtex]{biblatex}
+\RequirePackage[backend=bibtex, backref=true]{biblatex}
 \RequirePackage{cleveref}
 \RequirePackage[svgnames]{xcolor}
 \RequirePackage{framed}
@@ -55,6 +55,7 @@
 \anothertheorem{overleaf}{Note to Overleaf users}
 \anothertheorem{practices}{Good practices}
 \anothertheorem{technote}{Technical side note}
+\anothertheorem{remark}{Remark}
 
 % There are also theorem environments for the examples; these use plain style
 \newtheorem{theorem}{Theorem}
@@ -67,12 +68,13 @@
 \NewDocumentCommand{\cmd}{o m}{\texttt{\textbackslash{}#2}\indexcmd[#1]{#2}}
 \NewDocumentCommand{\indexcmd}{o m}{\index{#2@\texttt{\textbackslash{}#2}\IfValueT{#1}{!#1}}}
 \NewDocumentCommand{\obscmd}{m}{\texttt{\textbackslash{}#1}\index{#1@\texttt{\textbackslash{}#1} \emph{(do not use)}}}
+\NewDocumentCommand{\obsenv}{m}{\texttt{#1}\index{#1@\texttt{#1} environment \emph{(do not use)}}}
 \NewDocumentCommand{\indexenv}{o m}{\index{#2@\texttt{#2} environment\IfValueT{#1}{!#1}}}
 \NewDocumentCommand{\env}{o m}{\texttt{#2}\indexenv[#1]{#2}}
 \NewDocumentCommand{\indexpkg}{o m}{\index{#2@\textsf{#2} package\IfValueT{#1}{!#1}}}
 \NewDocumentCommand{\pkg}{o m}{\textsf{#2}\indexpkg[#1]{#2}}
 \NewDocumentCommand{\obspkg}{m}{\textsf{#1}\index{#1@\textsf{#1} package \emph{(do not use)}}}
-\NewDocumentCommand{\prg}{o m}{\textbf{#2}\indexcmd[#1]{#2}}
+\NewDocumentCommand{\prg}{o m}{\textbf{#2}\indexprg[#1]{#2}}
 \NewDocumentCommand{\indexprg}{o m}{\index{#2@\textbf{#2} program\IfValueT{#1}{!#1}}}
 
 % Code examples use the fancyvrb package.
