@@ -965,6 +965,9 @@ at \url{www.ctan.org/pkg/hyperref}.
     Replaces the old \obspkg{graphics} package of early nineties \LaTeX{};
     do not confuse the two.
     See \Cref{sec:pictures}.
+\item[mathtools] More mathematical environments and commands.
+    Superset of the \pkg{amsmath} package, which is loaded by AMS document classes.
+    See \Cref{sec:mathematics}
 \item[xcolor] Support for setting text and symbols in colour.
     Replaces the old \obspkg{color} package included in early \LaTeX{}.
     See \Cref{sec:colour}.
@@ -1102,7 +1105,14 @@ This only sees the effect of \verb|\stepcounter| on the another counter;
 if you use \verb|\setcounter| to change it, the dependent counter is not reset.
 \end{gotcha}
 
-\todo{Using counterwithin to customize standard counters}
+To customize the resetting of pre-existing counters,
+you can use the \cmd{numberwithin} command.
+For example, to prefix the equation numbers with section numbers,
+you would put in the preamble
+%
+\begin{ExampleCode}
+\numberwithin{equation}{section}
+\end{ExampleCode}
 
 \begin{technote}
 Counters are always in a global scope.\index{scope!counters}

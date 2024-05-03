@@ -1,14 +1,920 @@
-\chapter{Mathematics layout}
+\chapter{Mathematics layout}\label{sec:mathematics}
 
-\section{Mathematical symbols}
+Plain \TeX{} already provides a lot of facilities for typesetting mathematics,
+and this is further extended by \LaTeX{} and the \pkg{amsmath} packages.
+The \pkg{amsmath} package is essentially as old as \LaTeX{}.
+It is automatically loaded by the Americal Mathematical Society document classes like \verb|amsart|,
+so you might not even need to load it.
 
-\todo{Difference between $:$ and $\colon$}
-\todo{Difference between $|$ and $\mid$}
+The package works well but has not been significantly updated since the nineties.
+Some additions and bug fixes are collected in the \pkg{mathtools} package.
+If you use a non-AMS document class, you can load \pkg{mathtools} instead of \pkg{amsmath}
+to get slightly improved typesetting.
 
-\todo{Mathematical symbol classes; TLC p.~209}
+\begin{technote}
+The \pkg{amsmath} package used to be tied to the AMS document classes,
+but it is nowadays maintained by the \LaTeX{} core team.
+It is one of the packages guaranteed to be present on every \LaTeX{} distribution.
+\end{technote}
+
+
+%
+%
+%
+\section{Equation environments}
+
+Standard \LaTeX{} provides the \verb|\[ ... \]| syntax for
+creating a mathematics display (as opposed to inline mathematics with \verb|$ ... $|).
+This environment does not support equation numbering or line breaks;
+for those, \pkg{amsmath} provides a lot of options.
+
+\begin{warning}
+Plain \TeX{} used the \verb|$$ ... $$| syntax for display mathematics.
+Do not use it -- the \LaTeX-style environment has some hooks and accessibility features
+that the \TeX{} syntax does not have.
+\end{warning}
+
+
+%
+%
+\subsection{Single numbered equation}
+
+The basic equation environment of \pkg{amsmath} is \env{equation}.
+It sets its contents on a single line and numbers the equation:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\begin{equation}
+i \partial_t u - \Delta u = -u^3.
+\end{equation}
+\end{VerbatimOut}
+\ShowExample
+
+If you'd rather have an unnumbered equation,
+you can use the \verb|equation*| environment.
+It is essentially equivalent to \verb|\[ \]| of \LaTeX.
+
+To customize the equation number, you can use the \cmd{tag} command.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\begin{equation}
+i \partial_t u - \Delta u = -u^3.
+\tag{NLS}
+\end{equation}
+\end{VerbatimOut}
+\ShowExample
+%
+The tag also appears in cross-references to this equation.
+The tag is read in text mode, so any mathematical symbols need to be wrapped with \verb|$|.
+
+If you want to change whether equations are numbered globally or per section,
+use the \cmd{numberwithin} mechanism described in \Cref{sec:counters}:
+%
+\begin{ExampleCode}
+\numberwithin{equation}{section}
+\end{ExampleCode}
+
+
+%
+%
+\subsection{Single equation on many lines}
+
+You can break a long expression into multiple lines with the \env{multline} environment.
+Only one equation number is produced (none if you use \verb|multline*|).
+Line breaks are specified with \verb|\\|:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\begin{multline}
+a^5 + 5 a^4 b \\
++ 10 a^3 b^2 + 10 a^2 b^3\\
++ 5 a b^4 + b^5
+\end{multline}
+\end{VerbatimOut}
+\ShowExample
+%
+The first line is left-aligned, the last line is right-aligned,
+and the rest are centered.
+
+If you need to control the alignment,
+you can use the \env{split} environment.
+This environment needs to be put inside \verb|equation| (or \verb|equation*|).
+The alignment point is denoted by \verb|&|:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\begin{equation}
+\begin{split}
+(a+b)^2
+&= (a+b)(a+b)\\
+&= a^2 + 2ab + b^2.
+\end{split}
+\end{equation}
+\end{VerbatimOut}
+\ShowExample
+
+Sometimes, you need to align with things that are not really there.
+Let us produce a slightly different version of the previous example:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\begin{equation}
+\begin{split}
+&\mathrel{\phantom{=}} (a+b)^2\\
+&= (a+b)(a+b)\\
+&= a^2 + 2ab + b^2.
+\end{split}
+\end{equation}
+\end{VerbatimOut}
+\ShowExample
+%
+The \cmd{phantom} command reserves enough space on the first line for $=$,
+even though it is not printed there;
+the \cmd{mathrel} command ensures that the spacing is that surrounding $=$ as well.
+This ensures that the expressions are aligned.
+The same effect can not be attained with moving the alignment symbol,
+since the \TeX{} spacing algorithm (described below) cannot see across the \verb|&|:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+Bad spacing after $=$ sign:
+\begin{equation}
+\begin{split}
+&(a+b)^2\\
+= &(a+b)(a+b)\\
+= &a^2 + 2ab + b^2.
+\end{split}
+\end{equation}
+\end{VerbatimOut}
+\ShowExample
+
+
+
+%
+%
+\subsection{Many equations, many lines}
+
+The \env{gather} environment collects equations, each centered.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\begin{gather}
+(a+b)^2 = a^2 + 2ab + b^2,\\
+a^2 - b^2 = (a+b)(a-b).
+\end{gather}
+\end{VerbatimOut}
+\ShowExample
+
+This environment also supports \env{split} on one or more sub-equations:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\begin{gather}
+(a+b)^2 = a^2 + 2ab + b^2,\\
+\begin{split}
+(a+b)^3 &= a^3\\
+&\mathrel{\phantom{=}} + 3a^2 b + 3ab^2 + b^3.
+\end{split}
+\end{gather}
+\end{VerbatimOut}
+\ShowExampleBelow
+
+You can customize the tag of each individual equation with \cmd{tag},
+and also suppress an individual tag with \cmd{notag}.
+These commands can appear anywhere before the \verb|\\| that ends the particular equation.
+Again, the \verb|gather*| environment suppresses all tags
+except those explicitly created with \cmd{tag}.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\begin{gather}
+(a+b)^2 = a^2 + 2ab + b^2,\\
+(a+b)^3 = a^3 + 3a^2 b + 3a b^2 + b^3, \notag\\
+a^2 - b^2 = (a+b)(a-b). \tag{$\ast$}
+\end{gather}
+\end{VerbatimOut}
+\ShowExampleBelow
+
+If you need to have several aligned equations, you can use the \env{align} environment.
+In comparison to \env{split}, each line is now numbered individually:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\begin{align}
+(a+b)^2
+&= (a+b)(a+b)\\
+&= a^2 + 2ab + b^2.
+\end{align}
+\end{VerbatimOut}
+\ShowExample
+The same remarks about \cmd{tag} and \cmd{notag} with \verb|gather| apply here.
+The \env{align} environment also supports more than one alignment point.
+
+
+\begin{warning}
+There is also an \obsenv{eqnarray} environment provided by base \LaTeX.
+It is far less sophisticated and generally uglier than
+anything you can achieve with the environments presented here,
+so I would avoid it.
+\end{warning}
+
+If you want to number the equations as subequations,
+it can be done by wrapping the environment inside \env{subequations}:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\begin{subequations}  
+  \begin{align}
+    (a+b)^2
+    &= (a+b)(a+b)\\
+    &= a^2 + 2ab + b^2.
+  \end{align}
+\end{subequations}
+\end{VerbatimOut}
+\ShowExample
+
+
+If your equation environment is very long,
+it might be beneficial to allow page breaks.
+The display environments presented here do not allow page breaks by default.
+By putting a \cmd{displaybreak} command before the \verb|\\|,
+you indicate that a page break \emph{is allowed}.
+
+The \cmd{allowdisplaybreaks} command permits page breaks in displays everywhere in its scope.
+If you put it inside an environment, it applies to that environment only;
+if you put it in the preamble, it applies to all environments.
+
+
+%
+%
+\subsection{Cases}
+
+To group several expressions with vertical brackets,
+you can use the \env{cases} environment inside an equation environment.
+This environment supports a single alignment \verb|&|:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\begin{equation}
+f(n) = \begin{cases}
+    n^2, & n > 0,\\
+    -n, & n \leq 0.
+\end{cases}
+\end{equation}
+\end{VerbatimOut}
+\ShowExample
+%
+If you mostly have text following the alignment character,
+you can use the starred environment.
+It interprets the right-hand side of \verb|&| in text mode:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\begin{equation}
+f(n) = \begin{cases*}
+    n^2+1, & if $n$ is even,\\
+    n+7, & if $n$ is odd.
+\end{cases*}
+\end{equation}
+\end{VerbatimOut}
+\ShowExample
+
+They also have a right-aligned cousin \env{rcases}:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\begin{equation}
+\begin{rcases}
+i \partial_t u - \Delta u = -u^3,\\
+\partial_{tt} u - \Delta u = -u^3
+\end{rcases}
+\text{ some dispersive PDE}
+\end{equation}
+\end{VerbatimOut}
+\ShowExampleBelow
+
+If you want to number lines in the \verb|cases| environment individually,
+check out the \pkg{cases} package.
+
+
+%
+%
+\subsection{Matrices}
+
+Like \verb|cases|, matrices are not equation environments on their own,
+but can appear inside one.
+There are a few variants depending on how you like them:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\begin{gather*}
+\begin{pmatrix}
+    1 & 2\\
+    3 & 4
+\end{pmatrix}\\
+\begin{bmatrix}
+    1 & \cdots & 1\\
+    0 & \ddots & \vdots\\
+      & \cdots & 1
+\end{bmatrix}\\
+\begin{vmatrix}
+    a & b\\
+    c & d
+\end{vmatrix}
+\end{gather*}
+\end{VerbatimOut}
+\ShowExample
+
+
+
+
+%
+%
+%
+\section{Fonts and text in mathematics}
+
+In mathematical mode \TeX{} follows different spacing rules.
+Spaces are ignored, and the spacing between letters is slightly altered:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\emph{some text}\\
+$some text$
+\end{VerbatimOut}
+\ShowExample
+%
+\todo{Subscript stat}
+You should never write operators like $\sin$ with \verb|\mathrm|;
+see \Cref{sec:operators} for the correct way to do them.
+
+\begin{practices}
+Also the spacing of punctuation is slightly different in math mode.
+You should use math mode only for mathematics;
+in particular, the second example below is preferable:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+Summing over $i, j, k$, we find\dots\\
+Summing over $i$, $j$, $k$, we find\dots\\
+\end{VerbatimOut}
+\ShowExample
+\end{practices}
+
+To put text inside a math display, use the \cmd{text} command of \pkg{amsmath}.
+Since spaces are ignored in math mode, you need to put the spacing inside the argument.
+(Quite often, it is useful to add a bit more space with the manual spacing commands described below.)
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\[
+a_k < a_{k+1}
+\text{ for all } k \in \mathbb N.
+\]
+\end{VerbatimOut}
+\ShowExample
+%
+The argument inside \cmd{text} is interpreted in text mode,
+but it is in fact possible to enter math mode again with \verb|$|:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\[
+a_k < a_{k+1}
+\text{ for all $k \in \mathbb N$, and }
+a_1 > 1.
+\]
+\end{VerbatimOut}
+\ShowExampleBelow
+
+Inside an \env{align} environment, you can do short interjections with \cmd{intertext}.
+\todo{intertext}
+
+\begin{practices}
+Do not overuse \cmd{intertext}.
+It is suitable only for short notes.
+\end{practices}
+
+\todo{amsfonts}
+
+
+%
+%
+%
+\section{Mathematical symbols and whitespace}
+
+\LaTeX{} and \pkg{mathtools} already provide quite a lot of symbols,
+but if those are not enough, there are many extension packages.
+The first two to consider are \pkg{amssymb} (AMS symbol font)
+and \pkg{stmaryrd}.
+There are also some specialized packages like \pkg{braket} for Dirac bra-ket notation.
+
+\begin{gotcha}
+The \pkg{stmaryrd} package should be loaded \emph{after} \pkg{amssymb},
+since it extends and modifies some symbols there.
+\end{gotcha}
+
+If you're not interested in browsing through package documentation to find symbols,
+the Detexify tool\footnote{\url{detexify.kirelabs.org}} is your friend.\index{Detexify}\index{symbols!finding}
+You can draw the symbol in this web app,
+and it searches for it in \LaTeX{} symbol list and a large collection of extension packages.%
+\footnote{\url{www.ctan.org/tex-archive/info/symbols/comprehensive}
+is your friend if you want to search manually;
+be advised that this PDF is over 30~MB and almost 500~pages in size.}
+
+
+%
+%
+\subsection{Spacing}
+
+\TeX{} is quite smart about figuring out the spacing between different mathematical symbols.
+Just look at the difference between $2 - 1$ and $2 (-1)$.
+Sometimes, it is important to choose the command properly to get expected spacing.
+Compare the two examples:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+$f : A \to B$\\
+$f \colon A \to B$
+\end{VerbatimOut}
+\ShowExample
+
+Let us first see the manual commands for spacing,
+since their sizes correspond to units used by \TeX.
+Note that the difference of the units is very small,
+just enough to be perceptible:
+These commands can be used to manually tweak spacings.
+However, even better is to let \TeX{} automate things.
+
+Internally, every mathematical symbol belongs to a symbol class.\index{symbol classes}
+These are listed in \Cref{tbl:math symbol classes}.
+\TeX{} puts a space between two symbols based on their respective classes.
+For example, there is no space between two ordinary characters,
+whereas there is a medium \verb|\:| space between binary and ordinary symbols.
+
+\begin{table}
+\centering
+\begin{tabular}{l|cc}
+Symbol class & Override command & Examples\\
+\hline
+Ordinary & \cmd{mathord} & $2 x$\\
+Operator & \cmd{mathop} & $\sin$\\
+Binary & \cmd{mathbin} & $2 + x$\\
+Relation & \cmd{mathrel} & $2 < x$\\
+Opening & \cmd{mathopen} & $( \quad \lfloor$\\
+Closing & \cmd{mathclose} & $) \quad \rfloor$\\
+Punctuation & \cmd{mathpunct} & $,$
+\end{tabular}
+\caption{The mathematical symbol classes.}
+\label{tbl:math symbol classes}
+\end{table}
+
+We talk more about operators below in \Cref{sec:operators},
+so let us consider binary operations as our example.
+Usually $\heartsuit$ is considered an ordinary symbol,
+but let us imagine that we have defined it as an operation between two expressions.
+Then it would be necessary to wrap its use in \cmd{mathbin} in order to get correct spacing.
+\todo{DeclareMathSymbol}
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\newcommand{\friends}{\mathbin\heartsuit}
+
+Bad: $x \heartsuit y$\\
+Good: $x \friends y$.
+\end{VerbatimOut}
+\ShowExample
+%
+Some combinations of symbol classes are considered impossible,
+in which case \TeX{} modifies one of the classes suitably.
+To go back to the example of the minus sign,
+\verb|-| is usually defined as a Relation symbol.
+However, if it is not preceded by an Ordinary symbol (like a number),
+it is transformed into Ordinary itself -- this means that \verb|-1| produces no spacing at all.
+
+\begin{gotcha}
+This somewhat explains the difference between \verb|:| and \cmd[spacing]{colon}, but only partly.
+The symbol \verb|:| is classified as Relation and \cmd[spacing]{colon} as Punctuation.
+However, \pkg[colon]{amsmath} further modifies the spacing of \cmd[spacing]{colon}
+to fit the $f \colon A \to B$ pattern -- and only that pattern.
+
+If you ever need the colon as a punctuation symbol, you can wrap it in \verb|\mathpunct{:}|.
+\end{gotcha}
+
+\begin{gotcha}
+Another source of confusion is \verb.|. and \cmd[spacing]{mid}.
+The first is Ordinary and the second Relation.
+They should be used correspondingly:
+\verb.|a|. for the absolute value $|a|$,
+\verb.f|_A. for the restriction of a function $f|_A$,
+and \verb.a \mid b. for the divisibility relation $a \mid b$.
+\end{gotcha}
+
+\begin{gotcha}
+The symbols \verb|. ! ?| are of class Ordinary, not Punctuation.
+This is to do with their mathematical meanings.
+\end{gotcha}
+
+\begin{gotcha}
+Adding an accent turns the symbol into Ordinary.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+$a \hat= b$\\
+$a \mathrel{\hat=} b$
+\end{VerbatimOut}
+\ShowExample
+\end{gotcha}
+
+\begin{gotcha}
+The occasionally used notation for open intervals conflicts with the algorithm,
+since \verb|]a, b[| is understood as Closing--Opening pair instead of the opposite.
+It can be fixed manually as in the next example:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+$f \colon ]a, b[ \to ]0, 1]$\\
+$f \colon \mathopen]a, b\mathclose[
+    \to \mathopen]0, 1]$
+\end{VerbatimOut}
+\ShowExample
+%
+A quick fix is to wrap the intervals inside \verb|{}|.
+If you use a lot of intervals,
+you should either define some custom commands or check out the \pkg{interval} package.
+\end{gotcha}
+
+
+
+One common pain point is the humble $\mathrm dx$ that appears in integrals.
+It is nice to get the spacing consistently right,
+and note also the upright $\mathrm d$ (this is advocated by an ISO standard, but some prefer $dx$).
+\index{dx@$\mathrm dx$}
+
+A common way to do this (based on Stack Exchange discussions) is:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\newcommand{\diff}{\mathop{}\!\mathrm{d}}
+
+In an integral:
+\[
+\int_0^1 x \diff x,
+\]
+and inside parens: $\mu(\diff x)$.
+\end{VerbatimOut}
+\ShowExample
+%
+Note the automatic space between $x$ and $\mathrm dx$.
+
+What happens here is that the empty group \verb|{}| is set in operator style.
+When preceded by an ordinary symbol, the operator style puts a thin \verb|\,| space;
+when preceded by punctuation like \verb|(|, the space is not present.
+The thin \verb|\,| space between the (empty) operator and `d' is cancelled with \verb|\!|.
+
+If you find yourself writing lots of complicated differentials like
+\[
+\frac{\mathrm d^2 \log(x)}{\mathrm dx^2},
+\]
+you should look into the \pkg{diffcoeff} package
+that provides a slightly shorter syntax.
+
+
+%
+%
+\subsection{Operators and limits}\label{sec:operators}
+One common class of text in mathematics is operators.
+Compare the three examples here:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+Awful: $2 sin \pi$,\\
+Still bad: $2 \textrm{sin} \pi$,\\
+Good: $2 \sin \pi$.
+\end{VerbatimOut}
+\ShowExample
+Here the \verb|\sin| command not only sets the operator name properly,
+but also adjusts the spacing around the operator.
+
+If the operator you need is not predefined as a \LaTeX{} command,
+you can do the styling once with \cmd{operatorname}\dots
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\[
+2 \operatorname{dim} X
+\]
+\end{VerbatimOut}
+\ShowExample
+%
+\dots{}or define a new command with \cmd{DeclareMathOperator} in the preamble:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+% In the preamble:
+% \DeclareMathOperator{\arccosh}{arccosh}
+
+\[
+2 \arccosh \pi
+\]
+\end{VerbatimOut}
+\ShowExample
+
+For certain operators, limits can be put either to the side or above/below the operator.
+Compare these two:
+\[
+\text{text style }\textstyle \sum_{i=1}^\infty
+\text{ and display style }\displaystyle \sum_{i=1}^\infty.
+\]
+There are package options to \pkg{amsmath}/\pkg{mathtools}
+to control how the limits are placed in display equations.
+By default, they are placed on the side for integrals and above/below for everything else.
+
+To put limits above/below your custom operator, use the starred form of the declaration:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\[
+\operatorname{dim}_H^\ast X
+\text{ vs }
+\operatorname*{dim}_H^\ast X
+\]
+\end{VerbatimOut}
+\ShowExample
+
+If you need to put multiple lines of text in a sum argument,
+you can use the \cmd{substack} command.
+Inside its argument, you can use the usual \verb|\\| line breaks:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\[
+\sum_{\substack{1 \leq j \leq 10\\ 1 \leq k \leq j}}
+\]
+\end{VerbatimOut}
+\ShowExample
+
+\todo{mathtools offers cramped versions}
+
+Some special operators that deserve a mention are the modulus operators,
+since they have some special spacing rules:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\begin{gather*}
+a \equiv b \mod p\\
+a \equiv b \bmod p\\
+a \equiv b \pmod p
+\end{gather*}
+\end{VerbatimOut}
+\ShowExample
+
+
+%
+%
+\subsection{Fractions}
+There are two basic fraction-like commands: \cmd{frac} for fractions,
+and \cmd{binom} for binomial coefficients.
+Both take the numerator and denominator as their arguments.
+
+To produce generalized fraction-like operators like
+\[
+\genfrac{(}{)}{}{}{a}{b}
+\quad\text{and}\quad
+\genfrac{\lfloor}{\rceil}{0pt}{}{a}{b},
+\]
+the \pkg{amsmath} package provides the \cmd{genfrac} command.
+Read the package documentation to understand its six parameters.
+
+Continued fractions are produced with the \cmd{cfrac} command:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\[
+\cfrac{1}{\sqrt 3 + \cfrac{2}{\sqrt 3 + \dotsb}}
+\]
+\end{VerbatimOut}
+\ShowExample
+
+\begin{warning}
+Plain \TeX{} does fractions and binomials with the \obscmd{over} and \obscmd{choose} commands
+that have a different syntax: \verb|n \choose m| instead of \verb|\binom n m|.
+As natural as the syntax might seem, you should only use the \LaTeX{} constructs.
+\end{warning}
+
+
+%
+%
+\subsection{Building new symbols}
+
+\todo{Shortly on this}
+
+\todo{Negations}
+
+
+
+%
+%
+%
+\section{Size in mathematics}
+
+Delimiting symbols come in five sizes:
+\begin{VerbatimOut}{\jobname.tmp}
+\[
+( \big( \Big( \bigg( \Bigg(
+\]
+\end{VerbatimOut}
+\ShowExample
+%
+Instead of setting the size manually,
+the \cmd{left} and \cmd{right} commands can be used.
+They choose the size based on the content between delimiters.
+Accordingly, the two commands must be paired correctly.
+There is also \cmd{middle} for an optional middle delimiter in the matching size.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\[
+\left\{ a \in \mathbb Q
+  \middle| a^2 < \frac 1 2 \right\}
+\]
+\end{VerbatimOut}
+\ShowExample
+
+\begin{gotcha}
+It is not possible to have a line break between \cmd{left} and \cmd{right},
+so in long formulas you might need to do the sizing manually.
+\end{gotcha}
+
+\begin{practices}
+I like to define the following two commands in my documents:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\newcommand{\abs}[1]{\left|#1\right|}
+\newcommand{\norm}[1]{\left\|#1\right\|}
+
+Absolute value $\abs x$,\\
+function norm $\norm f$.
+\end{VerbatimOut}
+\ShowExample
+%
+They are both semantically meaningful and automatically sized.
+\end{practices}
+
+There are two basic styles of sizing other mathematics: text style and display style
+(there are also two levels of sub-/superscript styles).
+The first is used with inline mathematics and the latter with display mathematics.
+It is possible to override the style with \cmd{textstyle} and \cmd{displaystyle}:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+Text with oversize
+$\displaystyle \binom n m \frac 1 2$
+mathematics, and a display with small maths:
+\[
+\sqrt{\textstyle \binom n m \frac 1 2}
+\]
+\end{VerbatimOut}
+\ShowExample
+%
+For fractions, there are the abbreviated \cmd{tfrac} and \cmd{dfrac} commands
+to achieve this effect.
+
+
+%
+%
+%
+\section{Decorations}
+
+\subsection{Accents}
+
+You should not use accented Unicode characters like `â' in math mode.
+Instead, write \verb|\hat a|.
+The supported accents are listed in various places online.%
+\footnote{\url{https://en.wikibooks.org/wiki/LaTeX/Mathematics\#Accents}}
+
+\begin{gotcha}
+The accents apply to the immediately succeeding character,
+and do not take subscripts into account.
+Compare the three:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+$\hat a_0$ vs $\hat {a_0}$
+vs $\widehat {a_0}$
+\end{VerbatimOut}
+\ShowExample
+\end{gotcha}
+
+To put material over and under symbols,
+there are the aptly named \cmd{overset}, \cmd{underset}, and \cmd{overunderset} commands:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\[
+\overset{\eqref{eq:pythagoras}}{=}
+\quad \underset{\ast}{X}
+\quad \overunderset{a}{b}{C}
+\]
+\end{VerbatimOut}
+\ShowExample
+%
+To produce some very cursed versions of big operators,
+there is also the \cmd{sideset} command:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\[
+\sideset{^a_b}{^c_d}\sum_{i=1}^\infty
+\]
+\end{VerbatimOut}
+\ShowExample
+
+
+
+%
+%
+\subsection{Dots}
+
+The \pkg{amsmath} package provides a context-sensitive \cmd{dots} command.
+Compare the vertical positions of the dots in these two examples:
+%
+Thanks to this, is is usually enough to use \cmd{dots} everywhere in your mathematics.
+The exception is at the end of expression,
+since \pkg{amsmath} decides the placement by looking at the following symbol.
+You can give a hint with commands like \verb|\dotsc| (dots with commas)
+and \verb|\dotsb| (dots with binary operations)
+and even \verb|\dotsi| (dots with integrals) for these cases.
+
+Of course, if memorizing these seems too much, the usual \verb|\cdots| and \verb|\ldots| can be used;
+they just tie the semantics and presentation together.
+
+
+%
+%
+\subsection{Braces and highlighting}
+There are two commands for producing horizontal braces:
+\cmd{overbrace} and \cmd{underbrace}.
+They both accept explanatory text as super-/subscript respectively.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\[
+\overbrace{a^2 + b^2}^{\text{catheti}}
+= \underbrace{c^2}_{> 0}.
+\]
+\end{VerbatimOut}
+\ShowExample
+
+The \pkg{mathtools} package also provides similar commands for brackets.
+They can be optionally customized in thickness and height,
+but they do not support text:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\[
+\overbracket[1pt][0.5cm]{a^2 + b^2}
+= \underbracket[3pt]{c^2}.
+\]
+\end{VerbatimOut}
+\ShowExample
+
+Relatedly, let us just note that \pkg{amsmath} provides a \cmd{boxed} command
+for drawing a box around some mathematics.
+If the argument continues across a \verb|&| alignment point,
+you need the \pkg{mathtools} variant \cmd{Aboxed}.
+A more extensible version is provided by the \pkg{empheq} package.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\[
+\boxed{a^2 + b^2} = c^2.
+\]
+\end{VerbatimOut}
+\ShowExample
+
+If you want to emphasize something with colour,
+the \pkg{xcolor} package offers a \cmd{mathcolor} command that works
+just like its text counterpart:%
+\footnote{To be precise, it works \emph{very much unlike} its text counterpart in that
+if you try to use \texttt{\textbackslash textcolor} in math mode, it breaks the spacing.}
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\[
+\mathcolor{blue}{a^2 + b^2} = c^2.
+\]
+\end{VerbatimOut}
+\ShowExample
+
+
+%
+%
+\subsection{Arrows}
+Mathematicians seem to like arrows.\index{arrows!mathematics}
+Here is a sample of some;
+note that some have synonyms for semantically more meaningful code.
+You probably can deduce the rules for even further variants:
+\begin{VerbatimOut}{\jobname.tmp}
+\begin{gather*}
+\gets \to \mapsto\\
+\leftarrow \uparrow \nwarrow \searrow \rightarrow\\
+\Leftarrow \Leftrightarrow \Rightarrow\\
+\Longleftarrow \Longleftrightarrow \implies\\
+\hookleftarrow \rightharpoonup\\
+\leftrightharpoons \rightleftharpoons
+\end{gather*}
+\end{VerbatimOut}
+\ShowExample
+
+Sometimes it is useful to put longer sub- or superscripts on arrows.
+The \pkg{amsmath} package provides extensible versions of arrows.
+The command names are prefixed with \verb|x|,
+and the optional argument goes below and the main argument above the arrow:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\begin{gather*}
+f(x) \xrightarrow[n \to \infty]{\text{weakly}} 0\\
+b^2 = 0
+\xRightarrow{\eqref{eq:pythagoras}} a^2 = c^2
+\end{gather*}
+\end{VerbatimOut}
+\ShowExample
+
+\begin{gotcha}
+These extended arrows should only be used in display size.
+\end{gotcha}
+
+While we are on the topic of arrows,
+let us mention the commutative diagrams that are popular among some mathematicians.
+For simple diagrams the \pkg{amscd} package by AMS provides a terse syntax;
+for more complicated diagrams there is \pkg{tikz-cd} based on TikZ.
+
+
+
+%
+%
+%
+\section{Theorem environments}
 
 \todo{Putting QED where it belongs (and customizing it)}
-
-\section{Whitespace in mathematics}
-
-\section{Theorem environments}
