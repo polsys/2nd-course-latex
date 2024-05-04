@@ -17,7 +17,7 @@
 \RequirePackage{cleveref}
 \RequirePackage[svgnames]{xcolor}
 \RequirePackage{framed}
-\RequirePackage[hyperref,framed]{ntheorem}
+\RequirePackage[hyperref,framed,amsmath,thmmarks,amsthm]{ntheorem}
 \RequirePackage{footmisc}
 \RequirePackage{enumitem}
 \RequirePackage{tikz}
@@ -25,8 +25,10 @@
 
 % These packages are used in the examples
 \RequirePackage{amsfonts}
+\RequirePackage{dsfont}
 \RequirePackage{amssymb}
 \RequirePackage{stmaryrd}
+\RequirePackage{bm}
 \RequirePackage[normalem]{ulem}
 \RequirePackage{listings}
 \lstloadlanguages{[LaTeX]TeX,Pascal}
@@ -61,6 +63,7 @@
 \anothertheorem{remark}{Remark}
 
 % There are also theorem environments for the examples; these use plain style
+\theoremstyle{plain}
 \newtheorem{theorem}{Theorem}
 
 % Macros for referencing commands and environments

@@ -328,9 +328,10 @@ $some text$
 \end{VerbatimOut}
 \ShowExample
 %
-\todo{Subscript stat}
-You should never write operators like $\sin$ with \verb|\mathrm|;
-see \Cref{sec:operators} for the correct way to do them.
+To make your documents have that subtle final touch,
+it is therefore important to understand where the boundary of text and math goes.
+We will first discuss putting \emph{explanatory text} within math environments,
+and then talk about \emph{mathematical text} styles like $\exp(f_{\mathrm{stat}})$ below.
 
 \begin{practices}
 Also the spacing of punctuation is slightly different in math mode.
@@ -344,7 +345,12 @@ Summing over $i$, $j$, $k$, we find\dots\\
 \ShowExample
 \end{practices}
 
-To put text inside a math display, use the \cmd{text} command of \pkg{amsmath}.
+
+%
+%
+\subsection{Explanatory text}
+
+To put explanatory text inside a math display, use the \cmd{text} command of \pkg{amsmath}.
 Since spaces are ignored in math mode, you need to put the spacing inside the argument.
 (Quite often, it is useful to add a bit more space with the manual spacing commands described below.)
 %
@@ -368,15 +374,178 @@ a_1 > 1.
 \end{VerbatimOut}
 \ShowExampleBelow
 
-Inside an \env{align} environment, you can do short interjections with \cmd{intertext}.
-\todo{intertext}
+Inside an \env{align} environment, you can do short textual interjections with \cmd{intertext}.
+The benefit is that the alignment is kept in sync across mathematics lines:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\begin{align}
+a^3 - b^3
+&= \sum_{k=0}^3 \binom 3 k a^k b^{3-k},\\
+\intertext{and by some computation this equals}
+&= (a-b)(a^2 + ab + b^2).
+\end{align}
+\end{VerbatimOut}
+\ShowExampleBelow
 
 \begin{practices}
-Do not overuse \cmd{intertext}.
-It is suitable only for short notes.
+As useful as \cmd{intertext} is,
+remember that the display math environments do not participate in page breaking by default.
+If you have a long chain of equalities,
+you should think about the most reader-friendly way to present it.
 \end{practices}
 
-\todo{amsfonts}
+
+%
+%
+\subsection{Mathematics fonts}
+
+Then what about mathematics set in a diffenent font?
+First, we need to distinguish \emph{operators} and \emph{ordinary symbols} from each other,
+since the two also differ in spacing.
+Just compare the two examples:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+$\sin x$\\
+$\mathrm{sin} x$
+\end{VerbatimOut}
+\ShowExample
+%
+The spacing rules around operators are discussed in \Cref{sec:operators}.
+The \cmd{operatorname} command described there also takes care of the upright font.
+
+This leaves us finally to talk things like $f_{\mathrm{stat}}$,
+$\mathbf R$ or $\mathbb R$, and $\mathcal F$.
+The commands are similar to those used in text mode.
+
+The upright roman style is produced with \cmd{mathrm},
+bold with \cmd{mathbf},
+and the calligraphic style with \cmd{mathcal}.
+There is also the sans serif style \cmd{mathsf}.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+$\mathrm{F(x)}$\\
+$\mathbf{F(x)}$\\
+$\mathsf{F(x)}$\\
+$\mathcal{F(x)}$
+\end{VerbatimOut}
+\ShowExample
+%
+As you see from above, not all characters are supported by the default fonts,
+sometimes producing confusing results.
+
+\begin{practices}
+A common convention is to use upright style when something has a multi-letter name.
+That is, the identity matrix should be $\mathrm{Id}$ and not $Id$,
+and a stationary function should be $f_{\mathrm{stat}}$ and not $f_{stat}$.
+\end{practices}
+
+Note that symbols are not typically set in bold font even when \cmd{mathbf} is used:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\[
+\mathbf{\sum_{k=1}^\infty \frac{k}{1+k^2}}
+\]
+\end{VerbatimOut}
+\ShowExample
+%
+There is the \cmd{boldsymbol} command in \pkg{amsmath},
+but it only supports a subset of symbols.
+If you need bold mathematics, the easiest way is to use the \pkg{bm} package
+and the identically named command:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+% \usepackage{bm}
+\[
+\bm{\sum_{k=1}^\infty \frac{k}{1+k^2}}
+\]
+\end{VerbatimOut}
+\ShowExample
+%
+Whenever the font has a special bold symbol, it is used;
+otherwise, a ``poor man's bold'' is applied by overprinting the character with small offsets.
+
+
+By loading the \pkg{amsfonts} package, you gain a couple more styles:
+``blackboard bold'' by \cmd{mathbb} and fraktur by \cmd{mathfrak}.
+Again, these support only a subset of the characters.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+% \usepackage{amsfonts}
+$\mathbb{ABC}$\\
+$\mathfrak{ABCdef}$
+\end{VerbatimOut}
+\ShowExample
+
+In some fields, a blackboard bold $1$ is used (to signify an indicator function, for example).
+This symbol is not provided by \pkg{amsfonts}.
+There are two methods to fix this issue.
+
+First, $\mathds 1$ can be found e.g.\ in the \pkg{dsfont} package
+that provides a double stroke font accessible via \cmd{mathds}.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+% \usepackage{amsfonts, dsfont}
+$\mathbb{ABC123}$\\
+$\mathds{ABC123}$
+\end{VerbatimOut}
+\ShowExample
+%
+Note that the other digits are now missing altogether!
+
+Since \cmd{mathbb} is in muscle memory for many of us, let us show one dirty trick.
+If you want to replace the blackboard bold font altogether with the double-stroke font,
+you can use the following code:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+% \usepackage{dsfont}
+\DeclareCommandCopy{\mathbb}{\mathds}
+
+$\mathbb{ABC123}$
+\end{VerbatimOut}
+\ShowExample
+
+
+The second method is more correct,
+but it requires a modern \LaTeX{} processing pipeline.
+It should thus be used still with caution.
+
+\begin{latexthree}
+If you copy mathematical text from a \LaTeX-produced PDF,
+the symbols come in a normal font or might be completely random.
+This is another example of \TeX{} and Unicode having evolved separately.
+However, Unicode nowadays has code points for symbols like ``blackboard bold R''.
+
+If you use a Unicode-native compiler (LuaLaTeX or XeLaTeX),
+you can load the \pkg{unicode-math} package.
+This package replaces all math symbols with their Unicode equivalents.
+Now they appear correctly for copy-paste and screen readers.
+
+With this package, you no longer need to load \pkg{amsfonts},
+\emph{all digits} have blackboard bold variants,
+and there are no longer weird symbol substitutions.
+Moreover, it is possible to easily load a different Unicode font for maths.
+
+Where's the catch?
+The package is still marked as experimental,
+it does not work with pdfLaTeX,
+and there are some subtle differences compared to original math commands.
+This package should only be used for new projects where backwards compatibility is not required.
+\end{latexthree}
+
+
+%
+%
+\subsection{Completely different typefaces}
+
+It is possible to use non-default fonts for mathematics,
+but there are many caveats.
+Most fonts do not contain a usable range of mathematical symbols,
+and those that do might not pair well with the text font.
+
+The \pkg{unicode-math} package and Unicode fonts with good mathematics support are the best bet.
+Palatino and Noto families also have good mathematics support,
+which we will discuss in \Cref{sec:typefaces}.
+
 
 
 %
@@ -454,7 +623,6 @@ so let us consider binary operations as our example.
 Usually $\heartsuit$ is considered an ordinary symbol,
 but let us imagine that we have defined it as an operation between two expressions.
 Then it would be necessary to wrap its use in \cmd{mathbin} in order to get correct spacing.
-\todo{DeclareMathSymbol}
 %
 \begin{VerbatimOut}{\jobname.tmp}
 \newcommand{\friends}{\mathbin\heartsuit}
@@ -917,4 +1085,139 @@ for more complicated diagrams there is \pkg{tikz-cd} based on TikZ.
 %
 \section{Theorem environments}
 
-\todo{Putting QED where it belongs (and customizing it)}
+Basic theorem/definition/etc.\ environments are usually done with the \pkg{amsthm} package.
+The operative command is \cmd{newtheorem}, which takes two required arguments:
+the environment name and the heading to display.
+It also takes one optional argument, whose location is significant:
+\begin{itemize}
+\item If it comes after the required arguments,
+    it gives the level at which the environment is numbered.
+    For example, \verb|[section]| means that the counter is prefixed with section number.
+\item If it comes before them, it gives the counter to use.
+    If you have already defined a theorem environment named \verb|definition|,
+    then \verb|[definition]| means that the new environment is part of the same numbering.
+\end{itemize}
+
+\begin{practices}
+This is now more of a personal opinion,
+but I strongly believe that all theorem-like environments should share the same numbering.
+It is infuriating to find Theorem~5 in a document like
+\begin{quote}
+    \dots, Definition~3, Lemma~3, Theorem~3, Lemma~4, Lemma~5, Lemma~6, Theorem~4,
+    Definition~4, \dots
+\end{quote}
+where each environment has individual numbering.
+\end{practices}
+
+The appearance of the environment is chosen with the \cmd{theoremstyle} command.
+It applies to all following \cmd{newtheorem} invocations.
+There are three predefined styles:
+\begin{description}
+\item[plain] Boldface header, italic text.
+\item[definition] Boldface header, upright text.
+\item[remark] Italic header, upright text.
+\end{description}
+%
+There is also a \cmd{swapnumbers} command if you prefer ``1.1~Theorem'' instead of ``Theorem~1.1''.
+
+A complete example of defining theorem environments could be as follows.
+All environments share the same numbering, which is section-based.
+%
+\begin{ExampleCode}
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{example}[theorem]{Example}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\end{ExampleCode}
+
+There is also the starred \cmd{newtheorem*} command that does not produce a number.
+It might be useful in some special cases.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\theoremstyle{plain}
+\newtheorem*{riemannhyp}{Riemann hypothesis}
+
+\begin{riemannhyp}
+The real part of every nontrivial zero of the Riemann zeta function is $1/2$.
+\end{riemannhyp}
+\end{VerbatimOut}
+\ShowExampleBelow
+
+
+The theorem environment also accepts an optional argument,
+which is placed in parentheses after the theorem number.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\begin{theorem}[Pythagoras]
+If $a$ and $b$ are the lengths of catheti of a right-angled triangle,
+then the hypothenuse has length $\sqrt{a^2 + b^2}$.
+\end{theorem}
+\end{VerbatimOut}
+\ShowExampleBelow
+
+
+The \cmd{amsthm} package automatically defines a \env{proof} environment.
+The ``Proof'' heading can be customized with the optional argument,
+and the environment automatically put a QED symbol at the end.
+The symbol can be changed by redefining \cmd{qedsymbol}
+(either in the preamble or locally within the environment):
+%
+\begin{VerbatimOut}{\jobname.tmp}
+% We need to fake things a bit since the notes use ntheorem instead of amsthm
+% To use a customized symbol, we need to call \qed at the closing of of the environment
+% Moreover, instead of \renewcommand\qedsymbol{...} we need to CALL \qedsymbol{...}
+% Instead of showing and executing different code, we use a nasty hook here
+\DeclareCommandCopy{\oldqedsymbol}{\qedsymbol}
+\AddToHook{env/proof/end}[qed-hack]{%
+\renewcommand{\qedsymbol}{\oldqedsymbol}\qedsymbol{$\heartsuit$}\qed}
+
+\begin{theorem}
+\LaTeX{} course participants are fantastic.
+\end{theorem}
+\begin{proof}[Sketch of proof]
+Just look at them.
+\renewcommand{\qedsymbol}{$\heartsuit$}
+\end{proof}
+\end{VerbatimOut}
+\ShowExampleBelow[9]
+\RemoveFromHook{env/proof/end}[qed-hack]
+
+If the environment ends with a list or display equation,
+the QED symbol is placed on a new line.
+Since this is not very pretty, we can give \LaTeX{} a hint with the \cmd{qedhere} command.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+% Again a hack, since ntheorem automatically puts the QED mark in the correct position
+\newcommand{\qedhere}{}
+
+\begin{proof}[Remainder of a long proof]
+It remains to notice that
+\[
+a^2 - b^2 = (a+b)(a-b).
+\qedhere
+\]
+\end{proof}
+\end{VerbatimOut}
+\ShowExampleBelow[3]
+
+
+There are also some fancier theorem environments,
+such as those produced by \pkg{ntheorem}.
+However, \pkg{ntheorem} does have some subtly surprising behaviors at times,
+and it might have compatibility issues with some other packages.%
+\footnote{This observation sponsored by: using \pkg{ntheorem} in quite a few projects,
+including these notes.
+Since the examples use \pkg{amsthm} syntax and \pkg{ntheorem} is at times very incompatible with it,
+there are some nasty hacks involved.}
+
+\emph{The \LaTeX{} Companion} \cite[Section~4.1.5]{TLC} suggests using the \pkg{thmtools}
+package to iron out some differences between \pkg{amsthm} and \pkg{ntheorem},
+but I have no personal experience of it.
+
