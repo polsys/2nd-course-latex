@@ -13,4 +13,182 @@
 
 \section{Customizing headings}
 
+%
+%
+%
 \section{Accessibility of documents}
+
+The PDF file format is principally a set of instructions to a printer:
+draw a curve here, another there, and so on.
+This poses a problem for accessibility.
+Some examples of accessibility issues are:
+%
+\begin{itemize}
+\item Can a ``screen reader'' program read the document aloud for a blind person?
+\item Can a visually impaired person increase the color contrast on graphics?
+\item Can the text from the document be copy-pasted into another program?
+\end{itemize}
+%
+Note that the last point might not sound like an accessibility issue,
+but it is caused and solvable by the same reasons.
+
+There are three layers of accessibility work going on:
+%
+\begin{enumerate}
+\item The PDF format can include semantic metadata about the document contents.
+    \LaTeX{} is increasingly better at writing this metadata,
+    but it might require you to opt in to the new behavior.
+\item \LaTeX{} can be compiled into another format, such as HTML web page.
+    This approach is increasingly used by major publishers and arXiv.
+    It requires you to use a sensible subset of \LaTeX.
+\item Source code is very accessible to a screen reader program;
+    a well-written \verb|.tex| file is a good workaround.
+    This still requires you to write clean code.
+\end{enumerate}
+%
+We will briefly explore each of these layers below.
+
+\begin{practices}
+Accessibility is for everybody.
+Most people benefit from some accommodations at some point in their life.
+Even without an ``obvious'' disability, think about reading your document
+\begin{itemize}
+    \item on an ebook reader with grayscale screen (visual impairment),
+    \item on a mobile phone in bright sunlight (ditto), or
+    \item by a sleep-deprived parent between meetings (cognitive impairment).
+\end{itemize}
+Not all accessibility issues have technological solutions
+-- they also require you to think about how you present your message.
+A complicated figure is hard to read, no matter the technology used to produce it.
+\end{practices}
+
+
+%
+%
+\subsection{PDF accessibility}
+
+This is the core accessibility work done by the \LaTeX{} team during the last few years.
+The goal is to embed semantic metadata about the document into the PDF format.
+A lot of the semantics is in the \verb|.tex| source in form of sectioning commands and such.
+
+The translation is hampered by the need to rewrite \LaTeX{} internals without breaking compatibility,
+and all the abuse of commands to get semantically incorrect but visually good results.
+
+To enable PDF metadata, you should do the following steps:
+\begin{itemize}
+\item Use a modern \LaTeX{} compiler like LuaLaTeX or XeLaTeX.
+    Of these LuaLaTeX is more actively maintained, so it is preferable.
+\item Add \cmd{DocumentMetadata} as the first line (before \verb|\documentclass|) of the code.
+\item Load the \pkg{hyperref} package.
+\item Consider loading the \pkg{unicode-math} package
+    (and remove other mathematics symbol and font packages;
+    see page~\pageref{rem:math unicode}).
+\end{itemize}
+
+\begin{warning}
+Since some behavior changes subtly,
+you should take these into use only in new projects
+and only when everybody involved (including the publisher) uses a Unicode-native \LaTeX{} pipeline.
+
+Be extra careful with checking the output when converting old projects,
+or if you need to compile the project with both old and new toolsets.
+\end{warning}
+
+\begin{warning}
+As of April~2024, arXiv \emph{does not} use Unicode-native \LaTeX{} tools.
+For arXiv submissions, follow the next section instead.
+\end{warning}
+
+The \cmd{DocumentMetadata} command tells \LaTeX{} that you opt in
+to new and rewritten behaviors.
+For example, it enables some new features in the \pkg[opt-in features]{hyperref} package.
+
+\begin{latexthree}
+This work is still heavily in progress.
+There are some arguments to \cmd{DocumentMetadata} that enable further in-development features.
+As of April~2024 these include tagging of mathematics and tables.
+
+Since these arguments are unstable, they are not documented here
+and should not be used in ``real'' documents quite yet.
+You can follow the progress through \LaTeX{} release newsletters:
+\begin{quote}
+\url{https://www.latex-project.org/news/}
+\end{quote}
+\end{latexthree}
+
+In order for the tagging to work,
+you need to produce semantically correct code.
+That is, use \verb|\subsection*| when you need an unnumbered subsection,
+and only then -- do not abuse it for bold, heavy text.
+Similarly, use \verb|\emph| to emphasize,
+instead of \verb|\textit| or \verb|\textbf| that carry only visual meaning.
+
+
+%
+%
+\subsection{HTML conversion}
+
+Another option is to skip PDF altogether.
+The most common alternative format is HTML, the technology behind web pages.
+It has a few benefits:
+%
+\begin{itemize}
+\item It is processed on the user device, so e.g.\ colours can be customized by the reader.
+\item The text can be reflowed based on the screen size and magnification factor.
+\item Existing screen reader programs can already read out web pages.
+\end{itemize}
+%
+However, there are a few drawbacks too:
+%
+\begin{itemize}
+\item \TeX{} is built on the model of printing on paper; it assumes a fixed layout in many places.
+\item The usual \LaTeX{} compilers only produce PDF output or equivalent.
+\end{itemize}
+
+This approach is now pursued by several publishers and arXiv,
+together with e.g.\ American Mathematical Society.
+ArXiv uses a tool called LaTeXML%
+\footnote{\url{https://github.com/brucemiller/LaTeXML}}
+that is essentially a new \TeX{} compiler that selectively reimplements some packages.
+
+Since \LaTeX{} is already semantically focused, this works surprisingly well.
+A lot of packages are already supported.
+Importantly, TikZ can output its pictures also in the SVG (Scalable Vector Graphics) format
+used together with HTML.\index{TikZ!accessibility}
+
+\begin{practices}
+Load and use only the packages that you really need.
+Prefer mainstream packages supported by the arXiv converter.
+ArXiv has a help document outlining some more best practices for HTML conversion.\footnotemark
+\end{practices}
+\footnotetext{\url{https://info.arxiv.org/help/submit_latex_best_practices.html}}
+
+
+
+%
+%
+\subsection{Accessible source code}
+
+Both of the above methods require you to use semantically meaningful commands:
+otherwise, the automated tools are unable to do tagging/conversion.
+Yet writing good semantic \LaTeX{} code is also an accessibility feature:
+you can always read the source code.
+
+\begin{remark}
+Source code posted to arXiv is public and downloadable.
+\end{remark}
+
+If you want to set vectors in bold font, then do not write \verb|\mathbf a| but
+%
+\begin{VerbatimOut}{\jobname.tmp}
+% Preamble
+\renewcommand{\vec}{\mathbf}
+
+$\vec a$
+\end{VerbatimOut}
+\ShowExample
+%
+Now it is immediate from the source code that \verb|a| refers to a vector.
+It can not be confused with other things marked with boldface.
+Besides, if you change your mind about the style,
+you only need to change one command in the preamble.
