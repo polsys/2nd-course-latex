@@ -101,12 +101,16 @@ A nice feature of this package is that you can also pass several references,
 and \pkg{cleveref} sorts out how to present them.
 That is,
 \begin{ExampleCode}
-\Cref{thm:first, thm:second, thm:third}
+\Cref{thm:first,thm:second,thm:third}
 \end{ExampleCode}
 might produce something like ``Theorems~4.1 to~4.3''
 or ``Theorems~4.1, 4.7, and~5.1''.
 Again, see the package documentation for how to customize this
 (for example, if the plural form is not formed by just appending `s').
+
+\begin{gotcha}
+Do not put spaces around the commas in the argument to \verb|\Cref|.
+\end{gotcha}
 
 There are also the \cmd{cpageref} and \verb|\Cpageref|
 commands to produce page references (with the same support for ranges),
