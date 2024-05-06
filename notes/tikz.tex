@@ -643,4 +643,34 @@ but let us briefly show some of the more useful packages.
 
 \todo{Think about what to cover here: angles, decorations, graphs, trees, spy?}
 
-\todo{tikz-cd and friends? TLC}
+%
+\subsection{Commutative diagrams}\label{sec:tikz-cd}
+
+In certain fields of mathematics, everything is explainable with sufficiently many arrows.
+If you are one of those people, then you will love the \pkg{tikz-cd} package.
+It can also be loaded through \verb|\usetikzlibrary{cd}|.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\centering
+% \usetikzlibrary{babel} % Might be needed, see below
+% \usetikzlibrary{cd}
+
+\begin{tikzcd}
+A \arrow[r] \arrow[d, dotted] & B \arrow[d, Rightarrow, bend left]\\
+C \arrow[r, maps to, "\psi"]  & D
+\end{tikzcd}
+\end{VerbatimOut}
+\ShowExampleBelow[2]
+
+\begin{gotcha}
+If you get an error message when you try to add a label (like \verb|"\psi"| above),
+you should try loading the \verb|babel| TikZ library.
+This relates to the handling of quotation marks by \pkg[TikZ compatibility]{babel} package;
+the TikZ support library fixes up the handling inside TikZ environments.
+\end{gotcha}
+
+There is a nice online editor for commutative diagrams by Yichuan Shen.%
+\footnote{\url{https://tikzcd.yichuanshen.de/}}
+It only supports a subset of \pkg{tikz-cd} features,
+but is a nice and visual way to edit the diagram before exporting its \LaTeX{} code.
+(It also supports \emph{importing} code for further editing!)
