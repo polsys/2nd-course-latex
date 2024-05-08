@@ -331,6 +331,26 @@ Neither protects you against overwriting existing macros.}
 \quiettodo{Keep these on the same page!}
 
 
+The \TeX{} compiler works in two basic modes: text mode and math mode.
+Some commands (for example, \verb|\sqrt|) are only usable in math mode.
+
+How to define a command that works \emph{both} in text and math mode?
+You can use the \cmd{ensuremath} command: in text mode it wraps its contents inside \verb|$|,
+and in math mode it does nothing:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\newcommand{\magic}{\ensuremath{\sqrt 2}}
+
+The number \magic{} satisfies
+\[
+\magic^2 = 2.
+\]
+\end{VerbatimOut}
+\ShowExample
+
+
+
+
 %
 \subsection{Arguments to commands}
 
@@ -733,11 +753,31 @@ Scroll to the \emph{very first} error message and fix it.
 The later error messages are misleading,
 and will go away once the actual error is fixed.
 
+\medskip\noindent{\em \verb|\begin{equation}| on input line 7 ended by \verb|\end{equation*}|}\\*
+Exactly what is says: there is a mismatched begin/end combination.
+If the message says \verb|\end{document}|, then the end command is missing altogether.
+
+\medskip\noindent{\em Missing \verb|$| inserted}\\*
+You have tried to use a math-mode command while in text mode.
+If you want to define a custom command that works in both modes,
+you can wrap mathematical symbols in it within \cmd{ensuremath}.
+
+\medskip\noindent\emph{Bad math environment delimiter}\\*
+Conversely, do you have an extra \verb|$| inside a display math environment?
+
+\medskip\noindent{\em Misplaced alignment tab character \verb|&|}\\*
+\medskip\noindent{\em Extra alignment tab has been changed to \verb|\cr|}\\*
+You have a bit too many \verb|&| characters per line,
+or are using an equation environment that does not support them at all.
+
+\medskip\noindent{\em Package amsmath Error: \verb|\begin{split}| won't work here.}\\*
+You need to wrap the environment inside \verb|equation| or one of its friends.
+
 \medskip\noindent\emph{Missing character: There is no \emph{\dots} in font nullfont!}\\*
-If this happens inside a TikZ picture, you have very likely mistyped a command.
+If this happens inside a TikZ picture, you have very likely mistyped a command or option.
 Check the code line shown above the error message.
 
-\todo{Common error messages}
+\todo{More common error messages}
 
 
 
