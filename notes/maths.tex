@@ -76,7 +76,7 @@ use the \cmd{numberwithin} mechanism described in \Cref{sec:counters}:
 
 %
 %
-\subsection{Single equation on many lines}
+\subsection{Single equation on many lines}\label{sec:math split}
 
 You can break a long expression into multiple lines with the \env{multline} environment.
 Only one equation number is produced (none if you use \verb|multline*|).
@@ -323,8 +323,8 @@ In mathematical mode \TeX{} follows different spacing rules.
 Spaces are ignored, and the spacing between letters is slightly altered:
 %
 \begin{VerbatimOut}{\jobname.tmp}
-\emph{some text}\\
-$some text$
+\emph{different spacing}\\
+$different spacing$
 \end{VerbatimOut}
 \ShowExample
 %
@@ -575,7 +575,7 @@ be advised that this PDF is over 30~MB and almost 500~pages in size.}
 
 %
 %
-\subsection{Spacing}
+\subsection{Spacing}\label{sec:math spacing}
 
 \TeX{} is quite smart about figuring out the spacing between different mathematical symbols.
 Just look at the difference between $2 - 1$ and $2 (-1)$.
@@ -590,10 +590,23 @@ $f \colon A \to B$
 
 Let us first see the manual commands for spacing,
 since their sizes correspond to units used by \TeX.
+Their sizes are defined based on the \emph{math unit}, which depends on the font size.
 Note that the difference of the units is very small,
-just enough to be perceptible:
+just enough to be perceptible:\indexcmd{mspace}
+%
+\begin{VerbatimOut}{\jobname.tmp}
+$xx$ (no space)\\
+$x\,x$ (thin space, 3~mu)\\
+$x\:x$ (medium space, 4~mu)\\
+$x\;x$ (thick space, 5~mu)\\
+$x\!x$ (negative thin space)\\
+$x\mspace{8mu}x$ (custom space)
+\end{VerbatimOut}
+\ShowExample
+%
 These commands can be used to manually tweak spacings.
 However, even better is to let \TeX{} automate things.
+
 
 Internally, every mathematical symbol belongs to a symbol class.\index{symbol classes}
 These are listed in \Cref{tbl:math symbol classes}.

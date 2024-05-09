@@ -323,6 +323,58 @@ see \verb|\SaveVerb| and \verb|\UseVerb| in \pkg{fancyvrb} documentation.
 %
 %
 %
+\section{Spaces, line breaks, and paragraphs}
+
+\TeX{} ignores consecutive whitespace characters.
+It does not matter if you put one or two spaces between words,
+or even start a new line -- only one space is printed.
+For a description of the spacing algorithm, and the ways to produce visual space of fixed space,
+you should go to \Cref{sec:layout}.
+
+\begin{practices}
+I personally like to put every sentence on a new line.
+To me it is easier to scan,
+and it also goes well with the version control system I use:
+the system highlights changed lines,
+so there is a one-to-one correspondence between changed lines and changed sentences.
+\end{practices}
+
+An empty line starts a new paragraph.
+Since \TeX{} handles paragraph spacing, you should almost never need manual line breaking commands.
+In some esoteric corner cases (like macro definitions),
+you can also use the \cmd{par} command to cause a paragraph break.
+
+\begin{gotcha}
+Be careful with line breaks in your macro definitions;
+you might accidentally end up causing paragraph breaks.
+If your macro definition spreads over many lines,
+you should tell \TeX{} to ignore the line breaks by ending each line with \verb|%|.
+\end{gotcha}
+
+For customization of the space between paragraphs and indentation,
+again look at \Cref{sec:layout} and specifically \Cref{sec:paragraph layout}.
+If you need to suppress indentation of a single paragraph,
+you can use \cmd{noindent} at the beginning.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\setlength\parindent{2em}
+\setlength\parskip{0pt}
+
+This is a long example paragraph.
+
+This too is a long example paragraph.
+
+\noindent
+This paragraph is exceptional,
+as it is not indented.
+\end{VerbatimOut}
+\ShowExample
+
+
+
+%
+%
+%
 \section{Colour}\label{sec:colour}
 
 Due to historical and technical reasons, \TeX{} does not natively support colours.

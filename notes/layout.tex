@@ -1,4 +1,4 @@
-\chapter{Page layout and whitespace}
+\chapter{Page layout and whitespace}\label{sec:layout}
 
 
 %
@@ -7,7 +7,6 @@
 \section{How \TeX{} sets lines}\label{sec:overfull}\label{sec:babel}
 
 The line and paragraph shaping algorithm of \TeX{} has long been touted as excellent.
-\todo{Cite it}
 The algorithm breaks lines and hyphenates words in a way that tries to
 keep the inter-word spacing visually pleasing.
 It works on paragraph level: changing a word may cause the preceding lines to be set differently,
@@ -16,12 +15,219 @@ as \TeX{} tries to find the globally best solution.
 \begin{technote}
 The algorithm has quite a few parameters that \emph{can} be modified\dots{}
 but most likely \emph{should} not.
-You can find them in the TeXbook \todo{cite}.
+You can find them in the \TeX book \cite{texbook}.
 \end{technote}
 
-\todo{Boxes}
+\begin{warning}
+The following discussion is \TeX nical, and mostly for giving you an idea of how things work.
+If you find yourself needing to manipulate boxes directly,
+\begin{enumerate}
+    \item reconsider what you are doing,
+    \item go read the \TeX book.
+\end{enumerate}
+\end{warning}
 
-\todo{Phantom}
+
+\TeX{} lays out a line just like a human typesetter would do with metal type.
+The basic unit is \emph{box}, a rectangular piece of content.\index{boxes}
+\TeX{} alternates between a horizontal mode, where the boxes are set in line,
+and a vertical mode, where boxes are set on top of each other.%
+\footnote{To be precise, there are two horizontal modes:
+the one where lines are broken automatically, and the one where they are not.
+Similarly, there are two vertical modes that differ in page breaking behaviour.
+Finally, there are the inline and display math modes, bringing the total to six.}
+Boxes are nested to produce complicated layouts.
+
+\begin{technote}
+We can play an old-school typesetter with the \obscmd{hbox} and \obscmd{vbox} commands.
+(These are low-level \TeX{} commands -- see below for \LaTeX{} versions!)
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\vbox{\hbox{\hbox{Above1}\hbox{Above2}}\hbox{Below}}
+\end{VerbatimOut}
+\ShowExampleBelow
+\end{technote}
+
+A key concept in typesetting is the \emph{baseline}.\index{baseline}
+The bottoms of letters lay on the baseline.
+Some letters like `p' have \emph{descenders} that drop below the baseline.
+The \emph{height} of a letter is the vertical extent above baseline;
+the \emph{depth} that below baseline.
+%
+\begin{center}
+\newcommand\ExampleText{\normalfont\fontsize{48pt}{48pt}\selectfont Typography}
+\newlength\Myheight
+\settoheight\Myheight{\ExampleText}
+\newlength\Mydepth
+\settodepth\Mydepth{\ExampleText}
+%
+\begin{tikzpicture}
+    \small
+    \draw (0cm,0) -- (9cm, 0) node[right] {baseline};
+    \draw[dotted] (0cm,\Myheight) -- (9cm,\Myheight) node[right] {line height};
+    \draw[dotted] (0cm,-\Mydepth) -- (9cm,-\Mydepth) node[right] {line depth};
+    \draw (0,0) node[right,anchor=base west] {\ExampleText};
+\end{tikzpicture}
+\end{center}
+
+The height of each line is given by the \emph{baseline skip}:
+the vertical distance between baselines.
+It is visually pleasing when lines are spread evenly,
+but \TeX{} will happily give extra space when content like $\dfrac 1 2$ needs it,
+even though it looks bad (just look at it!).
+Moreover, the baseline skip might vary between pages,
+since \TeX{} might try to squeeze one more line onto a page to get a better layout.
+
+Back to boxes.
+I can invent three reasons to create boxes manually:
+\begin{itemize}
+    \item overriding hyphenation,
+    \item drawing a frame around something,
+    \item doing some placement tricks.
+\end{itemize}
+We will look at each of these use cases.
+You can create your own boxes with the \cmd{mbox} command,
+and framed boxes with the \cmd{fbox} command.
+These commands are both defined in \LaTeX{}.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\fbox{Framed!}
+\end{VerbatimOut}
+\ShowExample
+%
+The \verb|\fboxsep| length parameter determines the padding between the box and the frame;
+by default it is 3~pt.
+There is also a \verb|\fboxrule| parameter for the width of the line (0.4~pt by default).
+We can use these parameters to illustrate how \TeX{} lays out words (ignoring hyphenation):
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\setlength\fboxsep{0pt}
+
+\fbox{Some} \fbox{example} \fbox{text}
+\fbox{that} \fbox{forms} \fbox{a}
+\fbox{complete} \fbox{example}
+\fbox{paragraph}.
+\end{VerbatimOut}
+\ShowExample
+
+The \cmd{makebox} and \cmd{framebox} commands behave otherwise similarly,
+but they accept optional width and alignment parameters.
+By default, the text is centered.
+Inside these commands and their arguments,
+a special \cmd{width} command gives the total width of the contents.
+
+Do note that lines are not automatically broken inside these boxes.
+You can thus overflow the size:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\framebox[4cm][c]{Centered}\\
+\framebox[1.5\width][r]{Some legroom}\\
+\framebox[1cm][l]{Overflowed it!}
+\end{VerbatimOut}
+\ShowExample
+
+\begin{technote}
+There are a few \emph{niche} use cases for producing special layouts with boxes.
+You most likely should not use these in an article.
+
+The first is that you can take advantage of the overflow with zero-width boxes.
+Here we use a right-aligned zero-width box to push stuff into the margin:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+Some text\\
+\makebox[0pt][r]{(!) }Important text\\
+Some more text
+\end{VerbatimOut}
+\ShowExample
+
+Another is to raise or lower a box for dramatic effect:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+My feeling \raisebox{-\totalheight}{sank.}
+\end{VerbatimOut}
+\ShowExample
+%
+The \cmd{totalheight} command gives the height of the line:
+it is the sum of \cmd{height} (of the contents above baseline)
+and \cmd{depth} (of the contents below baseline).
+We will talk about baseline a bit later below.
+\end{technote}
+
+
+What if you want to put multiple lines of content into a box,
+with automatic hyphenation?
+Enter paragraph boxes.\index{boxes!paragraph}
+The \env{minipage} environment essentially creates a page within page.
+You need to tell it the width of the box, and optionally whether the
+top, center, or bottom line is aligned with the baseline:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+Some text
+\begin{minipage}[b]{2.7cm}
+interrupted by a rambling
+note, followed by
+\end{minipage}
+some
+\begin{minipage}[t]{2cm}
+more text, albeit not
+very usefully set either.
+\end{minipage}
+\end{VerbatimOut}
+\ShowExampleBelow
+%
+Let us also show a more practical example of how this could be used:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\begin{minipage}[c]{5cm}
+\textbf{Curriculum Vit\ae}\\
+Cira the dog\\
+Born 2009\\
+Expert eater of everything
+\end{minipage}
+\hfill
+\begin{minipage}[c]{4cm}
+\includegraphics[bb=2.8cm 1.4cm 7cm 6cm, clip, width=\textwidth]
+    {pictures/TheDogs.jpg}
+\end{minipage}
+\end{VerbatimOut}
+\ShowExampleBelow
+
+
+Finally, let us talk about invisible boxes.
+
+The \cmd{phantom} command can be used to reserve space.
+You can see it in action in \Cref{sec:math split}.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+There is a \phantom{phantom} in here.\\
+There is a phantom in here.
+\end{VerbatimOut}
+\ShowExampleBelow
+
+The \cmd{rule} command creates a filled box,
+but it can also be used to create a \emph{strut}:\index{strut}
+an invisible ``support beam'' that takes up some vertical space.
+The command takes the width and height of the rule,
+optionally preceded by the position above baseline:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+Thick rule on baseline: \rule{1cm}{3pt}\\
+Raised a bit: \rule[6pt]{1cm}{3pt}
+Below baseline: \rule[-3pt]{1cm}{3pt}
+\end{VerbatimOut}
+\ShowExample
+%
+If we set the width to zero, then the space is reserved but no rule is drawn.
+Here we reserve 0.5~cm below the baseline and 1~cm above it:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\fbox{\rule[-0.5cm]{0pt}{1.5cm}%
+A lot of room!}
+\end{VerbatimOut}
+\ShowExample
+%
+This can be used e.g.\ to create some vertical clearance inside a table cell.
+
 
 
 %
@@ -37,7 +243,7 @@ This disables automatic hyphenation for the particular word,
 so it will only be broken at the hinted points.
 Conversely, if a word should not be broken across lines, it can be wrapped in an \cmd{mbox}.
 Finally, to prevent a line break between two words,
-the \verb|~| symbol produces a \emph{non-breaking space}.
+the tilde \verb|~| symbol produces a \emph{non-breaking space}.
 
 Compare these two passages (to illustrate the automatic hyphenation, they are slightly different).
 The breaking override commands cause the lines to be underfull,
@@ -223,23 +429,231 @@ so you might just need to accept the minor issues with newer compilers.
 \end{practices}
 
 
+
 %
 %
 %
 \section{Units of measure and whitespace}
 
-\todo{Inter-word spacing}
+\TeX{} supports specifying distances in a variety of units.
+The most useful are:
+\begin{description}
+    \item[\texttt{cm}] Centimetres
+    \item[\texttt{in}] Inches (1~in=2.54~cm)
+    \item[\texttt{pt}] Points (1~in=72.27~pt); usually used for font sizes%
+        \footnote{There is also the \texttt{bp} (big point) used by PDF format,
+        where there are exactly 72~bp to an inch.}
+    \item[\texttt{ex}] Approximate height of `x' in current font
+    \item[\texttt{em}] Approximate width of `M' in current font
+    \item[\texttt{mu}] Math unit (1~em=18~mu); used for spacing in math mode
+\end{description}
+%
+Wherever a length is used, it must be supplied with a unit: for example, \verb|1.5cm|.
 
+In horizontal mode, a space is created with the \cmd{hspace} command.
+The \cmd{quad} command produces an \emph{em space} (1~em), \cmd{qquad} doubly so,
+and \cmd{enspace} half of it.
+In math mode, there are some more commands: see \Cref{sec:math spacing}.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+An em space is this big:\\
+xxx\hspace{1em}xxx
+\end{VerbatimOut}
+\ShowExample
+
+
+It is possible to make a length \emph{stretchy},\index{strectch}
+letting it expand or shrink within some limits.
+Here the syntax \texttt{1cm plus 1cm minus 0.6cm} means that
+the space can be anything between 0.4~cm and 2.0~cm:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\newcommand\spa
+  {\hspace{1cm plus 1cm minus 0.6cm}}
+
+Every\spa word\spa space\spa in\spa this\spa
+long\spa example\spa paragraph\spa has\spa
+this\spa weird\spa stretchy\spa space.
+Perhaps\spa anybody\spa should\spa not\spa
+set\spa any\spa text\spa like\spa it.
+\end{VerbatimOut}
+\ShowExample
+
+An extreme case of stretchy spaces is given by \cmd{hfill}:
+it expands to take all the available space on the line.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+Left\hfill center\hfill right
+\end{VerbatimOut}
+\ShowExampleBelow
+%
+Internally, \cmd{hfill} is implemented as \verb|\hspace{\stretch{1}}|.
+With the \cmd{stretch} command it is possible to distribute the space in uneven ratio:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+Left\hspace{\stretch{1}} off-center\hspace{\stretch{2}} right
+\end{VerbatimOut}
+\ShowExampleBelow
+
+There are also the \cmd{hrulefill} and \cmd{dotfill} commands
+that fill the space with something:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+Left\hrulefill center\dotfill right
+\end{VerbatimOut}
+\ShowExampleBelow
+
+The same general ideas work for vertical spacing.
+One can request exact vertical space with \cmd{vspace} or a stretch space with \cmd{vfill}
+(below, the latter does nothing since the ``page'' streches according to the example content):
+%
+\begin{VerbatimOut}{\jobname.tmp}
+Something
+
+\vspace{1cm}
+
+Something else
+
+\vfill
+
+Bottom of the page
+\end{VerbatimOut}
+\ShowExample
+
+Instead of manual spacing commands,
+you should use the semantically more meaningful
+\cmd{smallskip}, \cmd{medskip}, and \cmd{bigskip} commands.
+
+However, there is a significant catch.
+Remember that \TeX{} alternates between the horizontal and vertical mode.
+Using vertical commands in the horizontal mode might cause some surprises.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+An example.
+\bigskip
+Inside this paragraph,
+there is a vertical spacing command.
+Can you see where it got applied?
+\end{VerbatimOut}
+\ShowExample
+
+
+%
+%
+\subsection{Length variables}
+
+Like counters, \TeX{} supports special length variables.
+\TeX{} and \LaTeX{} supply quite a lot of read-only variables that can be used in length expressions.
+
+Let us use \cmd{textwidth} as our example.
+It gives the width of the text area on the page.
+We can print its value with the \cmd{the} command (mostly useful for debugging!),
+and put a multiplicative factor in front of it:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+The text width is \the\textwidth.
+Here's a line of that width:
+
+{\color{blue}\rule{\textwidth}{1pt}}
+
+And of half that width: {\color{blue}\rule{0.5\textwidth}{1pt}}
+\end{VerbatimOut}
+\ShowExampleBelow
+
+Importantly, this length changes depending on the context.
+Inside a \env{minipage} environment, the width of the text area is different.
+Let us do the same example again, but now the output is placed inside a smaller minipage:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+The text width is \the\textwidth.
+Here's a line of that width:
+
+{\color{blue}\rule{\textwidth}{1pt}}
+
+And of half that width:
+{\color{blue}\rule{0.5\textwidth}{1pt}}
+\end{VerbatimOut}
+\ShowExample
+
+Out of the box, the only calculation possible with lengths is multiplication,
+like \verb|0.5\textwidth| used above.
+The \pkg{calc} package has traditionally been used when a complete expression language is needed.
+
+\begin{latexthree}
+\LaTeX3 now also provides similar functionality through the \cmd{dimeval} and \cmd{inteval} commands:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+Text height: \the\textheight\\
+Paper height: \the\paperheight\\
+Padding:
+\dimeval{\paperheight - \textheight}\\
+About this many lines:
+\inteval{\textheight / \baselineskip}
+\end{VerbatimOut}
+\ShowExample
+%
+Be warned that the syntax does have some peculiar corner cases.
+\end{latexthree}
+
+
+It is usually enough to provide length expressions to commands,
+but sometimes it is useful to define custom length variables.
+Such a variable is initialized with \cmd{newlength}, similar to how counters are created.
+It can then be set with \cmd{setlength}, and used by prefixing the name with \verb|\|:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\newlength\Mylen
+\setlength\Mylen{1.75em}
+
+My\hspace{\Mylen}space.
+\end{VerbatimOut}
+\ShowExample
+
+\begin{technote}
+Like counters, length variables live in the global scope.
+\end{technote}
+
+There are the useful \cmd{settowidth}, \cmd{settoheight}, and \cmd{settodepth}
+commands that measure a piece of text and store its size in the variable:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\settowidth\Mylen{Hello world!}
+
+The text ``Hello world!''
+is {\the\Mylen} wide.
+
+\settowidth\Mylen{\large Hello world!}
+
+In \verb|\large| font it takes
+the whopping \the\Mylen.
+\end{VerbatimOut}
+\ShowExample
+
+
+
+%
+%
+%
 \section{Page geometry}
 
 
 
-\todo{Explain minipages somewhere}
-
 \todo{Landscape pages}
+
+%
+%
+\subsection{Paragraphs and page breaks}\label{sec:paragraph layout}
+
+\todo{indentation and such}
 
 \todo{needspace and page breaks}
 
+
+%
+%
+%
 \section{Headers and footers}
 
-\section{Titles}
+\todo{Page numbering}
+
+\todo{General headers and footers}
