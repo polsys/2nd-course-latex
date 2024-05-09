@@ -371,6 +371,20 @@ as it is not indented.
 \ShowExample
 
 
+If you really need a manual line break without starting a new paragraph,
+you can use either the \verb|\\| or the \verb|\\*| command.
+The difference between the two is that the starred form prevents a page break between the lines.
+(That is, you probably need to use the latter.)
+These commands take an optional argument for the space after the line break:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+Yours sincerely,\\*[8pt]
+P.~Laarne\\*
+\TeX nical assistant
+\end{VerbatimOut}
+\ShowExample
+
+
 
 %
 %

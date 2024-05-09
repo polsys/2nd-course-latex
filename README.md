@@ -19,6 +19,8 @@ As mentioned above, this is a misnomer, and hence the name of these notes.
 The main file is `notes/2nd-course-in-latex.tex`.
 It must be compiled with XeLaTeX or LuaLaTeX.
 
+**Before compiling the main file**, you need to compile all files in the `notes/examples` folder.
+
 The bibliography is compiled with legacy BibTeX for unfortunate technical reasons:
 my university computer's security policies are incompatible with the binary packer used by `biber`.
 You can use `biber` by removing `backend=bibtex`

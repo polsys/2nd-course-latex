@@ -280,7 +280,7 @@ There are a few ways to fix these issues:
     \item Slightly change the wording or word order to create better hyphenation opportunities.
     \item Manually tweak the hyphenation of a long word within the paragraph.
     \item If the page layout causes suboptimal paragraph shaping,
-        it could also be tweaked, but this is an extreme action (see \todo{reference}).
+        it could also be tweaked, but this is an extreme action (see \Cref{sec:paragraph layout}).
 \end{itemize}
 %
 There is just one hard rule:
@@ -611,6 +611,7 @@ My\hspace{\Mylen}space.
 
 \begin{technote}
 Like counters, length variables live in the global scope.
+Once created, they never go away.
 \end{technote}
 
 There are the useful \cmd{settowidth}, \cmd{settoheight}, and \cmd{settodepth}
@@ -636,17 +637,162 @@ the whopping \the\Mylen.
 %
 \section{Page geometry}
 
+Let us then move on to the layout of a complete page.
+To see the frame of a page, you can load the \pkg{showframe} package
+or pass the \verb|showframe| option to the \pkg{geometry} package.
+The result is shown in \Cref{fig:page geometry}.
+
+\begin{figure}
+\centering
+\setlength\fboxsep{0pt}
+\fbox{\includegraphics[totalheight=0.8\textheight]{examples/geometry.pdf}}
+\caption{The geometry of an A4~page. The header is set to be 15~pt tall.}
+\label{fig:page geometry}
+\end{figure}
+
+The most basic customization tools are the options passed to the document class.
+For further changes to the geometry, or a larger range of paper sizes,
+it is easiest to turn to the \pkg{geometry} package.
+
+Just loading the \pkg{geometry} package changes the layout:
+by default, the package applies narrower margins than \LaTeX{} does by default.
+Further customization is done by optional arguments to the package,
+or later in the preamble with the \cmd{geometry} command.
+
+You only need to specify the options you specifically want to customize
+-- the package computes the remaining parameters.%
+\footnote{Of course, it is possible to give an incompatible set of measurements.}
+For all the details, look at the package documentation.
+Some of the more useful options are:
+\begin{description}
+\item[\texttt{inner}] The width of the inner margin.
+    In \verb|oneside| document mode, this corresponds to the left margin.
+\item[\texttt{outer}] The width of the outer margin.
+    In \verb|oneside| document mode, this corresponds to the right margin.
+\item[\texttt{textwidth}] The width of the text area.
+\item[\texttt{textheight}] The height of the text area.
+\item[\texttt{lines}] Alternatively to the above,
+    the desired text height in lines (in the current default font).
+\item[\texttt{headheight}] The height of the header area.
+\item[\texttt{headsep}] Distance between the header and text area.
+\item[\texttt{footskip}] Distance between the text area and the footer.
+\item[\texttt{paper}] This accepts an extended range of paper sizes:
+    \verb|a0paper| through \verb|a6paper|, and the same for B and C series.
+    Custom sizes can be specified through \verb|paperwidth| and \verb|paperheight|.
+\end{description}
+
+\begin{remark}
+University of Helsinki doctoral theses are printed on B5~paper.
+The suggested font size is 10~pt in that case.
+\end{remark}
+
+\begin{warning}
+The raw \TeX{} and \LaTeX{} lengths are available as well,
+and many a Stack Exchange answer suggests modifying them directly.
+There is nothing wrong with it, but \pkg{geometry} gives a nicer interface
+that avoids some surprising things.
+\end{warning}
+
+\begin{technote}
+As an example of a surprise, the coordinate system of \TeX{}
+puts the origin at 1~inch to the right and below of the top-left corner of the paper.
+That means that some of the internal length parameters are negative.
+\end{technote}
 
 
-\todo{Landscape pages}
+Of the read-only length variables provided by \LaTeX{},
+\cmd{textwidth} and \cmd{textheight} are some of the most useful ones.
+It is very common to set a figure to be a certain portion of the text width.
+
+
+%
+%
+\subsection{Landscape pages}\label{sec:landscape pages}
+
+\LaTeX{} has several restrictions to changing the layout mid-document.
+Some parameters can be customized with the \cmd{newgeometry} command,
+which ends the current page, outputs all the outstanding floats,
+and starts a new page with the new layout.
+
+Sometimes, it is useful to produce single landscape pages, e.g.\ to hold a wide table.
+For this, you can use the \pkg{pdflscape} package
+and its \env{landscape} environment.
+The contents of this environment are set on a new landscape page (or several).
+See also \Cref{sec:landscape floats} for automatic placement of floats on landscape pages.
+
+\begin{technote}
+The \textsf{pdf} in \pkg{pdflscape} stands for the fact
+that the environment even tells the PDF reader application to rotate the page on your screen.
+This is its sole improvement over the older \textsf{lscape} package.
+\end{technote}
+
+
 
 %
 %
 \subsection{Paragraphs and page breaks}\label{sec:paragraph layout}
 
-\todo{indentation and such}
+Other two commonly customized parameters are \cmd{parindent} and \cmd{parskip}.
+As the names suggest, they control the indentation and distance between paragraphs.
 
-\todo{needspace and page breaks}
+By default, paragraphs are indented, with no extra vertical separation.
+If you prefer non-indented, vertically separated paragraphs, the commands are:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\setlength\parindent{0pt}
+\setlength\parskip{4pt}
+
+Some text forming an example paragraph.
+Just enough to get it to a few lines.
+
+Another example paragraph,
+with quite a few words.
+\end{VerbatimOut}
+\ShowExample
+
+If you want to remove the indentation of a single paragraph only,
+you can put \cmd{noindent} at the beginning of the paragraph.
+
+\bigskip
+
+Let us then move to page breaks.
+The \cmd{clearpage} command ends the current page,
+then produces enough pages to set all the outstanding floats (figures and tables),
+and finally starts a new page.
+The \cmd{cleardoublepage} variant ensures that the new page has odd number,
+which puts it on the right-hand side of a twoside layout.
+This is done automatically at the end of chapter in the \textsf{report} document class.
+
+Generally, you should not otherwise interfere with the page breaking algorithm,
+but sometimes it is necessary for a good layout.
+The \cmd{pagebreak} command forces a manual page break.
+
+However, this command \emph{is dangerous}.
+If the preceding text changes, it is possible that the \cmd{pagebreak} command now produces
+a mostly-empty page!
+
+Instead, it might be better to use the \pkg{needspace} package.
+The identically named command approximates the remaining space on the page,
+and starts a new page if there is not enough.
+For example, to ensure that there is space for two more lines,
+one can say
+%
+\begin{ExampleCode}
+\needspace{2\baselineskip}
+\end{ExampleCode}
+
+Finally, there is an extreme command for fine-tuning the final layout of a page.
+The \pkg{addlines} package can be used to add or remove lines to the current spread.
+(The package applies the extension to both sides of a spread in twoside mode;
+in oneside mode it only affects the single page.
+This distinguishes the package from raw \LaTeX{} \cmd{enlargethispage} command.)
+
+\begin{warning}
+Only do fine-tuning to the page layout at the very end of editing process
+-- even the tiniest change can cause a massive cascade of layout changes!
+
+Quite often, you can do completely without these tweaks.
+\end{warning}
 
 
 %
@@ -654,6 +800,12 @@ the whopping \the\Mylen.
 %
 \section{Headers and footers}
 
-\todo{Page numbering}
+\todo{Page numbering, lastpage}
 
 \todo{General headers and footers}
+
+\begin{remark}
+The package gives a warning if the header height is not large enough.
+The warning even gives a suggested value for the \cmd{headheight} length,
+which you can pass to \pkg{geometry} (or do a raw \verb|\setlength|, if not using the package).
+\end{remark}
