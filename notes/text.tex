@@ -151,6 +151,19 @@ Command form & Declarative form & Output\\
 \end{tabular}
 \end{figure}
 
+\begin{technote}
+Prefer the command forms.
+They are easier to parse for automatic tools like \prg{latexdiff},
+and moreover \cmd{textit} does a tiny typographic tweak called \emph{italic correction}
+at the interface between italic and upright styles:\index{italic correction}
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\textit{Super}charged\\
+{\itshape Super}charged
+\end{VerbatimOut}
+\ShowExample
+\end{technote}
+
 There are two important points to remember:
 First, you should keep the semantics and the styling separate.
 For example, these notes define a \verb|\pkg| command to highlight package names;
@@ -160,7 +173,8 @@ Thus the code is not only semantically meaningful but also benefits the reader.}
 
 Another is that you should not use \verb|\textit| to emphasize text.
 It is much better to use \cmd{emph}:
-first, it is semantically meaningful, and second, it supports nesting:%
+first, it is semantically meaningful, and second, it supports nesting:
+%
 \begin{VerbatimOut}{\jobname.tmp}
 Sometimes you need to
 \emph{emphasize} a point.
