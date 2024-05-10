@@ -536,8 +536,6 @@ Sometimes they consist of just one thing,
 sometimes they can be a list of things
 (see the discussion of \cmd{usepackage} later in this chapter).
 
-\todo{Defining commands with optional arguments?}
-
 
 %
 \subsection{Replacing existing commands}
@@ -655,8 +653,6 @@ do not leave an empty line between \verb|\end{...}| and the following text.
 
 
 
-\todo{Parameter form; improvements in L3}
-
 
 %
 %
@@ -752,6 +748,9 @@ If not, this is a strong sign that \TeX{} failed to recover from an error.
 Scroll to the \emph{very first} error message and fix it.
 The later error messages are misleading,
 and will go away once the actual error is fixed.
+
+If the cause of the error is a command used inside a sectioning command or table specification,
+you may have hit a robustness issue; see \Cref{sec:robustness}.
 
 \medskip\noindent{\em \verb|\begin{equation}| on input line 7 ended by \verb|\end{equation*}|}\\*
 Exactly what is says: there is a mismatched begin/end combination.
@@ -991,6 +990,7 @@ The documentation typically includes usage examples, a complete reference,
 and possible compatibility issues with other packages.
 For example, you can find the (very extensive!) documentation of \pkg{hyperref}
 at \url{www.ctan.org/pkg/hyperref}.
+They are also available at \url{www.texdoc.org}.
 
 \todo{Other common packages}
 \begin{description}
@@ -1030,15 +1030,72 @@ Otherwise, you might get non-functioning hyperlinks.
 
 \section{Creating your own style file}
 
-\todo{Fill in this}
+\begin{practices}
+As discussed above, it is best to keep an article in one file.
+The same can be said also of a thesis.
 
-\todo{When to create a style file?}
+You should only create a style file if you have multiple documents sharing commands and packages.
+For example, a style file is useful for a personal notes folder.
+\end{practices}
 
-\todo{Basic syntax}
 
-\todo{Requiring packages}
+Internally, \LaTeX{} packages live in \verb|.sty| files.
+It is possible to move preamble code into such a file.
+If the file is in the same directory as the document,%
+\footnote{Or on \TeX's search path, but don't ask me about that.}
+it can then be accessed with \cmd{usepackage}.
 
-\todo{Options}
+For example,
+\begin{ExampleCode}
+\usepackage{mystyle}
+\end{ExampleCode}
+loads the file called \verb|mystyle.sty|.
+
+
+Inside the style file, there are a few important things.
+First off, the file is started with a special identification header:
+%
+\begin{ExampleCode}
+\NeedsTeXFormat{LaTeX2e}[2020/02/02]
+\ProvidesPackage{mystyle}[2024/05/20 mystyle]
+\end{ExampleCode}
+%
+These tell \TeX{} that the file requires \LaTeX{} released no later than 2~February~2020,
+and that the file contains the version of \verb|mystyle| published on 20~May~2024.
+(Keeping the latter number up to date is relevant only for package writers,
+but it is nice to keep in sync for your own reference.)
+
+After this, you can do everything that you could do in document preamble.
+Ideally, you would define your favourite commands here.
+One change is that loading packages is done with \cmd{RequirePackage}.
+
+As a complete example, here is a heavily shortened version of the style file for these notes.%
+\footnote{As the source code is openly available, you can read the full file as well!}
+%
+\begin{ExampleCode}
+\NeedsTeXFormat{LaTeX2e}[2020/02/02]
+\ProvidesPackage{latexcourse}[2024/03/05 latexcourse]
+
+% A simple TODO command, available only when the 'draft' option is set
+\DeclareOption{draft}{
+    \newcommand{\todo}[1]{\textcolor{red}{\textbf{[TODO: #1]}}}
+}
+\ProcessOptions\relax
+
+\RequirePackage{mathtools}
+\RequirePackage{csquotes}
+\RequirePackage[finnish,french,english]{babel}
+\RequirePackage[hidelinks]{hyperref}
+
+% Theorem styles for examples
+\RequirePackage[hyperref,framed,amsmath,thmmarks,amsthm]{ntheorem}
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\end{ExampleCode}
+
+In this example, you could also see how a simple boolean option can be declared.
+It is enabled with \verb|\usepackage[draft]{latexcourse}|.
+We do not discuss further package development topics here.
 
 
 
@@ -1111,10 +1168,22 @@ To define your own counters, you can use \cmd{newcounter}:
 \begin{VerbatimOut}{\jobname.tmp}
 \newcounter{fact}
 \newcommand{\axiom}[1]{\stepcounter{fact}%
-    \textbf{Rule \arabic{fact}.} #1\par}
+    \textbf{Rule \thefact.} #1\par}
 
 \axiom{Don't use plain \TeX.}
 \axiom{See the above.}
+\end{VerbatimOut}
+\ShowExample
+%
+As we saw above, the value of the counter is accessed by prefixing it with \cmd{the}.
+The style of the counter can be changed by redefining this command:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+We're at Fact number~\thefact.
+
+\renewcommand\thefact{\Roman{fact}}
+
+Now it's called Fact~\thefact.
 \end{VerbatimOut}
 \ShowExample
 
@@ -1126,10 +1195,11 @@ An example use case is to reset the counter every time a new section is started
 \begin{VerbatimOut}{\jobname.tmp}
 \setcounter{fact}{0}
 \newcommand{\axiom}[1]{\stepcounter{fact}%
-    \textbf{Rule \arabic{fact}.} #1\par}
+    \textbf{Rule \thefact.} #1\par}
 \newcounter{exc}[fact]
+\renewcommand{\theexc}{\roman{exc}}
 \newcommand{\except}[1]{\stepcounter{exc}%
-  {\tiny Exception~\roman{exc}. #1}\par}
+  {\tiny Exception~\theexc. #1}\par}
 
 \axiom{Don't use plain \TeX.}
 \except{Unless Don Knuth passes by.}
@@ -1145,12 +1215,25 @@ if you use \verb|\setcounter| to change it, the dependent counter is not reset.
 \end{gotcha}
 
 To customize the resetting of pre-existing counters,
-you can use the \cmd{numberwithin} command.
+you can use the \cmd{counterwithin} command.
 For example, to prefix the equation numbers with section numbers,
 you would put in the preamble
 %
 \begin{ExampleCode}
-\numberwithin{equation}{section}
+\counterwithin{equation}{section}
+\end{ExampleCode}
+%
+This effect can be undone with the \cmd{counterwithout} command:
+%
+\begin{ExampleCode}
+\counterwithout{equation}{section}
+\end{ExampleCode}
+%
+You can also pass an optional formatting command.
+If you like your equations in Roman numbers within section (like 1.iv), then you'd set
+%
+\begin{ExampleCode}
+\counterwithin[\Roman]{equation}{section}
 \end{ExampleCode}
 
 \begin{technote}
@@ -1166,12 +1249,49 @@ Due to this, you should probably define your counters in the preamble.
 %
 %
 %
-\section{\emph{Further topics*}}\label{sec:if}
+\section{\emph{Further topics*}}
 
-\todo{Say something about robustness}
-
+%
+%
+\subsection{Control flow}\label{sec:if}
 \todo{ifthen, loops, ?}
 
-\todo{Adding options to own packages}
+%
+%
+\subsection{Robustness}\label{sec:robustness}
 
+The design of \TeX{} as a macro language poses some challenges.
+One is controlling the time and place where macros are expanded.
+
+Some commands like \cmd{section} store their contents in the auxiliary file:
+the section title is also used for setting the table of contents.
+Commands like \cmd[fragility]{ifthenelse} cannot be used in this context.
+They are called \emph{fragile} commands.\index{fragility}\index{commands!fragile}
+
+The commands that expand to text are generally robust.\index{robustness}\index{commands!robust}
+Similarly, most \LaTeX{} commands are nowadays robust.
+
+It is very rare to see a robustness issue,
+but its telltale signs are very confusing error messages
+caused by using a command inside a sectioning command, figure caption, or table specification.
+If you really need to use a command there,
+you can try prefixing its use with \cmd{protect}.
+
+
+%
+%
+\subsection{More on command and style definitions}\label{sec:latex3 commands}
+
+\LaTeX3 provides a completely revamped system for defining commands.
+If you want optional arguments or starred forms,
+you should use the new system.
+For environments, it offers a clearer syntax for parameters
+and even capturing the environment contents.
+It is also a bit more robust in places.
+
+The new system is documented in ``\emph{\LaTeX{} for authors}'' distributed with \LaTeX.
+It can be accessed by the name \texttt{usrguide} at \url{www.texdoc.org}
+or with the \verb|texdoc| command-line utility.
+
+\todo{Adding options to own packages}
 
