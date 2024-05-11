@@ -2,16 +2,77 @@
 
 \section{Alternative \LaTeX{} compilers}
 
-\section{Typefaces}\label{sec:typefaces}
+During the years, the preferred output format of \TeX{} has changed:
+\begin{enumerate}
+\item The original implementation of \TeX{} produced DVI~files
+    -- this was a device-independent format that could be processed into commands
+    to be sent to the printer or photo\-type\-setting machine.
+\item Simultaneously in the 1980s, Adobe developed the PostScript format.
+    PostScript is a language for expressing complex drawing commands to printers.%
+\footnote{Processing drawing commands requires processing power and memory.
+The original Apple laser printers were \emph{more powerful} than the
+Macintosh computers used to lay out the documents!}
+    It became the universal standard,
+    and in the 1990s a lot of \TeX{} documents were put online as \verb|.ps| files.
+    These files were produced from DVI~files by a converter.
+\item PDF (Portable Document Format), also by Adobe,
+    was created in the 1990s and has become the dominant standard.
+    PDF encapsulates a subset of PostScript, image data, and metadata about the document.
+\end{enumerate}
 
-\todo{Point sizes}
-\todo{Microtypography}
+Originally, PDF~files were produced by first converting DVI to PostScript and then to PDF.
+In early 2000s, a new implementation of \TeX{} appeared: \prg{pdftex}.
+It produces PDF~files directly and supports some special features of the format:
+For example, the \pkg{pdflscape} package can tell the PDF reader
+to display a landscape page in rotated mode.
 
-\todo{Palatino and Noto with math}
+\begin{technote}
+The only difference between \textbf{pdftex} and \textbf{pdflatex}
+is whether the \LaTeX{} macros are automatically loaded.
+These notes make no effort at being consistent with the names.
+\end{technote}
 
-\subsection{Emoji}\label{sec:emoji}
 
-\section{Customizing headings}
+Another development was with the character sets.
+Original \TeX{} used 7~bits per character, because 128~characters is enough for anybody
+(that is, anybody writing in English).
+In the 1980s, this was recognized as unsustainable,
+so the character set was \emph{doubled} into 8~bits.
+Any further extensions to that are based on swapping fonts on the fly.
+
+This limitation applies also to \prg{pdftex},
+but in the current\footnote{Read: past 20~years.} age of Unicode there are now alternatives.
+The two major alternative compilers are
+\begin{itemize}
+\item \prg{luatex}, which is based on \prg{pdftex} source code.
+    It uses Unicode as its native character set.
+    As the name suggests, extension packages can be also written in the Lua programming language.
+    Some packages like TikZ use the Lua support for a speed boost.
+\item \prg{xetex} is an independent Unicode-native development
+    that uses a completely different PDF backend.
+    It produces a bit smaller PDF files than \prg{luatex},
+    but it is less actively maintained.
+\end{itemize}
+
+Both of these ``modern'' engines support loading arbitrary OpenType fonts
+with the \pkg{fontspec} package, unlike \prg{pdftex}.
+(This is discussed in \Cref{sec:typefaces}.)
+The native use of Unicode also means that letters like `ä'
+really are output as the glyph `ä',
+not \texttt{\textasciidieresis a} superimposed on top of each other
+-- something you only see when copying text from a PDF~file.
+
+\begin{practices}
+Based on the discussion above,
+it would be natural to suggest always using \prg{luatex}.
+For personal writing, either of the Unicode engines should be the first choice.
+
+Alas, arXiv and many publishers still use \prg{pdftex} in their pipeline.
+This means that we are still stuck with making our articles \prg{pdftex}-compatible.
+Hopefully the situation will change soon enough.
+\end{practices}
+
+
 
 %
 %
@@ -76,8 +137,8 @@ and all the abuse of commands to get semantically incorrect but visually good re
 
 To enable PDF metadata, you should do the following steps:
 \begin{itemize}
-\item Use a modern \LaTeX{} compiler like LuaLaTeX or XeLaTeX.
-    Of these LuaLaTeX is more actively maintained, so it is preferable.
+\item Use a modern \LaTeX{} compiler like LuaL\prg{luatex} or \prg{xetex}.
+    Since \prg{luatex} is more actively maintained, it is preferable.
 \item Add \cmd{DocumentMetadata} as the first line (before \verb|\documentclass|) of the code.
 \item Load the \pkg{hyperref} package.
 \item Consider loading the \pkg{unicode-math} package
@@ -95,7 +156,8 @@ or if you need to compile the project with both old and new toolsets.
 \end{warning}
 
 \begin{warning}
-As of April~2024, arXiv \emph{does not} use Unicode-native \LaTeX{} tools.
+As of April~2024, arXiv \emph{does not} use Unicode-native \LaTeX{} tools;
+their process involves \prg{pdftex}.
 For arXiv submissions, follow the next section instead.
 \end{warning}
 
@@ -145,9 +207,9 @@ However, there are a few drawbacks too:
 \item The usual \LaTeX{} compilers only produce PDF output or equivalent.
 \end{itemize}
 
-This approach is now pursued by several publishers and arXiv,
+The HTML approach is now pursued by several publishers and arXiv,
 together with e.g.\ American Mathematical Society.
-ArXiv uses a tool called LaTeXML%
+ArXiv uses a tool called \mbox{LaTeXML}%
 \footnote{\url{https://github.com/brucemiller/LaTeXML}}
 that is essentially a new \TeX{} compiler that selectively reimplements some packages.
 
@@ -178,7 +240,8 @@ you can always read the source code.
 Source code posted to arXiv is public and downloadable.
 \end{remark}
 
-If you want to set vectors in bold font, then do not write \verb|\mathbf a| but
+If you want to set vectors in bold font, then do not write \verb|\mathbf| but
+redefine \verb|\vec| to set vectors in bold style:
 %
 \begin{VerbatimOut}{\jobname.tmp}
 % Preamble
@@ -192,3 +255,17 @@ Now it is immediate from the source code that \verb|a| refers to a vector.
 It can not be confused with other things marked with boldface.
 Besides, if you change your mind about the style,
 you only need to change one command in the preamble.
+
+
+%
+%
+%
+\section{Typefaces}\label{sec:typefaces}
+
+\todo{Point sizes}
+\todo{Microtypography}
+
+\todo{Palatino and Noto with math}
+
+\subsection{Emoji}\label{sec:emoji}
+
