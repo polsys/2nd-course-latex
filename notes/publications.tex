@@ -790,3 +790,34 @@ what is important is that the diff shows that \emph{something big} has changed a
 If your document is split into multiple \verb|.tex| files,
 you only need to give the paths to the main files.
 The algorithm is clever enough to parse \verb|\input| and \verb|\include| commands.
+
+
+
+%
+%
+%
+\section{Embedding PDF files}
+
+Including figures in PDF~format is discussed in \Cref{sec:pictures},
+but what about embedding complete documents?
+The most common use case is, of course, the article-based PhD~thesis.
+
+The \pkg{pdfpages} package solves this problem.
+It provides an \cmd{includepdf} command that extracts a page range from a PDF~document.
+The extracted pages are laid out on new pages,
+centered and scaled to fit.
+
+The package documentation clearly explains the customization options,
+but really the only necessary argument is \verb|pages|.
+It takes a range of pages like \verb|{1,3,5}| or \verb|7-11|.
+To include all pages, just write \verb|pages=-|.
+
+\begin{ExampleCode}
+% Preamble
+\usepackage[final]{pdfpages}
+
+\includepdf[pages=-]{article1.pdf}
+\end{ExampleCode}
+%
+The \verb|final| package option ensures that pages are embedded
+even if the rest of the document is in \verb|draft| mode.
