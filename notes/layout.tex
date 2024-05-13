@@ -800,12 +800,110 @@ Quite often, you can do completely without these tweaks.
 %
 \section{Headers and footers}
 
-\todo{Page numbering, lastpage}
+\subsection{Built-in \LaTeX{} styles}
 
-\todo{General headers and footers}
+By default, \LaTeX{} provides three page styles:\index{page styles}
+%
+\begin{description}
+\item[\texttt{empty}] Nothing in the header or footer.
+\item[\texttt{plain}] Centered page number in the footer.
+\item[\texttt{headings}] Header contains current chapter/section and subsection, and the page number.
+\end{description}
+%
+The choice is taken with \cmd{pagestyle} in the preamble.
+It is also possible to override the style temporarily with \cmd{thispagestyle}.
+If you make your own title page, you should issue \verb|\thispagestyle{plain}| there.
+
+\todo{The marking mechanism}
+
+
+%
+%
+\subsection{Page numbering}
+
+To customize just the page numbering, you can use \cmd{pagenumbering}.
+It takes a formatting style as its sole argument, for example \verb|Roman|
+for uppercase Roman numerals or \verb|arabic| for the usual numbers.
+You can also pass \verb|gobble| to suppress page numbering.
+Note that the command also resets the page numbering!
+
+If you want to write something like ``Page $m$ of $n$'', where $n$ is the total number of pages,
+the easiest way is to load the \pkg{lastpage} package.
+It creates a label called \verb|LastPage| on the last page of the document,
+and this label can then be referred to as usual:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+This is page
+\thepage{} of \pageref*{LastPage}.
+\end{VerbatimOut}
+\ShowExample
+%
+(Here we used the starred \cmd{pageref*} command that does not produce a clickable link.
+It is of course fine, if a bit odd, to provide a link to the last page.)
+
+Do note that this method gives the \emph{page number} of the last page,
+not the \emph{total number} of pages.
+The two might not be equal if several page numbering schemes have been in use.
+
+
+%
+%
+\subsection{Getting fancy with \textsf{fancyhdr}}
+
+The \pkg{fancyhdr} package provides a nice interface for customizing the headers and footers.
+It is taken into use by loading the package and setting the \verb|fancy| page style.
+Its model of the page consists of six positions for text:
+%
+\begin{center}
+\begin{tikzpicture}
+\draw (0,0) node[anchor=base west] {Left header};
+\draw (4,0) node[anchor=base] {Centre header};
+\draw (8,0) node[anchor=base east] {Right header};
+
+\draw (0,-0.1)--(8,-0.1);
+\draw (0,-3)--(8,-3);
+\draw (4,-1.5) node {\emph{[Page content]}};
+
+\draw (0,-3) node[anchor=north west] {Left footer};
+\draw (4,-3) node[anchor=north] {Centre footer};
+\draw (8,-3) node[anchor=north east] {Right footer};
+\end{tikzpicture}
+\end{center}
+
+The \cmd{fancyhf} command is the basic workhorse of the package:
+it takes an optional placement specifier and the header content.
+The placement consists of up to three letters:
+\verb|E| or \verb|O| for even and odd pages, one of \verb|LCR| for left-centre-right,
+and \verb|H| or \verb|F| for header and footer.
+The \cmd{fancyhead} and \cmd{fancyfoot} commands imply the header/footer specifier.
+
+These are maybe best illustrated by an example:
+%
+\begin{ExampleCode}
+\pagestyle{fancy}
+
+% No specifier, so the command applies to all positions
+% This clears any pre-existing content
+\fancyhf[]{}
+
+% Page number to the centre footer of all pages
+\fancyfoot[C]{\thepage}
+
+% Some text to the margin-side header
+% (Left on even pages, right on odd pages)
+\fancyhead[LE, RO]{\textbf{An important document}}
+\end{ExampleCode}
+
+\todo{Section names and such}
 
 \begin{remark}
 The package gives a warning if the header height is not large enough.
 The warning even gives a suggested value for the \cmd{headheight} length,
 which you can pass to \pkg{geometry} (or do a raw \verb|\setlength|, if not using the package).
 \end{remark}
+
+You can customize the rule separating header and text by redefining the
+\cmd{headrulewidth} length, and correspondinly \cmd{footrulewidth}.
+It is also possible to customize the separation from header text and the line style,
+but for these we refer to the package documentation.%
+\footnote{One has to be a bit careful with vertical spacing.}
