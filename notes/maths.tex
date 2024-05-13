@@ -65,12 +65,16 @@ i \partial_t u - \Delta u = -u^3.
 %
 The tag also appears in cross-references to this equation.
 The tag is read in text mode, so any mathematical symbols need to be wrapped with \verb|$|.
+For example, you would write \verb|\tag{$\ast$}| to produce ($\ast$).
 
 If you want to change whether equations are numbered globally or per section,
-use the \cmd{numberwithin} mechanism described in \Cref{sec:counters}:
+use the \cmd{counterwithin} mechanism described in \Cref{sec:counters}:%
+\footnote{The \pkg{amsmath} package also defines \cmd{numberwithin},
+which is functionally identical to \cmd{counterwithin}.
+It does not matter which one you use.}
 %
 \begin{ExampleCode}
-\numberwithin{equation}{section}
+\counterwithin{equation}{section}
 \end{ExampleCode}
 
 
@@ -159,14 +163,16 @@ a^2 - b^2 = (a+b)(a-b).
 \end{VerbatimOut}
 \ShowExample
 
-This environment also supports \env{split} on one or more sub-equations:
+This environment also supports \env{split} on one or more sub-equations:%
+\footnote{Now we wrap the phantom equals sign in \cmd{mathord},
+which makes the $+$ sign act as binary plus, not unary plus.}
 %
 \begin{VerbatimOut}{\jobname.tmp}
 \begin{gather}
 (a+b)^2 = a^2 + 2ab + b^2,\\
 \begin{split}
 (a+b)^3 &= a^3\\
-&\mathrel{\phantom{=}} + 3a^2 b + 3ab^2 + b^3.
+&\mathord{\phantom{=}} + 3a^2 b + 3ab^2 + b^3.
 \end{split}
 \end{gather}
 \end{VerbatimOut}
@@ -614,7 +620,7 @@ These are listed in \Cref{tbl:math symbol classes}.
 For example, there is no space between two ordinary characters,
 whereas there is a medium \verb|\:| space between binary and ordinary symbols.
 
-\begin{table}
+\begin{table}[tbh]
 \centering
 \begin{tabular}{l|cc}
 Symbol class & Override command & Examples\\
@@ -673,6 +679,20 @@ and \verb.a \mid b. for the divisibility relation $a \mid b$.
 \begin{gotcha}
 The symbols \verb|. ! ?| are of class Ordinary, not Punctuation.
 This is to do with their mathematical meanings.
+\end{gotcha}
+
+\begin{gotcha}
+If you write in a language where comma is used as the decimal separator,
+you should wrap the comma in parentheses:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+$123,456$\\
+$123{,}456$
+\end{VerbatimOut}
+\ShowExample
+%
+It is also possible to load the \pkg{icomma} package,
+which interprets comma as a list separator \emph{only if} it is followed by a space.
 \end{gotcha}
 
 \begin{gotcha}
@@ -983,6 +1003,14 @@ there is also the \cmd{sideset} command:
 
 The \pkg{amsmath} package provides a context-sensitive \cmd{dots} command.
 Compare the vertical positions of the dots in these two examples:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\begin{gather*}
+1 + \dots + n\\
+1, \dots, n
+\end{gather*}
+\end{VerbatimOut}
+\ShowExample
 %
 Thanks to this, is is usually enough to use \cmd{dots} everywhere in your mathematics.
 The exception is at the end of expression,

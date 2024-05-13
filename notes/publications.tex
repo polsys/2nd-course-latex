@@ -520,6 +520,10 @@ as a package option to use legacy \prg[with BibLaTeX]{bibtex} instead.
 Do note that Unicode support is then unavailable,
 and some more advanced features might not work.
 
+\begin{overleaf}
+Overleaf takes care of calling the right bibliography compiler automatically.
+\end{overleaf}
+
 Bibliography styles are customized with package options.
 (When converting a project to BibLaTeX,
 you should also remove any references to \pkg[do not use with BibLaTeX]{natbib} and friends.)
@@ -584,8 +588,8 @@ everything works as it should.
 See the notes in \Cref{sec:sectioning}
 for how to abbreviate the section titles in the table of contents.
 
-\todo{Starred sectioning commands}
-
+Starred sectioning commands like \cmd{section*} do not produce a number,
+and they are not added to the table of contents by default.
 If you need to manually add something to the table of contents,
 you can use \cmd{addcontentsline}.
 It takes three arguments:
