@@ -1,10 +1,104 @@
-\chapter*{Introduction}
-\addcontentsline{toc}{chapter}{Introduction}
+\addtocounter{chapter}{-1}
+\chapter{Introduction}
 
-\todo{Write up this}
 
+These notes were created for a course called \emph{Advanced \LaTeX},
+offered to PhD students at University of Helsinki in spring~2024.%
+\footnote{I dislike the name of the course.
+As you will find out, we do not talk very much about advanced topics like
+\TeX{} internals or package development.
+A better name would be \emph{Professional \LaTeX} or \emph{A second course in \LaTeX},
+as these notes are named.}
+They attempt to give a somewhat unified view of what \LaTeX{} is,
+how it works, and how it should be used in producing scientific literature.
+They are much larger than can be covered in a two-week intensive course
+-- my hope is that they can work as a reference as well.
+
+These notes owe a lot to \emph{The \LaTeX{} Companion} \cite{TLC}
+by Frank Mittelbach and other \LaTeX{} team members.
+The third edition of the book is a treasure trove for a serious \LaTeX nician,
+but at three kilograms (printed version) it is not an investment for everybody.
+I have tried to distill some of the wisdom%
+\footnote{While undoubtedly introducing some un-wisdom of my own.}
+into these notes (which are still not what you'd call lightweight).
+
+Of course, the authoritative reference for each package is the documentation hosted on
+the Comprehensive \TeX{} Archive Network (\url{ctan.org}).
+
+
+
+%
+%
 \section{What you need}
 
-\todo{On working environment/editor}
+I assume that you already know the basics of \LaTeX{}
+-- ideally, you have written a Bachelor's or Master's thesis or an article with it.
 
-\todo{License and source code availability}
+You need to have an up-to-date \LaTeX{} environment.
+If you use a local installation, pause now for a moment
+and check whether the packages are up to date.
+If you use Overleaf, then the system is already good to go.
+
+I encourage you to compare different editor programs.
+As programmers can testify, having a good editor makes coding much more pleasant.
+It is good to get familiar with the keyboard shortcuts your editor offers.
+
+Since there are so many editors and they change much faster than base \LaTeX,
+these notes do not discuss their use.
+
+\begin{overleaf}
+As an exception, there are a few blocks like this that discuss Overleaf.
+I felt that Overleaf is worth mentioning, since so many people use it nowadays,
+and it has some differences to locally installed tools.
+\end{overleaf}
+
+
+%
+%
+\section{About this version}
+
+This is the first iteration of the notes, and still work in progress.
+There are some \todo{Fix this} notes sprinkled here and there,
+some sections are missing,
+and there are some badly written parts.
+
+Once the course is over, I will publish the state of the text as Version~1.0.
+The remaining red \textcolor{red}{\textbf{TODO}} notes will become
+blue \textcolor{blue}{\textbf{FUTURE}} notes,
+only visible in the working draft available on GitHub (see below).
+
+Version~1.0 does not mean a final version, but a first version.
+It will be in need of a good copy editor.
+Hopefully I will get a chance to lecture the course a second time,
+which will permit me to spend some time polishing the notes.
+Any comments and suggestions are more than welcome.
+
+
+
+%
+%
+\section{See how it is made}
+
+\noindent{\Huge\faCreativeCommons\faCreativeCommonsBy}
+These notes are licensed under the Creative Commons Attribution~4.0 license.%
+\footnote{\url{creativecommons.org/licenses/by/4.0/}}
+You are free to copy and redistribute them as you like.
+You can also modify and reuse them freely,
+under the condition that you indicate clearly the original author
+and whether you have modified the work.
+You can see the license terms for complete description.
+
+\bigskip\noindent{\huge\faGithub}
+The source code for these notes is available on GitHub:
+\url{github.com/polsys/2nd-course-latex}.
+
+You are invited to see how I built these notes
+-- I tried to follow my own guidelines, but of course you can disagree with some choices.
+In the end, there is no one true path to \TeX nical enlightenment.
+
+If you spot a typo or an error, you can send a pull request with the correction,
+file a GitHub issue, or send me an email about it.
+You can find my up-to-date contact information at \url{petri.laarne.fi}.
+
+\bigskip\noindent
+I hope that you find these notes useful!

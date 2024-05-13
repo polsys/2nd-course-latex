@@ -1095,7 +1095,7 @@ See \Cref{sec:tikz-cd} for a solution based on TikZ.
 %
 %
 %
-\section{Theorem environments}
+\section{Theorem environments}\label{sec:amsthm}
 
 Basic theorem/definition/etc.\ environments are usually done with the \pkg{amsthm} package.
 The operative command is \cmd{newtheorem}, which takes two required arguments:
@@ -1179,7 +1179,7 @@ The \pkg{amsthm} package automatically defines a \env{proof} environment.
 The ``Proof'' heading can be customized with the optional argument,
 and the environment automatically put a QED symbol at the end.
 The symbol can be changed by redefining \cmd{qedsymbol}
-(either in the preamble or locally within the environment):
+(either in the preamble or locally within the environment):\label{ex:nasty qed hack}
 %
 \begin{VerbatimOut}{\jobname.tmp}
 % We need to fake things a bit since the notes use ntheorem instead of amsthm

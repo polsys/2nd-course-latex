@@ -1,0 +1,39 @@
+\chapter*{Colophon}\addcontentsline{toc}{chapter}{Colophon}
+
+These notes are set in Latin~Modern,
+an updated version of Donald Knuth's Computer~Modern typeface.
+The typeface is a Didone design, meaning a high contrast between thin and thick lines.
+Knuth designed it after mathematics textbooks set in metal type.
+I am personally not that fond of Computer Modern,
+especially when reading on computer screen.
+I still kept it so that the notes are honest to \LaTeX's default behaviour.
+
+As you can see from the source code,
+there is nothing too special in these notes.
+The highlighted \emph{Gotcha!} blocks are created with \pkg[production notes]{ntheorem}
+and a bit of customization command magic.
+There are also a few custom commands for setting/indexing commands and packages.
+
+The largest programming trick was the examples.
+Code for the examples appears in the \verb|.tex| code inside a \env{VerbatimOut} environment.
+The code is stored into a temporary file, and then read twice:
+once to show the code, and a second time to evaluate the output.
+
+Due to this design, the examples are guaranteed to really work.
+However, a few examples include a few lines of secret extra code.
+This code mainly hides the fact that the examples live inside a minipage,
+and restores some customizations to \LaTeX{} defaults.
+
+There are just a couple sleight-of-hand tricks:
+as mentioned above, these notes use \textsf{ntheorem} internally,
+but \Cref{sec:amsthm} talks about \textsf{amsthm}.
+The two packages cannot be loaded simultaneously.
+Moreover, they have similar-looking but \emph{very incompatible} syntax:
+whereas \textsf{amsthm} changes the end-of-proof symbol by renewing \verb|\qedsymbol|,
+\textsf{ntheorem} expects the user to call \verb|\qedsymbol| with the desired symbol.
+
+Renewing the \textsf{ntheorem} \verb|\qedsymbol| command as in
+the example on page~\pageref{ex:nasty qed hack} causes massive havoc,
+so there is sneaky code to re-define it back just before the \verb|proof| environment ends.
+If you are interested in low-level \LaTeX{} programming,
+hooks are the next topic to learn.

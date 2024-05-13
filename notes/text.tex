@@ -86,11 +86,36 @@ Dotless \i
 %
 \subsection{Dingbats and logos}
 
-\todo{Font Awesome}
+There are several packages providing symbol characters.
+One notable example is \pkg{fontawesome5},
+which packages the version~5 of the Font~Awesome symbol font.%
+\footnote{As of May~2024, Font Awesome is in version 6.5,
+but there does not seem to be a corresponding \LaTeX{} package yet.}
+Once the package is loaded, symbols can be set with names prefixed with \verb|\fa|:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\faBook{} Reading suggestions\\
+\faCoffee{} (Have a cup at hand)\\
+
+There are also brand logos like
+\faGit*~Git and \faLinux~Linux,
+but remember that they are trademarks.\\
+
+Font size commands are supported:
+{\tiny\faPoop}~{\faPoop}~{\Large\faPoop}
+\end{VerbatimOut}
+\ShowExample
+%
+The full list of symbols is included in the documentation.
+The package includes the free set of symbols,
+but supports a larger set if you happen to own the commercial version of the font.
+There are also alternative versions of some symbols.
+
 
 What about emoji?
-It is possible to include emoji in \LaTeX{} documents,
-but it requires special support from font handling.
+It is possible to include emoji in \LaTeX{} documents.
+Emoji are just special Unicode characters;
+the problem is whether the font supports them.
 The inclusion of emoji will be discussed below in \Cref{sec:emoji}.
 
 

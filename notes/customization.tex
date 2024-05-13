@@ -269,3 +269,48 @@ you only need to change one command in the preamble.
 
 \subsection{Emoji}\label{sec:emoji}
 
+Emoji are Unicode characters, so in principle they can be included just as is in the source code.
+The problem is choosing a font that can display the characters.
+
+The \pkg{emoji} package automatically chooses an available emoji font
+(that is, the output will depend on your operating system!).
+It only works with recent LuaTeX (2020 or newer).
+The command provides readable shorthand names for the characters (listed in documentation):
+%
+\begin{ExampleCode}
+% Preamble
+\usepackage{emoji}
+
+% In text
+\emoji{thinking-face}
+\end{ExampleCode}
+
+There is also the manual way of loading the emoji font with \pkg[emoji]{fontspec}:
+%
+\begin{ExampleCode}
+% Preamble
+\usepackage{fontspec}
+\newfontfamily{\emojifont}{Noto Color Emoji}[Renderer=Harfbuzz]
+
+% In text
+{\emojifont ...}
+\end{ExampleCode}
+%
+Here, \verb|...| should be replaced with the emoji
+(not displayed here, since these notes do not have an emoji font set up!).
+You need to install the emoji font or replace it by the system emoji font.
+(On Windows, it is called \texttt{Segoe UI Emoji};
+on macOS it is \texttt{Apple Color Emoji}.)
+
+\begin{overleaf}
+The Overleaf editor cannot handle the Unicode emoji characters as of May~2024.
+If you use Overleaf, you need to use the \pkg{emoji} package.
+\end{overleaf}
+
+\begin{warning}
+With the manual way, black-and-white emoji can be displayed by both XeTeX and LuaTeX,
+but color emoji requires LuaTeX with the HarfBuzz renderer.
+If you use \pkg[emoji]{fontspec} to load an emoji font,
+you need to pass \verb|Renderer=Harfbuzz| as an optional font feature.
+This option is effective only with LuaTeX.
+\end{warning}
