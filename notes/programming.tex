@@ -1254,7 +1254,43 @@ Due to this, you should probably define your counters in the preamble.
 %
 %
 \subsection{Control flow}\label{sec:if}
-\todo{ifthen, loops, ?}
+
+\TeX{} does have syntax for basic control flow like \emph{if} statements,
+but the \pkg{ifthen} package makes it much nicer to use.
+The \cmd{ifthenelse} command takes three arguments:
+an expression, what to do if it is true, and what to do if it is false.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\ifthenelse{\thepage>10}
+    {We're past page~10.}
+    {We haven't passed it yet.}
+\ifthenelse{\thepage>50}
+    {We're also past page~50.}
+    {Yet page~50 is still ahead.}
+\end{VerbatimOut}
+\ShowExample
+%
+The syntax allows basic comparisons of counters with
+\verb|<|, \verb|=|, and \verb|>|.
+There is also the \cmd{isodd} command that is useful with page numbers.
+Lengths (\Cref{sec:lengths}) can be compared by wrapping the comparison inside \cmd{lengthtest}.
+See the package documentation for all expressions.
+
+The package also provides a \cmd{whiledo} command that provides a primitive loop.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\newcounter{mynumber}
+
+\whiledo{\themynumber<6}{%
+\stepcounter{mynumber}
+\arabic{mynumber} is \Roman{mynumber}\\}
+\end{VerbatimOut}
+\ShowExample
+
+However, in many cases the \cmd{foreach} command provided by \pkg{pgffor} is easier.
+Since the \pkg{pgffor} package is part of TikZ,
+we discuss it along TikZ in \Cref{sec:pgffor}.
+
 
 %
 %
