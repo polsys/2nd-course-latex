@@ -82,6 +82,23 @@ Dotless \i
 \ShowExample
 
 
+\TeX{} also does some typographical tweaks on its own.
+Look at the `ffi' in `efficient' -- the letter shapes have been merged.
+This is called a \emph{ligature}.\index{ligatures}
+
+Ligatures improve legibility, but if you need to suppress them,
+you can stick a \verb|\/| between the letters.
+This is sometimes practiced for English words like `shelf\/ful',
+where there is a word boundary between the f's.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+Efficient\\
+Ef\/ficient\\
+Ef\/f\/icient
+\end{VerbatimOut}
+\ShowExample
+
+
 %
 %
 \subsection{Dingbats and logos}
