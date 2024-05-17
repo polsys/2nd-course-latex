@@ -131,4 +131,8 @@
 \DefineVerbatimEnvironment{ExampleCode}{Verbatim}
     {frame=lines, framesep=1em, fontsize=\footnotesize, samepage=true}
 
+% Show PDF page in framed box
+\NewDocumentCommand{\EmbedPdfPage}{m m}
+{\begin{center}\fbox{\includegraphics[page=#2, width=0.6\textwidth]{#1}}\end{center}}
+
 \endinput

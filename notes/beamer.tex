@@ -1,1 +1,470 @@
+% !TeX root = 2nd-course-in-latex.tex
 \chapter{Presentations with Beamer}
+
+If you ask me, Beamer is an odd tool.
+Presentations are inherently visual,
+so a programming tool like \LaTeX{} seems ill-suited for the job.
+On the other hand, most graphical programs cannot match the quality of \LaTeX{} mathematics,
+and technical talks often have modest visual needs.
+
+Beamer does strike a nice balance between the two,
+if only your talk is not too ambitious with the visuals.
+At the same time I find its complexity to be similar to TikZ
+-- a lot of things are possible, but not all of them are advisable.
+
+\begin{practices}
+Even though this course is not about presentation skills,
+I want to use this opportunity for an important reminder:
+Beamer makes it very easy to throw too much mathematics at your audience.
+
+Leave whitespace on your slides, and focus on pictures to support your point.
+If you want to dive deep into a mathematical topic,
+there is an even superior tool: blackboard.
+\end{practices}
+
+
+%
+%
+\section{Basic structure}
+
+Beamer is implemented as the \textbf{beamer} document class.
+A minimal Beamer file is thus:
+%
+\begin{ExampleCode}
+\documentclass{beamer}
+
+\begin{document}
+
+\begin{frame}
+\end{frame}
+
+\end{document}
+\end{ExampleCode}
+%
+Beamer automatically loads \pkg[Beamer]{hyperref}.
+It also loads \pkg[Beamer]{amsthm} and creates some theorem environments by default.
+
+Since \TeX{} always believes it is typesetting for printing,
+Beamer modifies the page size to be suitable.
+By default it is $128 \times 96$~mm, which corresponds to 4:3 aspect ratio.
+
+To modify the aspect ratio, you can pass the \verb|aspectratio| class option.
+It is a string of two to four digits, and interpreted like:
+\verb|aspectratio=32| means 3:2, \verb|169| means 16:9, and \verb|1610| means 16:10.
+
+\begin{practices}
+Many computer screens have 16:9 or 16:10 aspect ratio, so 4:3 might seem old-fashioned.
+However, 4:3 has the benefit of increased vertical space.
+Many projectors can output either aspect ratio comfortably.
+If possible, check the venue beforehand.
+\end{practices}
+
+The default 11~pt font fits very nicely with the simulated paper size.
+You can pass the \verb|10pt| or \verb|12pt| class options to modify the font size a bit.%
+\footnote{There are also some more choices,
+but they make the text either very large of very unreadable.}
+
+\begin{gotcha}
+You should put \verb|\usefonttheme{professionalfonts}| in the preamble
+if you use \mbox{LuaTeX} or XeTeX.
+It appears that Beamer does not always recognize that Latin Modern is in use with these compilers.
+If the font theme is not changed,
+Beamer might produce bad kerning for some specific letter combinations.
+\end{gotcha}
+
+
+For basic title design, you can use the usual \cmd{title}, \cmd{author}, and \cmd{date} commands.
+There is also an \cmd{institute} command for specifying the author institution,
+and a \cmd{titlegraphic} command that can be used for a logo etc.
+Thus a basic presentation with just a title page is set with:
+%
+\begin{ExampleCode}
+\title{My fantastic presentation}
+\author{Firstname Lastname}
+\institute{University of Puuhamaa}
+\titlegraphic{\includegraphics[width=3cm]{TheDogs.jpg}}
+\date{20 May 2024}
+
+\begin{document}
+
+\maketitle
+
+\end{document}
+\end{ExampleCode}
+%
+\EmbedPdfPage{examples/basic-beamer.pdf}{1}
+%
+(The \cmd{maketitle} command can be inside or outside a \verb|frame| environment.
+The command is synonymous with \cmd{titlepage}.)
+
+New slides are created with the \env{frame} environments.
+Each slide acts like a page, so the basic typesetting commands are available.
+The title for the frame can be set with \cmd{frametitle};
+it is displayed in the frame header.
+%
+\begin{ExampleCode}
+\begin{frame}
+\frametitle{Hi there!}
+
+Welcome to my presentation!
+
+We will talk about Pythagoras and his theorem.
+\end{frame}
+\end{ExampleCode}
+%
+\EmbedPdfPage{examples/basic-beamer.pdf}{2}
+
+Note that the paragraphs have no visual separation whatsoever.
+You can of course set \cmd[Beamer]{parskip} to a better value
+(I suggest a larger value than for printed documents, like 1~em),
+but Beamer presentations are often composed of \emph{blocks}.
+The \env{block} environment has a title and content:
+%
+\begin{ExampleCode}
+\begin{frame}
+\frametitle{Hi there!}
+
+Welcome to my presentation!
+
+\begin{block}{Goal}
+You will learn about Pythagoras and his theorem.
+\end{block}
+\end{frame}
+\end{ExampleCode}
+%
+\EmbedPdfPage{examples/basic-beamer.pdf}{3}
+%
+In this example the block is not very highlighted,
+but that can be changed with a suitable colour theme.
+We'll get to that in \Cref{sec:beamer styles}.
+
+By default, Beamer creates a few common theorem environments.
+More can be created with the usual \pkg[Beamer]{amsthm} commands (see \Cref{sec:amsthm}).
+%
+\begin{ExampleCode}
+\begin{frame}
+\frametitle{The theorem}
+
+\begin{theorem}
+If $a$ and $b$ are the lengths of catheti of a right-angled triangle,
+then the hypothenuse has length $\sqrt{a^2 + b^2}$.
+\end{theorem}
+\begin{proof}
+We'll get to this soon.
+\end{proof}
+
+\end{frame}
+\end{ExampleCode}
+%
+\EmbedPdfPage{examples/basic-beamer.pdf}{4}
+
+
+To highlight text, it is advisable to use the \cmd{alert} command.
+By default it makes the text red, but the style can be customized.
+
+The usual list environments can be used.
+Beamer loads the \pkg{enumerate} package that enables a shorthand styling syntax
+for \env[shorthand styles]{enumerate} environments.
+
+Let us illustrate these elements with a multi-column layout.
+Such a layout is created with a \env[Beamer]{columns} environment.
+It takes an optional vertical alignment specifier (top by default;
+vertical centres with \verb|c| and bottoms by \verb|b|).%
+\footnote{If things do not align as you would expect,
+you should also try the \texttt{T} option:
+it aligns baselines of the first lines instead of tops of lines.}
+%
+Inside this environment, columns are created with the \env[Beamer]{column} environment,
+which takes column width as a required argument.%
+\footnote{There is also an equivalently named command
+if you prefer to avoid deeply nested environments.}
+%
+\begin{ExampleCode}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+
+Properties of \alert{Pythagoras}:
+\begin{enumerate}[1.]
+    \item From Ancient Greece ...
+\end{enumerate}
+\end{column}
+
+\begin{column}{0.5\textwidth}
+Properties of \alert{the theorem}:
+\begin{enumerate}[i)]
+    \item Not invented by Pythagoras ...
+\end{enumerate}
+
+\end{column}
+\end{columns}
+\end{ExampleCode}
+%
+\EmbedPdfPage{examples/basic-beamer.pdf}{5}
+
+
+\begin{gotcha}
+Frames do not really support the \env[Beamer]{verbatim} environment;
+the \pkg{listings} package is probably visually nicer anyways.
+\end{gotcha}
+
+
+%
+%
+\section{Including graphics}
+
+The usual graphics commands of \LaTeX{} and TikZ can be used as usual.
+Moreover, the usual \env[Beamer]{figure} and \env[Beamer]{table} environments can be used.
+%
+\begin{ExampleCode}
+\begin{figure}
+\begin{tikzpicture}
+    \draw (0,0) -- (0,2) node[pos=0.5, left] {$a$}
+        -- (3,0) node[pos=0.5, right] {$c$}
+        -- cycle node[pos=0.5, below] {$b$};
+\end{tikzpicture}
+\caption{A right triangle.}
+\end{figure}
+
+\begin{figure}
+    \includegraphics[width=3cm]{TheDogs.jpg}
+\caption{Slide hijacked by a dog!}
+\end{figure}
+\end{ExampleCode}
+%
+\EmbedPdfPage{examples/basic-beamer.pdf}{6}
+
+\begin{gotcha}
+As with article classes, figures are not placed side by side.
+The \pkg{subcaption} package is again useful for that;
+see \Cref{sec:subfigures}.
+Moreover, there is no automatic page breaking:
+if you put too much stuff on a slide, they will overflow.
+\end{gotcha}
+
+
+\todo{Absolute positioning}
+
+
+\begin{warning}
+You can find code examples and Beamer documentation about embedding video files inside a presentation.
+This is a great way to make a presentation work only on a specific Acrobat Reader version
+and only on your current computer.
+It is 99~\% guaranteed not to work at a conference venue.
+
+As annoying as it is to switch between programs to show videos,
+it is the only reliable option.
+\end{warning}
+
+
+
+%
+%
+\section{Uncovering things}
+
+The easiest way to uncover things piecewise is the \cmd{pause} command.
+As the name suggests, it inserts a slide break at the source location.
+%
+\begin{ExampleCode}
+\begin{frame}
+\frametitle{A digression on numbers}
+
+\begin{theorem}
+Every natural number has a successor.
+\end{theorem}
+
+\pause
+
+\begin{theorem}
+There is at least one natural number.
+\end{theorem}
+
+\pause
+
+\begin{corollary}
+There are infinitely many natural numbers.
+\end{corollary}
+\end{frame}
+\end{ExampleCode}
+%
+\begin{center}
+\fbox{\includegraphics[page=7, width=0.3\textwidth]{examples/basic-beamer.pdf}}~
+\fbox{\includegraphics[page=8, width=0.3\textwidth]{examples/basic-beamer.pdf}}~
+\fbox{\includegraphics[page=9, width=0.3\textwidth]{examples/basic-beamer.pdf}}
+\end{center}
+
+The \cmd{pause} command can be used in many places:
+between blocks and paragraphs and inside lists.
+
+\begin{gotcha}
+The \cmd{pause} command does not work inside \pkg[with Beamer]{amsmath} environments.
+\todo{Workarounds?}
+\end{gotcha}
+
+To get more control, it is possible to use the \cmd{uncover} command
+and \emph{overlay specifications}.
+Here are some example overlay specifications:
+\begin{description}
+\item[\texttt{<2>}] Only shown on slide~2.
+\item[\texttt{<2->}] Shown on slide~2 and all following slides.
+\item[\texttt{<2-3,5>}] Shown on slides~2--3 and~5.
+\end{description}
+%
+The block environments support overlay specifications,
+so the previous example could be rewritten as:
+%
+\begin{ExampleCode}
+\begin{frame}
+\frametitle{A digression on numbers, version 2}
+
+\begin{theorem}<1->
+Every natural number has a successor.
+\end{theorem}
+
+\begin{theorem}<2->
+There is at least one natural number.
+\end{theorem}
+
+\begin{corollary}<3->
+There are infinitely many natural numbers.
+\end{corollary}
+\end{frame}
+\end{ExampleCode}
+%
+There is also a shorthand syntax \verb|<+->| that is functionally similar to \cmd{pause}:
+it increments the previous overlay specification by one.%
+\footnote{To be precise, the magic command is \texttt{+}:
+it is replaced by the previous slide number, and the slide number is then incremented.}
+In the previous example, all overlay specifications could be replaced by \verb|<+->|.
+This is particularly useful for lists:
+%
+\begin{ExampleCode}
+\begin{itemize}
+    \item<+-> This is shown starting from the first slide.
+    \item<+-> This is shown starting from the second slide.
+    \item<+-> This is shown starting from the third slide.
+\end{itemize}
+\end{ExampleCode}
+%
+Beamer introduces an optional argument to produce such lists with even less repetition:
+%
+\begin{ExampleCode}
+\begin{itemize}[<+->]
+    \item This is shown starting from the first slide.
+    \item This is shown starting from the second slide.
+    \item This is shown starting from the third slide.
+\end{itemize}
+\end{ExampleCode}
+
+Outside an environment or list, the \cmd{uncover} command works the same:
+%
+\begin{ExampleCode}
+\begin{frame}
+\frametitle{On the infinitude of numbers}
+
+\begin{corollary}
+There are infinitely many natural numbers.
+\end{corollary}
+\begin{proof}
+\uncover<2->{Suppose that $n$ is the largest natural number.}
+\uncover<3->{But then its successor $n+1$ is an even larger natural number.}
+\end{proof}
+
+\end{frame}
+\end{ExampleCode}
+%
+\begin{center}
+\fbox{\includegraphics[page=10, width=0.3\textwidth]{examples/basic-beamer.pdf}}~
+\fbox{\includegraphics[page=11, width=0.3\textwidth]{examples/basic-beamer.pdf}}~
+\fbox{\includegraphics[page=12, width=0.3\textwidth]{examples/basic-beamer.pdf}}
+\end{center}
+
+Overlay specifications can also be applied to text styling commands like \cmd{alert}.
+In this case, the text styling is only applied on the specified frames.
+%
+\begin{ExampleCode}
+\begin{frame}
+
+\textbf<1>{Bold on the first slide only.}\\
+\alert<2>{Alerted on the second slide only.}
+
+\end{frame}
+\end{ExampleCode}
+%
+\begin{center}
+\fbox{\includegraphics[page=13, width=0.45\textwidth]{examples/basic-beamer.pdf}}~
+\fbox{\includegraphics[page=14, width=0.45\textwidth]{examples/basic-beamer.pdf}}
+\end{center}
+
+\todo{Alert shorthand for lists, \texttt{<.>}?}
+
+There is also an \cmd{only} command.
+Its difference to the \cmd{uncover} command is that no space is reserved.
+Since it may cause the positioning of the adjacent text change
+between slides, it should only be used when necessary.
+%
+\begin{ExampleCode}
+\begin{frame}
+
+There is nothing to see here.\\
+\only<2>{\includegraphics[width=6cm]{../pictures/TheDogs.jpg}\\}
+Absolutely nothing at all.
+
+\end{frame}
+\end{ExampleCode}
+%
+\begin{center}
+\fbox{\includegraphics[page=15, width=0.45\textwidth]{examples/basic-beamer.pdf}}~
+\fbox{\includegraphics[page=16, width=0.45\textwidth]{examples/basic-beamer.pdf}}
+\end{center}
+
+\todo{reserving space}
+
+\todo{againframe}
+
+
+%
+%
+\section{Sections and parts}
+
+\todo{Section and part commands}
+
+\todo{Appendices}
+
+\todo{Tables of contents}
+
+\todo{Bibliography}
+
+
+%
+%
+\section{Styling it}\label{sec:beamer styles}
+
+\todo{Navigation symbols, advanced typography}
+
+\todo{Transparency in uncovering}
+
+\todo{The templating system}
+
+\begin{technote}
+As with embedded videos, it is possible to specify slide transition effects,
+but they might not work with all PDF viewers.
+Because of this, we do not discuss them here.
+\end{technote}
+
+\subsection{Themes}
+\todo{Outline of the theme system}
+
+\subsection{Colours}
+\todo{fg and bg colors, using and setting them}
+
+\subsection{Fonts}
+\todo{Fonts}
+
+
+%
+%
+\section{Handouts}
+
+\todo{About this mode; also mention multiple slides per sheet (21.1)}
+
+\todo{Overlay specifications}
