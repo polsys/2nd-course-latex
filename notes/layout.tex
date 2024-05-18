@@ -298,7 +298,8 @@ which then propagates to the next pages.
 Result: You fixed a typo, and all the fine-tuning you had done on the following pages was just lost.
 
 I have often seen a one-word change increase the length of a paper by half a page.
-\todo{TLC production notes}
+\emph{The \LaTeX{} Companion} \cite{TLC} production notes mention
+a 1~\% change to a typewriter font size that broke 50~already fine-tuned pages.
 \end{warning}
 
 By default \LaTeX{} produces justified text that extends from the left to right margin.
@@ -394,13 +395,10 @@ we need to talk about font encodings.
 \begin{gotcha}\label{rem:font encoding}
 This here is the most important place where the traditional pdfTeX compiler
 and the Unicode-native LuaTeX and XeTeX compilers differ.
-You \emph{should always} use the \cmd{fontencoding} command with pdfTeX,
+You \emph{should always} use the \pkg{fontenc} package with pdfTeX,
 unless your document only contains the basic English characters.
-On the other hand, you \emph{should not} use \cmd{fontencoding} with LuaLaTeX or XeLaTeX,
+On the other hand, you \emph{should not} use \pkg{fontenc} with LuaLaTeX or XeLaTeX,
 since they use a better internal encoding by default.
-
-It is not dangerous to use \cmd{fontencoding} with the new compilers,
-but you might get suboptimal \todo{clarify} behaviour.
 \end{gotcha}
 
 Since 2018, \LaTeX{} has accepted Unicode input by default.
@@ -408,18 +406,25 @@ However, this only applies to the input:
 characters are then transformed into an internal representation
 and further into individual glyphs from a font file.%
 \footnote{To be precise, several characters can be combined into one glyph:
-see the ffi in `efficient'.
-These are called ligatures.}
+see the ffi ligature in `efficient'.}
 When \TeX{} and \LaTeX{} were developed,
 they had to solve the problem of having many (mathematical) glyphs,
 but Unicode was back then far from a universal standard.
 
-There are several of these internal representations,
-and the so-called \verb|OT1| encoding is the most recent one.
+There are several of these internal representations.
+The original \verb|OT1| encoding only has 128~characters.
+Characters like `ä' need to be composed of \texttt{\textasciidieresis a} set on top of each other.
+The \verb|T1| encoding is a more recent encoding that supports Western European languages.
+Cyrillic and Greek characters still need further encodings.
+
+The basic use is:
+\begin{ExampleCode}
+\usepackage[T1]{fontenc}
+\end{ExampleCode}
 
 The LuaTeX and XeTeX engines use Unicode for their internal representation,
 so this command is no longer necessary.
-Furthermore, it conflicts with \todo{what exactly},
+Furthermore, it might cause missing/incorrect characters or bad hyphenation,
 so it should be removed altogether.
 
 \begin{practices}
@@ -519,8 +524,12 @@ Something else
 Bottom of the page
 \end{VerbatimOut}
 \ShowExample
+%
+Vertical space at page boundaries is eliminated.
+If you need to suppress that, for instance when designing a title page,
+you can use \cmd{vspace*} (see the example on page~\pageref{ex:titlepage}).
 
-Instead of manual spacing commands,
+Instead of manual spacing commands within text,
 you should use the semantically more meaningful
 \cmd{smallskip}, \cmd{medskip}, and \cmd{bigskip} commands.
 
@@ -844,6 +853,36 @@ It is of course fine, if a bit odd, to provide a link to the last page.)
 Do note that this method gives the \emph{page number} of the last page,
 not the \emph{total number} of pages.
 The two might not be equal if several page numbering schemes have been in use.
+
+
+%
+%
+\subsection{Customized title pages}
+
+If the output of \cmd{maketitle} is not sufficient for your artistic tastes,
+you can of course set the title page by yourself.
+The \env{titlepage} environment creates an empty page with no decorations.%
+\footnote{It also sets the page number to 1, which is usually correct but sometimes surprising.}
+The title page of these notes was created with the following code:\label{ex:titlepage}
+%
+\begin{ExampleCode}
+\begin{titlepage}
+\vspace*{\stretch{1}}
+
+\hrulefill
+
+\begin{flushright}
+\textbf{\LARGE A second course in \LaTeX}\\[1em]
+\Large Petri Laarne\\[1em]
+Draft version\\
+\today
+\end{flushright}
+
+\hrulefill
+
+\vspace*{\stretch{2}}
+\end{titlepage}
+\end{ExampleCode}
 
 
 %

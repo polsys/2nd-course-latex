@@ -12,17 +12,29 @@
     pdftitle={A second course in LaTeX},
     pdfauthor={Petri Laarne}}
 
-\title{A second course in \LaTeX}
-\author{Petri Laarne\\University of Helsinki}
-\date{Draft as of \today}
-
 % Used in an example, but this command can only be used in the preamble
 \DeclareMathOperator{\arccosh}{arccosh}
 
 
 \begin{document}
 
-\maketitle
+% NOTE: Major changes to the title page should be reflected in the example (ex:titlepage)
+\begin{titlepage}
+\vspace*{\stretch{1}}
+
+\hrulefill
+
+\begin{flushright}
+\textbf{\LARGE A second course in \LaTeX}\\[1em]
+\Large Petri Laarne\\[1em]
+Draft version\\
+\today
+\end{flushright}
+
+\hrulefill
+
+\vspace*{\stretch{2}}
+\end{titlepage}
 
 \tableofcontents
 
