@@ -1,0 +1,54 @@
+\documentclass[11pt]{report}
+
+\usepackage[paperwidth=120mm,paperheight=90mm,margin=0.5cm,
+    headsep=0pt,headheight=0pt,footskip=0pt,voffset=-1cm]{geometry}
+\pagenumbering{gobble}
+
+\usepackage{fmtcount}
+\usepackage{xcolor}
+\usepackage{titlesec}
+
+\begin{document}
+
+\titleformat{\chapter}[display]{\filcenter}
+    {--\emph{The \ordinalstring{chapter} \MakeLowercase{\chaptertitlename}}--}
+    {4pt}{\Large\scshape}
+
+\titleformat{\section}[block]{\large}
+    {\bfseries\itshape Section~\thesection.}{4pt}
+    {\bfseries}
+
+\titleformat{\subsection}[runin]{}{\itshape \thesubsection.}{\wordsep}{\itshape}[.]
+
+\chapter{My chapter name}
+\section{My section name}
+\subsection{My subsection name}
+This is a long example text paragraph,
+demonstrating how the heading blends into the rest of the text.
+Usually, one writes something like lorem ipsum dolor sit amet here.
+
+\newpage
+
+
+
+\titleformat{\chapter}[display]{\filinner\sffamily}
+    {\bfseries\textcolor{gray}{\fontsize{60pt}{60pt}\selectfont\thechapter}}{0pt}
+    {}
+\titlespacing{\chapter}{0pt}{12pt}{12pt}
+
+\titleformat{\section}[frame]{\large}
+    {Section~\thesection}{8pt}
+    {\filcenter}
+\titlespacing{\section}{5em}{4pt}{12pt}
+
+\titleformat{\subsection}[wrap]{\bfseries}{\thesubsection.}{0.5em}{}
+\titlespacing{\subsection}{5cm}{8pt}{\wordsep}
+
+\chapter{My chapter name}
+\section{My section name}
+\subsection{My long subsection name}
+This is a long example text paragraph,
+demonstrating how the heading blends into the rest of the text.
+Usually, one writes something like lorem ipsum dolor sit amet here.
+
+\end{document}

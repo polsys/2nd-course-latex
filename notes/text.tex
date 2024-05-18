@@ -781,10 +781,114 @@ Google what it means, and you're on your way to becoming a typography enthusiast
 %
 \subsection{Customizing headings}
 
-\todo{Customization with titlesec}
+To customize heading styles, it is easiest to use the \pkg{titlesec} package.
+It provides two ways to customize headings: a ``simple'' and an ``advanced'' interface.
 
 \begin{gotcha}
 If you use the \pkg[customizing headings]{memoir} or \pkg[customizing headings]{koma-script}
-document classes, this method is not usable.
+document classes, this package is not usable.
 The document classes provide their own mechanisms instead.
 \end{gotcha}
+
+The simple interface is used with the \cmd{titleformat*} command.
+It takes two arguments: the sectioning command and formatting commands to apply to it.
+The formatting commands should use the declaration form.
+
+For example, to set centered subsection headers with a large small caps typeface,
+you would put in the preamble:
+\begin{ExampleCode}
+\usepackage{titlesec}
+\titleformat*{\subsection}{\centering\Large\scshape}
+\end{ExampleCode}
+
+The simple interface does not let you customize the layout of headings,
+and it does not permit customization of chapter headings (which spread on two lines by default).
+For these cases, there is the advanced interface.
+It uses the unstarred \cmd{titleformat} command,
+which takes up to seven parameters:
+\begin{itemize}
+\item The heading command to modify.
+\item (Optional.) The shape of the heading.
+    The default is \verb|hang|, which works like the default for sections.
+    For centered version, \verb|block| is preferable.
+    The \verb|display| option puts the content on two lines like the default for chapters;
+    the \verb|frame| option additionally sets a frame.
+    Finally, \verb|runin| places the heading within the following paragraphs;
+    a special case is \verb|wrap|, which additionally wraps the heading.
+    There are some more styles, which you can find in the documentation.
+\item Formatting code applied to the whole title.
+    This might also include some commands in vertical mode.
+\item Formatting of the heading number.
+    If you want to prefix the number with a string, do it here.
+    Since chapters are called either ``Chapter'' or ``Appendix'',
+    you can get the correct string with \cmd{chaptertitlename}.
+\item Length of the (vertical or horizontal, depending on shape) separation between label and heading.
+\item Code to execute before the heading text.
+\item (Optional.) Code to execute after the heading text.
+\end{itemize}
+%
+Inside this command, there are a few special considerations.
+To center or right-align text, you should use \cmd{filcenter} and \cmd{filouter}/\cmd{filinner}
+instead of the standard commands.
+These special commands respect the separation parameters.
+
+Let us explore these through a couple examples.
+Many more possibilities are shown in the package documentation.
+
+In the next example, chapter titles are centered with \cmd{filcenter}.
+The chapter number is stated as an ordinal with the \pkg{fmtcount} package.
+Section titles are customized to include the word ``Section'' and a full stop.
+Finally, subsection titles are changed to the run-in format.
+The \cmd{wordsep} command gives the natural inter-word distance for the font,
+and the optional end-code is used to add a full stop.
+%
+\begin{ExampleCode}
+\titleformat{\chapter}[display]{\filcenter}
+    {--\emph{The \ordinalstring{chapter} \MakeLowercase{\chaptertitlename}}--}
+    {4pt}{\Large\scshape}
+
+\titleformat{\section}[block]{\large}
+    {\bfseries\itshape Section~\thesection.}{4pt}
+    {\bfseries}
+
+\titleformat{\subsection}[runin]{}{\itshape \thesubsection.}
+    {\wordsep}{\itshape}[.]
+\end{ExampleCode}
+%
+\EmbedPdfPage{examples/titlesec.pdf}{1}
+
+The \cmd{titlespacing} command adjusts the spacing around the title.
+It takes three or four arguments:
+\begin{itemize}
+\item Addition to the left margin.
+    For the \verb|wrap| shape, it gives the maximum width of the heading.
+\item Vertical separation above the heading.
+\item Vertical separation below the heading.
+\item Addition to the right margin.
+\end{itemize}
+
+In the following, we move the chapter heading closer to the top of page,
+indent the framed section heading, and specify a wrapped subsection heading:
+%
+\begin{ExampleCode}
+\titleformat{\chapter}[display]{\filinner\sffamily}
+    {\bfseries\textcolor{gray}{\fontsize{60pt}{60pt}\selectfont\thechapter}}
+    {0pt}{}
+\titlespacing{\chapter}{0pt}{12pt}{12pt}
+
+\titleformat{\section}[frame]{\large}
+    {Section~\thesection}{8pt}
+    {\filcenter}
+\titlespacing{\section}{5em}{4pt}{12pt}
+
+\titleformat{\subsection}[wrap]{\bfseries}{\thesubsection.}{0.5em}{}
+\titlespacing{\subsection}{5cm}{8pt}{\wordsep}
+\end{ExampleCode}
+%
+\EmbedPdfPage{examples/titlesec.pdf}{2}
+
+
+\begin{warning}
+Be careful with heading customization, especially with the run-in and wrap styles.
+Long headings might break in surprising and suboptimal ways.
+\end{warning}

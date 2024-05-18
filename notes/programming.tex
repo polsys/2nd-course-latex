@@ -1162,6 +1162,13 @@ The last command \verb|\fnsymbol| is used for footnote symbols.
 Note that the letter-based styles can be capitalized
 by using \verb|\Roman| instead of \verb|\roman| etc.
 
+To format numbers as natural-language strings, you can use the \pkg{fmtcount} package.
+For example, its \cmd{ordinalstring} command produces strings like ``first'', ``second'', and so on.
+There are several capitalization variants,
+as well as support for a few languages (including grammatical gender).%
+\footnote{Unfortunately, Finnish is not yet among them.}
+The package also provides commands for binary and hexadecimal number formatting.
+
 To define your own counters, you can use \cmd{newcounter}:
 \index{counters!defining}%
 %
