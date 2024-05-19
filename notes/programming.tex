@@ -193,7 +193,7 @@ As we see below, there can also be some complexity in setting up the editor.
 
 Therefore my recommendation is:
 only split the document if you are preparing a book.
-This might be extended to theses, and lecture notes
+This advice might be extended to theses, and lecture notes
 edited by a limited amount of people simultaneously.
 These very notes are split into one file per chapter.\footnotemark
 
@@ -202,27 +202,48 @@ this was the piece of advice I got the most from other \TeX{}nicians.
 Consider yourself warned.
 \end{practices}
 \footnotetext{And suffer from some associated problems.
-The ``main file detection'' heuristics of my editor do get confused by this chapter.}
+The ``main file detection'' heuristics of my editor do get confused by this chapter
+where several \texttt{\textbackslash documentclass} commands appear.}
 
 There is a minor difference in the two commands.
 When \cmd{input} is called with the name of a \verb|.tex| file,
 the compiler acts as if the contents of the file were placed in that position.
-You could replace the input operation by copy-pasting the file contents.
+You could replace the input operation by copy-pasting the file contents.%
+\footnote{Some environments do not allow \texttt{\textbackslash input} inside them.}
 
 On the other hand, \cmd{include} finishes the current page
 before processing file contents.
 This involves placing any queued floats (see \Cref{sec:floats}).
 That makes it mostly suitable for including separate chapters.
-\todo{Check whether there was something more}
+Every included file gets its own \verb|.aux| file.
 
-There is also a command \cmd{includeonly} for temporarily restricting to a subset of the included files.
-The same can be achieved by selectively commenting out input commands.
+The \cmd{includeonly} command temporarily restricts the compilation to a subset of the included files.
 This can be a neat way to reduce compilation times on a long document.
+Since each file has its own \verb|.aux| file,
+cross-references to uncompiled chapters might work (but be outdated!).
+
+\begin{ExampleCode}
+% Preamble
+\includeonly{intro,discussion}
+
+\include{intro} % Input intro.tex
+\include{methods} % Input methods.tex
+\include{results} % Input results.tex
+\include{discussion} % Input discussion.tex
+\end{ExampleCode}
+
+\begin{gotcha}
+\cmd{include} only produces a warning if it cannot find the specified file.
+Also, some packages work unreliably with \cmd{include}.
+
+Do not use \cmd{includeonly} when preparing the final copy of your document,
+since some of the \verb|.aux| files could be outdated.
+\end{gotcha}
 
 \begin{practices}
 If you separate chapter contents into their own files,
 I highly recommend keeping the ``main file'' very short
--- consisting only of the preamble and input commands.
+-- consisting only of the preamble and \cmd{include} commands.
 \end{practices}
 
 In either case,
@@ -235,7 +256,10 @@ Conversely, this means that the separated files cannot be compiled on their own.
 There might be some editor-specific support for setting the main file of your project.
 This allows you to hit \emph{Compile} while editing a chapter file,
 and the main file gets compiled instead.
-\todo{How to set the main file with Overleaf}
+
+\begin{overleaf}
+You can set the main file in the settings menu at top left of the editor.
+\end{overleaf}
 
 
 
@@ -733,10 +757,10 @@ These are risky.
 
 If your document takes a long time to compile,
 find a way to speed it up
-(skip complicated TikZ pictures in draft mode, comment out chapters you're not working on, etc.).
+(skip complicated TikZ pictures in draft mode, only include chapters you're working on, etc.).
 If recompilation breaks your flow, you won't do it often enough.
 
-\todo{Practical way to do the TikZ trick.}
+For some pointers for conditionally skipping parts of pictures, see page~\pageref{ex:booleans}.
 \end{practices}
 
 
@@ -1282,6 +1306,20 @@ The syntax allows basic comparisons of counters with
 There is also the \cmd{isodd} command that is useful with page numbers.
 Lengths (\Cref{sec:lengths}) can be compared by wrapping the comparison inside \cmd{lengthtest}.
 See the package documentation for all expressions.
+
+It is also possible to define and test boolean variables
+that have value equal to \verb|true| or \verb|false|:\label{ex:booleans}
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\newboolean{MyBool}
+\ifthenelse{\boolean{MyBool}}
+    {It is true!}{It is false!}
+
+\setboolean{MyBool}{true}
+\ifthenelse{\boolean{MyBool}}
+    {It is true!}{It is false!}
+\end{VerbatimOut}
+\ShowExample
 
 The package also provides a \cmd{whiledo} command that provides a primitive loop.
 %
