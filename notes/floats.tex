@@ -539,6 +539,26 @@ There would also be several methods to add vertical whitespace to the table:
     This package defines a modifier for cell styles.
 \end{itemize}
 
+The \pkg{siunitx} package also introduces a new format specifier \verb|S|.
+It aligns numbers at the decimal point.
+This specifier has a lot of customization options, for which we refer to the package documentation.
+As an important note, the column is interpreted numerically:
+textual material might need protection with \verb|{}|
+(so that `e' is not interpreted as an exponent specifier).\label{ex:table siunitx}
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\centering
+\begin{tabular}{l| S}
+Important constant & {Value}\\
+\hline
+Pi & 3.14159\ldots\\
+Gravity & 9.81\\
+Inches to feet & 12\\
+Finnish population & {some } 5.61e6
+\end{tabular}
+\end{VerbatimOut}
+\ShowExampleBelow[2]
+
 \todo{Ragged right in table}
 
 

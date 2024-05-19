@@ -553,6 +553,67 @@ Palatino and Noto families also have good mathematics support,
 which we will discuss in \Cref{sec:typefaces}.
 
 
+%
+%
+\subsection{Units of measure}
+
+The \pkg{siunitx} package simplifies working with numerical quantities and units.
+There are a few basic commands that cover most of the cases.
+
+Numbers are formatted with \cmd{num}.
+This command accepts exponential notation and error ranges,
+and even both \verb|.| and \verb|,| as the decimal separator.
+Complex numbers are given with the \cmd{complexnum} command.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\num{12345}\\
+\num{3.9 +- 0,4}\\
+\num{1.28e-4}\\
+\complexnum{1+2ie3}
+\end{VerbatimOut}
+\ShowExample
+
+The next basic command is \cmd{unit}, which offers two modes.
+In the ``literal'' mode, units are given as strings.
+Multiplication is done with \verb|.|, division by \verb|/|,
+and sub- and superscripts in the usual way.
+In the ``macro'' mode, each part is given as a command
+(whose name corresponds to the usual spoken version).
+The benefit of this mode is that the appearance can be customized.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\unit{kg.m.s^{-2}}\\
+\unit{\kilogram\metre\per\second\squared}\\
+\unit{T_{eff}}
+\end{VerbatimOut}
+\ShowExample
+
+Finally, the two commands can be put together with \cmd{qty} (or its sibling \cmd{complexqty}):
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\qty{1.7e3}{kg.m/s^2}\\
+\qty{17}{\degreeCelsius}\\
+\complexqty{1+2ie-3}{\ohm}
+\end{VerbatimOut}
+\ShowExample
+%
+For angles, there is a special syntax with \cmd{ang}:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\ang{60}\\
+\ang{12;34;56}
+\end{VerbatimOut}
+\ShowExample
+
+The package offers a lot of customization in how the quantities are displayed.
+(This aligns well with the general \LaTeX{} philosophy.)
+See the package documentation for a thorough explanation.
+
+\begin{remark}
+See also page~\pageref{ex:table siunitx} for using \pkg{siunitx} in tables.
+\end{remark}
+
+
 
 %
 %
@@ -575,8 +636,8 @@ the Detexify tool\footnote{\url{detexify.kirelabs.org}} is your friend.\index{De
 You can draw the symbol in this web app,
 and it searches for it in \LaTeX{} symbol list and a large collection of extension packages.%
 \footnote{\url{www.ctan.org/tex-archive/info/symbols/comprehensive}
-is your friend if you want to search manually;
-be advised that this PDF is over 30~MB and almost 500~pages in size.}
+is the source if you really want to search manually;
+this PDF is over 30~MB and almost 500~pages.}
 
 
 %
