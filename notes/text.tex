@@ -348,7 +348,7 @@ it must be followed by a special character (or a number, but not \verb|*|).
 This special character ends the verbatim span.
 Obviously, you need to choose a character that does not appear in the text!
 There is also a starred form that makes the whitespace visible.
-
+%
 \begin{VerbatimOut}{\jobname.tmp}
 \verb+\LaTeX{}+ \\
 \verb|$1 + 1$| \\
@@ -365,6 +365,35 @@ but it offers no customization at all.
 The \pkg{fancyvrb} package provides a lot of that customization.
 However, the \pkg{listings} package additionally provides automatic syntax highlighting
 for many common programming languages, so it should be your first choice.
+
+One neat use of verbatim environments is to comment out large blocks of text.
+\index{comment!large block}%
+This example requires \pkg{fancyvrb} and its capitalized \env{Verbatim} environment:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+Some text.
+\begin{Verbatim}[lastline=0]
+You cannot see what's happening here.
+It's as if it didn't exist!
+\end{Verbatim}
+Some more text.
+\end{VerbatimOut}
+\ShowExample
+%
+This can be further simplified with the \cmd{DefineVerbatimEnvironment} command,
+which creates a customized environment based on \env{Verbatim}:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\DefineVerbatimEnvironment
+    {CommentOut}{Verbatim}{lastline=0}
+
+Did you hear something?
+\begin{CommentOut}
+Nothing to see here.
+\end{CommentOut}
+I thought I heard something.
+\end{VerbatimOut}
+\ShowExample
 
 \begin{technote}
 Verbatim environments are implemented with dark \TeX{} magic:
