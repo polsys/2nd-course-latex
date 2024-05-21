@@ -1286,6 +1286,20 @@ If you like your equations in Roman numbers within section (like 1.iv), then you
 \begin{ExampleCode}
 \counterwithin[\Roman]{equation}{section}
 \end{ExampleCode}
+%
+The \cmd{counterwithin} command does essentially something like
+\begin{ExampleCode}
+% \counterwithin[\Roman]{equation}{section}
+  \renewcommand{\theequation}{\thesection.\Roman{equation}}
+\end{ExampleCode}
+If you'd prefer not to have the within-counter as prefix (\verb|\thesection.|),
+you can renew the counter format again.
+This code numbers equations like (1), (2), \dots, and resets the numbering in each section:
+%
+\begin{ExampleCode}
+\counterwithin{equation}{section}
+\renewcommand\theequation{\arabic{equation}}
+\end{ExampleCode}
 
 \begin{technote}
 Counters are always in a global scope.\index{scope!counters}
