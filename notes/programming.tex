@@ -598,8 +598,28 @@ Physicists: $\dual{a}{b}$.
 \end{VerbatimOut}
 \ShowExample
 
+The \cmd{DeclareCommandCopy} robustly copies the current definition of a command.%
+\footnote{This can also be done with raw \TeX{} primitives, which are to be avoided.}
+It is then possible to renew the definition, and still access the previous version.
+Let us illustrate this by swapping the meanings of \verb|\epsilon| and \verb|\varepsilon|:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+Epsilon $\epsilon$ and varepsilon $\varepsilon$
 
-\todo{Advanced: adding to an existing command.}
+\DeclareCommandCopy{\oldepsilon}{\epsilon}
+\DeclareCommandCopy
+    {\oldvarepsilon}{\varepsilon}
+\renewcommand{\epsilon}{\oldvarepsilon}
+\renewcommand{\varepsilon}{\oldepsilon}
+
+Epsilon $\epsilon$ and varepsilon $\varepsilon$
+\end{VerbatimOut}
+\ShowExample
+
+\begin{latexthree}
+This command is part of the \LaTeX3 programming interface.
+It requires a relatively recent (2020 or later) \LaTeX{} version.
+\end{latexthree}
 
 
 %
