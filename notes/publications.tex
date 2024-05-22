@@ -105,16 +105,29 @@ That is,
 \end{ExampleCode}
 might produce something like ``Theorems~4.1 to~4.3''
 or ``Theorems~4.1, 4.7, and~5.1''.
-Again, see the package documentation for how to customize this
-(for example, if the plural form is not formed by just appending `s').
+Again, see the package documentation for how to customize this.
+
+There are also the \cmd{cpageref} and \verb|\Cpageref|
+commands to produce page references (with the same support for ranges),
+and a few other more specialized commands.
 
 \begin{gotcha}
 Do not put spaces around the commas in the argument to \verb|\Cref|.
 \end{gotcha}
 
-There are also the \cmd{cpageref} and \verb|\Cpageref|
-commands to produce page references (with the same support for ranges),
-and a few other more specialized commands.
+
+The package does have predefined names for many common theorem environments,
+but in some cases you need to define the name by yourself.
+This is done with the \cmd{crefname} command.
+It takes three arguments: name of the environment, singular form, and plural form.
+Capitalization is handled automatically.
+%
+\begin{ExampleCode}
+\newtheorem{assumption}{Assumption}
+\crefname{assumption}{assumption}{assumptions}
+\end{ExampleCode}
+
+
 
 \begin{gotcha}
 Since \pkg[should be loaded last]{cleveref} modifies the referencing mechanism,
