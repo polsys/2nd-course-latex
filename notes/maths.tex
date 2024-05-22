@@ -286,6 +286,38 @@ i \partial_t u - \Delta u = -u^3,\\
 \end{VerbatimOut}
 \ShowExampleBelow
 
+However, do note that there is some space put before the \verb|&| alignment position.
+If you want to collect several aligned equations inside a brace,
+it might be nicer to fake the output with help from the \env{aligned} environment
+and a suitably sized \verb|{| character:\label{ex:math equations in cases}
+%
+\begin{VerbatimOut}{\jobname.tmp}
+Not nice:
+\begin{equation}
+\begin{cases}
+    \partial_{tt} u - \Delta u &= 0,\\
+    u(0) &= X,\\
+    \partial_t u(0) &= Y.
+\end{cases}
+\end{equation}
+
+Much nicer:
+\begin{equation}
+\left\{
+\begin{aligned}
+    \partial_{tt} u - \Delta u &= 0,\\
+    u(0) &= X,\\
+    \partial_t u(0) &= Y.
+\end{aligned}
+\right.
+\end{equation}
+\end{VerbatimOut}
+\ShowExample
+%
+Here the \cmd{left}--\cmd{right} pair is used to produce a correctly sized brace.
+
+
+
 If you want to number lines in the \verb|cases| environment individually,
 check out the \pkg{cases} package.
 
@@ -960,7 +992,8 @@ Delimiting symbols come in five sizes:
 Instead of setting the size manually,
 the \cmd{left} and \cmd{right} commands can be used.
 They choose the size based on the content between delimiters.
-Accordingly, the two commands must be paired correctly.
+Accordingly, the two commands must be paired correctly
+-- however, the symbols need not be the same.
 There is also \cmd{middle} for an optional middle delimiter in the matching size.
 %
 \begin{VerbatimOut}{\jobname.tmp}
@@ -970,6 +1003,11 @@ There is also \cmd{middle} for an optional middle delimiter in the matching size
 \]
 \end{VerbatimOut}
 \ShowExample
+%
+If you only want to display one of the opening/closing symbols,
+you can write e.g. \verb|\left( \right.|.
+The full stop suppresses the output of closing delimiter.
+See the example on page~\pageref{ex:math equations in cases}.
 
 \begin{gotcha}
 It is not possible to have a line break between \cmd{left} and \cmd{right},
