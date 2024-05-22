@@ -809,7 +809,7 @@ Quite often, you can do completely without these tweaks.
 %
 \section{Headers and footers}
 
-\subsection{Built-in \LaTeX{} styles}
+\subsection{Built-in \LaTeX{} styles}\label{sec:marking}
 
 By default, \LaTeX{} provides three page styles:\index{page styles}
 %
@@ -819,11 +819,45 @@ By default, \LaTeX{} provides three page styles:\index{page styles}
 \item[\texttt{headings}] Header contains current chapter/section and subsection, and the page number.
 \end{description}
 %
+For articles and reports, \verb|plain| is the default;
+for books, \verb|headings|.
 The choice is taken with \cmd{pagestyle} in the preamble.
 It is also possible to override the style temporarily with \cmd{thispagestyle}.
-If you make your own title page, you should issue \verb|\thispagestyle{plain}| there.
+(The \env{titlepage} environment described below does this automatically.)
 
-\todo{The marking mechanism}
+We do not discuss here the base \LaTeX{} mechanisms for styling headers,
+since the \pkg{fancyhdr} package described below does a much better job at it.
+However, it is worth understanding the chapter and section names appearing in the \verb|headings| style.
+
+There are two marks: left mark and right mark.\index{marks}
+What they should be thought of is \emph{main mark} and \emph{sub-mark},
+but unfortunately here the semantics and presentation are not separated.
+The \cmd{markboth} command sets both marks, and \cmd{markright} only the sub-mark.
+Essentially, the sectioning commands do something like
+%
+\begin{ExampleCode}
+\chapter{Chapter name} -> \markboth{Chapter name}{}
+\section{Section name} -> \markright{Section name}
+\end{ExampleCode}
+%
+The right-hand-sides are internally implemented with the \cmd{chaptermark} and \cmd{sectionmark} commands,%
+\footnote{These commands exist for all sectioning levels, not just chapters and sections.}
+and by renewing them it is possible to change the format of marks.
+For example, to remove the automatic upper-casing one can use
+%
+\begin{ExampleCode}
+\renewcommand{\chaptermark}[1]{\markboth{\chaptername~\thechapter. #1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection. #1}}
+\end{ExampleCode}
+%
+To access the marks, you can use \cmd{leftmark} and \cmd{rightmark.}
+
+
+\begin{latexthree}
+\LaTeX3 introduces a completely new marking mechanism.
+We do not discuss it here, but its brief documentation does give the essential details.%
+\footnote{\url{https://www.latex-project.org/help/documentation/ltmarks-doc.pdf}}
+\end{latexthree}
 
 
 %
@@ -933,7 +967,24 @@ These are maybe best illustrated by an example:
 \fancyhead[LE, RO]{\textbf{An important document}}
 \end{ExampleCode}
 
-\todo{Section names and such}
+To access the current chapter and section name,
+you can use the marks described in \Cref{sec:marking}.
+The following code replicates the default \LaTeX{} \verb|headings| page style:
+%
+\begin{ExampleCode}
+\pagestyle{fancy}
+
+% Clear all
+\fancyhf[]{}
+
+% Page number to outer edge
+\fancyhead[LE,RO]{\thepage}
+
+% Mark to inner edge
+\fancyhead[RE]{\leftmark}
+\fancyhead[LO]{\rightmark}
+\end{ExampleCode}
+
 
 \begin{remark}
 The package gives a warning if the header height is not large enough.
