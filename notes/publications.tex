@@ -247,6 +247,8 @@ You should then check that the bibliography and citations
 appear correctly in the version compiled by arXiv.
 \end{remark}
 
+\footnotetext{\url{www.zotero.org}}
+\footnotetext{\url{https://retorque.re/zotero-better-bibtex/}}
 \begin{practices}
 You should also automate the process of collecting the bibliography.
 Reference management applications can help you organize your references
@@ -258,9 +260,9 @@ One good, free application is Zotero\footnotemark.
 A small note as a Zotero user (as of April 2024):
 unfortunately, the \verb|.bib| export escapes \LaTeX{} commands like \verb|$| into \verb|\$|,
 and \verb|^| into even more horrendous \verb|\textasciicircum|.
-You need to manually correct mathematical symbols in titles.
+You can install the \emph{Better BibTeX} plugin to Zotero to get
+customizable, better-quality export.\footnotemark
 \end{practices}
-\footnotetext{\url{www.zotero.org}}
 
 \begin{gotcha}
 The \prg[Unicode]{bibtex} compiler is not Unicode-aware,
