@@ -17,3 +17,9 @@ In summary:
   You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
 - **No additional restrictions** — You may not apply legal terms or technological measures 
   that legally restrict others from doing anything the license permits.
+
+
+# SIL Open Font License 1.1
+
+The Asana Math font included with the source code distribution
+is licensed under SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007.

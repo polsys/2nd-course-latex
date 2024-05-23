@@ -142,7 +142,7 @@ and all the abuse of commands to get semantically incorrect but visually good re
 
 To enable PDF metadata, you should do the following steps:
 \begin{itemize}
-\item Use a modern \LaTeX{} compiler like LuaL\prg{luatex} or \prg{xetex}.
+\item Use a modern \LaTeX{} compiler like \prg{luatex} or \prg{xetex}.
     Since \prg{luatex} is more actively maintained, it is preferable.
 \item Add \cmd{DocumentMetadata} as the first line (before \verb|\documentclass|) of the code.
 \item Load the \pkg{hyperref} package.
@@ -267,11 +267,249 @@ you only need to change one command in the preamble.
 %
 \section{Typefaces}\label{sec:typefaces}
 
-\todo{Point sizes}
-\todo{Microtypography}
+We will discuss two methods for changing the typeface in your document.
+In neither case, we do not comment too much on the aesthetic qualities
+-- use at your own risk!
 
-\todo{Palatino and Noto with math}
+\begin{warning}
+When changing fonts, especially the one used for mathematics,
+make sure that all the special characters still appear correctly.
+The character support of different fonts varies wildly.
+\end{warning}
 
+
+%
+%
+\subsection{Fonts via packages}
+
+Several common typefaces are packaged on CTAN as ready-to-use packages.
+This is a preferable way since the package author might have done some necessary
+typographical tweaks already for you.
+
+To find packaged typefaces, you can use the \emph{\LaTeX{} Font Catalogue}%
+\footnote{\url{https://tug.org/FontCatalogue/}}
+maintained by \TeX{} Users' Group.
+Each catalogue entry displays the code needed to load the font with typical installations.
+
+In the \emph{Font implementation} section,
+you should check what types are available.
+Type~1 fonts can be used with pdfTeX,
+whereas LuaTeX and XeTeX additionally support (and prefer!) OpenType or TrueType fonts.
+
+Let us see a few examples of common fonts.
+First, for comparison, here is a small standard text written with the default Latin Modern typeface
+(the $\lesssim$ symbol comes from \textsf{amssymb}):
+%
+\EmbedPdfPage{examples/font_default.pdf}{1}
+
+The Palatino typeface designed by legendary Hermann Zapf is a classic
+and commonly used also in the \TeX{} world.
+It is packaged as the PX text and math fonts.
+The font automatically comes with \verb|\lesssim|, so we do not need to load the symbol package.
+(See the next subsection for a different version with OpenType fonts.)
+%
+\begin{ExampleCode}
+\usepackage{newpxtext,newpxmath}
+% No need to load amssymb
+\end{ExampleCode}
+%
+\EmbedPdfPage{examples/font_px.pdf}{1}
+
+\begin{technote}
+Typeface designs cannot be copyrighted, but the names are trademarks.
+This is why near-identical implementations of the same typeface can appear with very different names.
+\end{technote}
+
+As a slightly different example, we use the Noto font.
+This typeface design by Google aims to contain \emph{all Unicode characters}.%
+\footnote{Its name comes from \textbf{no to}fu, since the rectangular `missing character' symbol
+in web browsers is sometimes called `tofu'.}
+It too can also be loaded with the mechanism described in the next section.
+%
+\begin{ExampleCode}
+\usepackage{notomath}
+% No need to load amssymb
+\end{ExampleCode}
+%
+\EmbedPdfPage{examples/font_noto.pdf}{1}
+
+For one more example, let us see a sans serif typeface.
+The Source~Sans typeface is an open source font by Adobe.
+When the package is loaded with the \verb|default| option,
+sans serif becomes the default font family.
+However, it does not come with mathematics support.
+Without further tweaks, the display mathematics comes in a very different typeface!
+%
+\begin{ExampleCode}
+\usepackage[default]{sourcesanspro}
+\usepackage{amssymb}
+\end{ExampleCode}
+%
+\EmbedPdfPage{examples/font_sourcesans.pdf}{1}
+
+Many sans serif packages have options to make sans serif the default style.
+The same can be achieved manually with
+\begin{ExampleCode}
+\renewcommand{\familydefault}{\sfdefault}
+\end{ExampleCode}
+
+
+%
+%
+\subsection{OpenType fonts via fontspec}
+
+\begin{remark}
+This section only applies to LuaTeX and XeTeX.
+\end{remark}
+
+Like character sets, also font formats have undergone a parallel evolution
+between \TeX{} and the rest of the world.
+Nowadays, fonts are distributed in the OpenType format (and its predecessor TrueType).
+
+The \pkg{fontspec} package allows loading OpenType/TrueType fonts
+on the Unicode-native compilers.
+In the preamble, the default roman, sans serif, and typewriter fonts are
+set with the respective commands:%
+\indexcmd{setmainfont}\indexcmd{setsansfont}\indexcmd{setmonofont}
+%
+\begin{ExampleCode}
+% Note: only works on Windows, where these are installed!
+\setmainfont{Times New Roman}
+\setsansfont{Comic Sans MS}
+\setmonofont{Consolas}
+\end{ExampleCode}
+%
+In this example, we used the system font names.
+
+\begin{technote}
+A XeTeX-specific issue:
+If \pkg{fontspec} cannot find the font,
+XeTeX tries to fall back to the old MetaFont technology.
+This manifests itself as log messages about \prg{mktexmf} failing to build (non-existent) files.
+\end{technote}
+
+It is also possible to give file names to fonts,
+if you have the font files in the same folder tree as your document.%
+\footnote{Or anywhere on \TeX's search path.}
+In this case, you might need to specify file names for each weight separately:%
+\footnote{This example takes advantage of it,
+and uses the Book and Semibold weights instead of Regular and Bold.}
+%
+\begin{ExampleCode}
+\setmainfont{FiraSans-Book.otf}[
+    BoldFont={FiraSans-SemiBold.otf},
+    ItalicFont={FiraSans-BookItalic.otf}]
+\end{ExampleCode}
+
+Instead of overriding the default fonts,
+it is also possible to define new font families with \cmd{newfontfamily}:
+%
+\begin{ExampleCode}
+% Preamble
+\newfontfamily{\comicfont}{Comic Sans MS}
+
+% Document
+Some people hate {\comicfont Comic Sans},
+but its history is often {\comicfont misunderstood}.
+\end{ExampleCode}
+%
+All these font loading command support \emph{a lot of} optional arguments
+-- see the package documentation.
+These can be used to control the appearance of the typeface
+and to enable stylistical variants of some letters.
+
+For example, when using typefaces not originally designed to play together,
+it might be useful to slightly adjust the sizes of fonts:
+%
+\begin{ExampleCode}
+% Fits a bit better with Latin Modern
+\newfontfamily{\comicfont}{Comic Sans MS}[Scale=0.9]
+\end{ExampleCode}
+
+The \pkg{unicode-math} package introduces the further \cmd{setmathfont} command
+that works just like the commands above, only for the math mode.
+The font needs to include the mathematical symbols,
+which most fonts do not have!
+This package also turns all mathematical symbols into proper Unicode characters
+that can be copied from and searched within the PDF.
+
+Let us illustrate one nice combination of OpenType text and mathematics fonts.
+\TeX{} Gyre Pagella is another version of Palatino, usually included with \LaTeX{} distributions.
+The Asana~Math font is also part of \TeX~Live, but here we load it from an included file:
+%
+\begin{ExampleCode}
+\usepackage{fontspec}
+\setmainfont{TeX Gyre Pagella}
+\usepackage{unicode-math}
+\setmathfont{Asana-Math.otf}
+% No amssymb loaded
+\end{ExampleCode}
+%
+\EmbedPdfPage{examples/font_pagella.pdf}{1}
+
+
+\begin{technote}
+Another odd corner of copyright law:
+typeface designs cannot be copyrighted, but \emph{font files} are!
+The reason is that the OpenType format is a small programming language,
+which makes fonts be classified as computer programs.
+
+Only use fonts that you have the right to use:
+those that come with your computer system,
+those you have bought,
+or ones available under a permissive license (like the SIL~Open Font License).
+As long as you have the license to use a font,
+you can freely distribute any documents typeset with it.
+\end{technote}
+
+
+
+%
+%
+\subsection{Point sizes and microtypography}
+
+Let us just briefly comment on two more nuances of setting text.
+\LaTeX{} provides the semantically meaningful font size commands (page~\pageref{sec:font size}),
+but what if you need to specify the exact point size?
+
+The low-level \cmd{fontsize} command can be used in this case.
+It takes two arguments: the desired size of the font, and the new baseline skip value.
+If the font does not support arbitrary size, the closest match is chosen.
+This declaration must be followed by \cmd{selectfont},
+which does the hard work of loading the font.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\fontsize{12pt}{14pt}\selectfont
+This is set in 12~pt font,
+with 14~pt baseline skip.
+Some extra text to illustrate
+the line heights.
+\end{VerbatimOut}
+\ShowExample
+
+\begin{technote}
+\LaTeX{} might need to do a fair bit of work to prepare a font for the given size,
+so you might hit some internal limitations if there are too many different sizes in use.
+\end{technote}
+
+Some more typographical tweaks are provided by the \pkg{microtype} package.
+Once loaded, it adds features like hanging punctuation
+(punctuation characters extending into the margins) and some tiny spacing adjustments.
+We are now talking of extremely small typographical details.
+
+\begin{warning}
+Support for \pkg{microtype} features depends a lot on the compiler.
+If you use the package, be aware that the page layout can change significantly
+between different compilers.
+\end{warning}
+
+\begin{warning}
+Some fonts might not pair well with the built-in adjustment parameters.
+\end{warning}
+
+
+%
+%
 \subsection{Emoji}\label{sec:emoji}
 
 Emoji are Unicode characters, so in principle they can be included just as is in the source code.
