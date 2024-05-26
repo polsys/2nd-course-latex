@@ -393,8 +393,10 @@ which makes it possible to draw some complicated functions.
   \draw[help lines] (0,0) grid (8,3);
   \draw[red, domain=0:8, samples=100] plot (\x, {1+sin(\x r)})
     node[right] {$1+\sin(x)$};
-  \draw[blue, domain=0:8, samples=100] plot (\x, {exp(\x/8)})
+  \draw[blue, dashed, domain=0:8, samples=100] plot (\x, {exp(\x/8)})
     node[right] {$\exp(x/8)$};
+  \draw[black, domain=0:8, samples=100] plot (\x, {pow(\x, 1/2)})
+    node[above right] {$\sqrt x$};
 \end{tikzpicture}
 \end{VerbatimOut}
 \ShowExampleBelow[2]
@@ -405,6 +407,7 @@ Some notes on the usage:
 \item The variable $x$ is written with a backslash \verb|\x|,
     but the mathematical commands are spelled without a backslash.
 \item Mathematical expressions should be wrapped inside \verb|{}|.
+\item Powers like $x^2$ can be specified with \verb|pow(\x, 2)|.
 \item Trigonometric functions assume degrees by default;
     the suffix \verb|r| after \verb|\x| converts the variable into radians.
 \end{itemize}
