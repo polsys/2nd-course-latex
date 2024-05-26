@@ -875,6 +875,7 @@ the easiest way is to load the \pkg{lastpage} package.
 It creates a label called \verb|LastPage| on the last page of the document,
 and this label can then be referred to as usual:
 %
+\needspace{3\baselineskip}% Ensure that this does not straddle a page boundary
 \begin{VerbatimOut}{\jobname.tmp}
 This is page
 \thepage{} of \pageref*{LastPage}.
