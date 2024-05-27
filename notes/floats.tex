@@ -419,7 +419,21 @@ end.
 %
 \subsection{Landscape floats}\label{sec:landscape floats}
 
-\todo{Especially useful for tables}
+If your material is very wide (for instance, a table with many wide columns),
+it might be beneficial to turn the page sideways.
+
+This is achieved most easily with the \pkg{rotating} package.
+It defines the \env{sidewaysfigure} and \env{sidewaystable} environments
+that work just like their counterparts, except that they are set on landscape pages.
+
+If you need the same behaviour for custom float environments,
+the \pkg{rotfloat} package bridges \pkg{rotating} and \pkg{float} together.
+
+As of this writing in May~2024, the package does not know how to tell your PDF reader
+to show the page in rotated mode.
+This could be circumvented with the method in \Cref{sec:landscape pages},
+but the manual addition of landscape pages always introduces a page break at the position.
+
 
 
 %
