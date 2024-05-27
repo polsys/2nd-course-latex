@@ -319,6 +319,33 @@ It is one of the few options that can be changed in the middle of a path
 \ShowExample
 
 
+%
+%
+\subsection{\emph{Absolute positioning*}}
+
+In some very special cases it might be useful to position graphics at absolute coordinates on the page.
+This can be done by specifying coordinates relative to the \verb|current page| anchor,
+and specifying two optional arguments to the environment:
+\begin{description}
+\item[\texttt{remember picture}] tells TikZ to remember the position on the page between \LaTeX{} runs.
+    You might need to compile twice.
+\item[\texttt{overlay}] tells TikZ to ignore bounding box computations.
+    This ensures that the picture does not interact with the rest of the page contents.
+\end{description}
+
+For example, here we start from the right edge of the page,
+move a bit upwards and to the left, and then fill a small circle:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[blue] (current page.east) ++(-1cm, 2cm) circle [radius=0.2cm];
+\end{tikzpicture}
+\end{VerbatimOut}
+\ExecuteExample
+%
+See \cite[Section~17.3.2]{tikz} for the full details.
+
+
 
 %
 %
