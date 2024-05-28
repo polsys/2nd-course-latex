@@ -20,7 +20,7 @@
 
 \section{Section name}
 
-\begin{frame}
+\begin{frame}[label=contents]
 \frametitle{The theorem}
 
 \begin{theorem}
@@ -40,5 +40,16 @@ We'll get to this soon.
 
 \end{frame}
 
+
+
+\setbeamercolor{block title}{fg=red}
+\setbeamercolor{block body}{fg=white, bg=blue}
+
+\againframe{contents}
+
+
+\setbeamerfont{frametitle}{series=\bfseries, family=\sffamily}
+
+\againframe{contents}
 
 \end{document}
