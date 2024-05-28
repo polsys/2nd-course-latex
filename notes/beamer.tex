@@ -242,7 +242,17 @@ if you put too much stuff on a slide, they will overflow.
 \end{gotcha}
 
 
-\todo{Absolute positioning}
+If you need to position graphics absolutely,
+you can use the absolute positioning system of TikZ (\Cref{sec:tikz absolute}).
+For instance, the following code could be used as the basis of a slide header:
+\begin{ExampleCode}
+\begin{tikzpicture}[remember picture,overlay]
+\node[yshift=0.15\paperheight] at (current page.center){%
+\includegraphics[width=\paperwidth]{slideheader.jpg}};
+\end{tikzpicture}
+\end{ExampleCode}
+This assumes the picture to be wide but narrow.
+The code needs to be compiled twice before anything is visible.
 
 
 \begin{warning}
@@ -254,6 +264,12 @@ It is 99~\% guaranteed not to work at a conference venue.
 As annoying as it is to switch between programs to show videos,
 it is the only reliable option.
 \end{warning}
+
+\begin{technote}
+As with embedded videos, it is possible to specify slide transition effects,
+but they might not work with all PDF viewers.
+Because of this, we do not discuss them here.
+\end{technote}
 
 
 
@@ -301,7 +317,7 @@ The \cmd{pause} command does not work inside \pkg[with Beamer]{amsmath} environm
 \end{gotcha}
 
 To get more control, it is possible to use the \cmd{uncover} command
-and \emph{overlay specifications}.
+and \emph{overlay specifications}.\index{overlay specification}
 Here are some example overlay specifications:
 \begin{description}
 \item[\texttt{<2>}] Only shown on slide~2.
@@ -439,32 +455,144 @@ Absolutely nothing at all.
 %
 \section{Styling it}\label{sec:beamer styles}
 
-\todo{Navigation symbols, advanced typography}
+Like the rest of \LaTeX, Beamer attempts to separate content and presentation.
+It does so via an extensive styling system.
+The appearance of presentation is controlled with commands in the preamble.
+
+First off, controlling the navigation symbols.
+There are several styles for them, but I believe you only need one
+-- the one where they are not shown:%
+\footnote{Have you ever seen anyone use them?}
+\begin{ExampleCode}
+\beamertemplatenavigationsymbolsempty
+\end{ExampleCode}
+
+\begin{remark}
+As mentioned above, if you use LuaLaTeX or XeLaTeX,
+you should usually also specify
+\begin{ExampleCode}
+\usefonttheme{professionalfonts}
+\end{ExampleCode}
+to avoid small kerning issues with some characters.
+\end{remark}
+
 
 \todo{Transparency in uncovering}
 
-\todo{The templating system}
 
-\begin{technote}
-As with embedded videos, it is possible to specify slide transition effects,
-but they might not work with all PDF viewers.
-Because of this, we do not discuss them here.
-\end{technote}
-
+%
+%
 \subsection{Themes}
-\todo{Outline of the theme system}
 
+Beamer comes with a complex theming system for changing the appearance of things.
+Essentially, you should only need to modify the preamble to change how things look.
+
+The overall appearance is determined by the \emph{presentation theme}.
+It is chosen with \cmd{usetheme} in the preamble.
+The presentation theme, in turn, consists of four parts, any of which can be changed independently:
+\begin{description}
+\item[Inner theme] The appearance of frame contents (blocks, lists, etc.)
+    Changed with \cmd{useinnertheme}.
+\item[Outer theme] The appearance of frame border (footer, navigation bar etc.)
+    Changed with \cmd{useoutertheme}.
+\item[Color theme] The colours used for elements.
+    Individual colours can be further customized.
+    Changed with \cmd{usecolortheme}.
+\item[Font theme] The fonts to be used for elements.
+    Also these can be customized individually.
+    Changed with \cmd{usefonttheme}.
+\end{description}
+%
+It is thus possible to start from a presentation theme,
+and then change parts of the style to suit your artistic tastes.
+
+The built-in presentation themes are showcased in \cite[Chapter~15]{beamer},
+inner and outer themes in \cite[Chapter~16]{beamer},
+and color and font themes in the following chapters.
+
+In this example, we use the \verb|Madrid| presentation theme without any further customization:%
+\footnote{Except for using \texttt{professionalfonts}, since the file was compiled with XeLaTeX.}
+%
+\begin{ExampleCode}
+\title{My fantastic presentation}
+\author[F.~Lastname]{Firstname Lastname}
+\institute[U.~Puuhamaa]{University of Puuhamaa}
+\date{20 May 2024}
+
+\beamertemplatenavigationsymbolsempty
+\usefonttheme{professionalfonts}
+\usetheme{Madrid}
+\end{ExampleCode}
+%
+\begin{center}
+\fbox{\includegraphics[page=1, width=0.45\textwidth]{examples/beamer-theme.pdf}}~
+\fbox{\includegraphics[page=2, width=0.45\textwidth]{examples/beamer-theme.pdf}}
+\end{center}
+
+Then, let us modify the look a bit.
+We take the \verb|miniframes| outer theme into use;
+it displays the sections and progress within section in the header.
+We also use its optional argument to simplify the footer.
+We then change to the \verb|crane| colour theme in order to induce a headache in our audience,
+and use the default serif font:
+%
+\begin{ExampleCode}
+\beamertemplatenavigationsymbolsempty
+\usefonttheme{professionalfonts}
+\usetheme{Madrid}
+\useoutertheme[footline=authortitle]{miniframes}
+\usecolortheme{crane}
+\usefonttheme{serif}
+\end{ExampleCode}
+%
+\begin{center}
+\fbox{\includegraphics[page=1, width=0.45\textwidth]{examples/beamer-theme2.pdf}}~
+\fbox{\includegraphics[page=2, width=0.45\textwidth]{examples/beamer-theme2.pdf}}
+\end{center}
+
+
+
+%
+%
 \subsection{Colours}
 \todo{fg and bg colors, using and setting them}
 
+\begin{practices}
+It is \emph{extra important} to take care of colour contrast in presentations.
+Projectors have a far smaller colour range than computer displays,
+especially if the room is bright.
+What might appear like two distinct colours on your laptop
+might be indistinguishable when projected.
+\end{practices}
+
+
+
 \subsection{Fonts}
 \todo{Fonts}
+
+\begin{practices}
+Beamer uses a sans-serif font by default.
+This is a good choice since serif fonts are usually more readable in low resolution.
+However, a serif font can be used to give a nice classic look.
+
+Using \emph{italic} for emphasis might be too subtle;
+prefer alerted and boldface text in presentations.
+\end{practices}
 
 
 %
 %
 \section{Handouts}
 
-\todo{About this mode; also mention multiple slides per sheet (21.1)}
+To produce handouts, pass the \verb|handout| optional argument to the document class.
+In this mode, the overlays are ``flattened'' so that everything is visible at once.
 
-\todo{Overlay specifications}
+If you still need to split a frame into multiple parts in the handout,
+you can modify the overlay specification to also apply to handouts.\index{overlay specification!handout}
+The following code shows its contents on the third slide in presentation mode,
+and on the second slide in handout mode:
+\begin{ExampleCode}
+\only<3|handout:2>{...}
+\end{ExampleCode}
+
+\todo{Multiple slides per sheet; Section~21.1 of the docs}
