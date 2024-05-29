@@ -1,2 +1,199 @@
 \chapter{Posters with tikzposter}
 
+There are several methods to creating posters with \LaTeX{}.
+To mention just three of the many packages: \pkg{tikzposter}, \pkg{beamerposter}, and \pkg{tcolorbox}.
+All of them suffer from the fact that posters are very visual,
+but \TeX{} can really only do boxes.
+
+Here we discuss \pkg{tikzposter}, since it is reasonably simple, reliable, and customizable.
+However, it is worth noting that the package has not been actively maintained since~2014.
+The other packages work fairly similarly.
+
+
+%
+%
+\section{Basic layout}
+
+The package is loaded with
+%
+\begin{ExampleCode}
+\documentclass{tikzposter}
+\end{ExampleCode}
+%
+By default, the options \verb|a0paper|, \verb|25pt|, and \verb|portrait| are used.
+Paper sizes A1 and A2 are also available, and the \verb|landscape| option produces a landscape page.
+The range of font sizes is limited to 12, 14, 17, 20, and 25~points.
+Of these, only the last one is suitable for A0~size.
+
+\begin{practices}
+As with presentations, you should not have too much text.
+Use whitespace and structure to guide the reader.
+\end{practices}
+
+For one reason or other, the package adds a watermark to the lower-right corner.
+It can be turned off with the monstrously long command
+%
+\begin{ExampleCode}
+\tikzposterlatexaffectionproofoff
+\end{ExampleCode}
+%
+There are also some package options to control margins and default block spacing;
+see the documentation for details.
+
+The title is set with \cmd[tikzposter]{maketitle} as usual;
+you can set \cmd{title}, \cmd{author}, and \cmd{institute} in the preamble.
+You can also put graphical (or rather, any) commands inside \cmd{titlegraphic}.
+By default these elements are set on top of each other.
+The customization is briefly discussed in \Cref{sec:poster style}
+
+
+
+As with Beamer, the basic layout consists of blocks.
+The \cmd[tikzposter]{block} command takes optional customization arguments,
+a title, and the contents:
+%
+\begin{ExampleCode}
+\block[]{Block title goes here}
+{
+Contents of the block
+}
+\end{ExampleCode}
+%
+The block will fill the available horizontal space,
+and the vertical size depends on the contents.
+Contents can be any material (except floats).
+If the title is empty, the ``block header'' disappears.
+
+To set several blocks side by side, it is possible to use columns
+specified inside a \env{tikzposter}{columns} environment.
+A new column is started with the \cmd[tikzposter]{column} command.
+As its argument it takes the fraction of text area width.%
+\footnote{You need to ensure that they sum to at most $1$.
+The documentation also talks about absolute widths, but they do not seem to actually work.}
+Any blocks specified after this command will be placed vertically in the column.
+For example, here we set two columns of equal size,
+and place two blocks in the left column:
+%
+\begin{ExampleCode}
+\begin{columns}
+
+\column{0.5}
+\block{Above left}{}
+\block{Below left}{}
+
+\column{0.5}
+\block{Right}{}
+
+\end{columns}
+\end{ExampleCode}
+
+The \env[tikzposter]{subcolumns} and \cmd[tikzposter]{subcolumn}
+can be used to further divide a column
+(the arguments are fractions of the \emph{outer column} width).
+
+After the \env{columns} environment ends,
+all new blocks again fill the whole horizontal space.
+
+You cannot use the usual vertical spacing commands to adjust spacing between blocks.
+A workaround is to add an offset both to the block title and contents.
+Negative $y$ values point downwards.%
+\footnote{It appears that this method might not work with blocks without title;
+this seems to be a bug.}
+%
+\begin{ExampleCode}
+\block[titleoffsety=-2cm, bodyoffsety=-2cm]{Title}{Contents}
+\end{ExampleCode}
+
+Inside a block, you can use the \cmd[tikzposter]{coloredbox} command to create highlighted regions.
+%
+\begin{ExampleCode}
+\block{Goal}
+{
+In this poster we discuss Pythagoras' theorem.
+
+\coloredbox{It is maybe the most important theorem in human history!!}
+
+\coloredbox[bgcolor=PeachPuff, fgcolor=red]{\centering I mean it!!!}
+}
+\end{ExampleCode}
+%
+It is also possible to add small notes.
+They are defined outside blocks, but they attach to the previous block.
+By default, they connect to the center of the block,
+but the precise point can be adjusted with optional arguments,
+as with the distance and angle (here east-southeast) to the anchor point:
+%
+\begin{ExampleCode}
+\note[angle=-20, radius=8cm, connection, targetoffsety=-2cm]
+    {This poster will convince you about it!}
+\end{ExampleCode}
+
+Let us see how these pieces (and a few more content additions) play together.
+The output of the following code is shown in \Cref{fig:poster example}.
+
+\begin{figure}
+\centering
+\includegraphics[height=0.85\textheight]{examples/tikzposter-content.pdf}
+\caption{The example poster (set in A2 size, and scaled here).}\label{fig:poster example}
+\end{figure}
+
+\VerbatimInput[fontsize=\footnotesize,frame=lines]{examples/tikzposter-content.tex}
+
+
+
+
+%
+%
+\section{Styling}\label{sec:poster style}
+
+The styling system of \pkg[styling]{tikzposter} is very similar to that of Beamer.
+There are a few built-in styles.%
+\footnote{\url{https://bitbucket.org/surmann/tikzposter/downloads/styleguide.pdf}}
+
+
+\begin{technote}
+The source code for the predefined styles is very readable.
+If you want to customize styles, I recommend using their code as a starting point.
+
+The installation location of packages depends on your specific \LaTeX{} installation,
+but the code can also be browsed online at \url{https://bitbucket.org/surmann/tikzposter/}.
+\end{technote}
+
+
+The overall look is controlled by \cmd[tikzposter]{usetheme},
+and then e.g.\ the colour and background styles can be customized.
+Individual colours can be changed with \cmd[tikzposter]{colorlet}
+(unlike in Beamer, colours are not separated into foreground and background colours).
+
+For example, this code produces \Cref{fig:poster styled}:
+\begin{ExampleCode}
+\usetheme{Envelope} % Block and title style set by this
+\usecolorstyle{Denmark} % Red-white colour scheme
+
+\usebackgroundstyle{VerticalGradation} % Vertical gradient...
+\colorlet{backgroundcolor}{blue!40} % ...with a faint blue colour
+\end{ExampleCode}
+
+To modify the layout of the title contents,
+it is unfortunately necessary to go to low-level \LaTeX{} code.
+The \cmd[tikzposter]{settitle} command can be used to define the layout code for the title contents.
+The variables set by the \verb|\maketitle| companion commands can be used as below.
+The following code is also used in \Cref{fig:poster styled}:
+%
+\begin{ExampleCode}
+\settitle{
+    \makebox[8cm][c]{\@titlegraphic}
+    \parbox[b]{20cm}{
+        \color{titlefgcolor} {\bfseries \Huge \sc \@title \par}
+        \vspace*{1em}
+        {\huge \@author{} \Large (\@institute)}
+    }
+}
+\end{ExampleCode}
+
+\begin{figure}
+\centering
+\includegraphics[height=0.85\textheight]{examples/tikzposter-style.pdf}
+\caption{A styled version of the previous example.}\label{fig:poster styled}
+\end{figure}
+

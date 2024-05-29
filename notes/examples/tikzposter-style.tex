@@ -1,0 +1,93 @@
+\documentclass[17pt,a2paper]{tikzposter}
+\usepackage{graphicx}
+\usepackage[svgnames]{xcolor}
+\usepackage{fontawesome5}
+
+\tikzposterlatexaffectionproofoff
+
+\usetheme{Envelope}
+\usecolorstyle{Denmark}
+\usebackgroundstyle{VerticalGradation}
+\colorlet{backgroundcolor}{blue!40}
+
+\settitle{
+    \makebox[8cm][c]{\@titlegraphic}
+    \parbox[b]{20cm}{
+        \color{titlefgcolor} {\bfseries \Huge \sc \@title \par}
+        \vspace*{1em}
+        {\huge \@author{} \Large (\@institute)}
+    }
+}
+
+\author{Firstname Lastname}
+\title{My first poster}
+\institute{University of Puuhamaa}
+\titlegraphic{\Huge\faCoffee}
+
+\begin{document}
+\maketitle
+
+\begin{columns}
+
+% The left column
+\column{0.5}
+\block{Above left}
+{
+In this poster we discuss Pythagoras' theorem.
+\coloredbox{It is maybe the most important theorem in human history!!}
+\coloredbox[bgcolor=PeachPuff, fgcolor=red]{\centering I mean it!!!}
+}
+
+\note[angle=-20, radius=8cm, connection, targetoffsety=-2cm]
+    {This poster will convince you about it!}
+
+\block{Below left}
+{
+Some facts about Pythagoras:
+\begin{itemize}
+    \item Ancient Greek
+    \item A bit weird
+    \item Did not invent the theorem
+\end{itemize}
+}
+
+% The right column
+\column{0.5}
+\begin{subcolumns}
+
+\subcolumn{0.6}
+\block{Right}
+{
+Here's the theorem:
+\[
+a^2 + b^2 = c^2
+\]
+where $a$, $b$ are the catheti
+and $c$ the hypothenuse of a right triangle.
+}
+
+\subcolumn{0.4}
+\block[titleoffsety=-2cm, bodyoffsety=-2cm]{Right 2}
+    {\centering\Huge\faDizzy[regular]}
+
+\end{subcolumns}
+
+\block{References}
+{
+\begin{itemize}
+    \item A book I read once but forget its name
+    \item University of Puuhamaa anthem song
+\end{itemize}
+}
+
+\end{columns}
+
+
+\block{}
+{
+\centering
+University of Puuhamaa assumes no responsibility
+for the scientific conduct or misconduct of its affiliates.
+}
+
+\end{document}
