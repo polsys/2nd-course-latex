@@ -375,7 +375,7 @@ you should still include \verb|doi| entries in article data, since
 \end{enumerate}
 \end{practices}
 
-\todo{When there is no natural author}
+\future{When there is no natural author}
 
 \begin{table}
 \centering
@@ -625,7 +625,7 @@ respectively to the \cmd{addcontentsline} command.
 
 
 %
-\subsection{\emph{Indexing*}}
+\subsection{\emph{Indexing*}}\label{sec:index}
 
 In the uncommon case that you need to prepare an index,
 let us very briefly go over the basic syntax.
@@ -688,7 +688,7 @@ The manually created part of the index has not received the love it would deserv
 \subsection{Line numbers}
 
 Some journals require line numbers for the referee copy of a submitted work.
-\todo{Also double spacing.}
+\future{Also double spacing.}
 This is usually achieved with the \pkg{lineno} package.
 
 The syntax is very simple.
@@ -748,7 +748,7 @@ perl path/to/latexdiff.pl old.tex new.tex > diff.tex
 \end{ExampleCode}
 It could be that \prg{latexdiff} is even on your search path,
 in which case it suffices to execute \verb|latexdiff|.
-\todo{Check how this usually is}
+\future{Check how this usually is}
 
 On Windows, things are slightly more complicated.
 Windows writes the output of the script (through the \verb|>| operator)
@@ -790,8 +790,6 @@ You need to manually fix up these issues,
 which makes for an exercise in \LaTeX{} debugging.
 If you keep your lines reasonably short,
 at least you get some assistance from the line numbers.
-
-\todo{How to avoid the problems}
 \end{gotcha}
 
 \begin{gotcha}

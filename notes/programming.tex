@@ -116,8 +116,7 @@ Some other temporary files that you can expect to see in your compilation folder
     See below and \Cref{sec:bibliography}.
     Some publishers, in particular arXiv,
     require you to submit this file together with your source code.
-\filetype{idx} Index created by the \prg{makeindex} program.
-    \todo{Reference if makeindex is mentioned}
+\filetype{idx} Index created by the \prg{makeindex} program (\Cref{sec:index}).
 \filetype{lof} List of figures.
 \filetype{log} This is the raw compiler log.
     \LaTeX{} editors parse this into a more readable form,
@@ -252,8 +251,6 @@ In either case,
 the included \verb|.tex| file must not contain a preamble --
 there already was one in the main file.
 Conversely, this means that the separated files cannot be compiled on their own.
-
-\todo{The standalone document class}
 
 There might be some editor-specific support for setting the main file of your project.
 This allows you to hit \emph{Compile} while editing a chapter file,
@@ -822,7 +819,7 @@ You need to wrap the environment inside \verb|equation| or one of its friends.
 If this happens inside a TikZ picture, you have very likely mistyped a command or option.
 Check the code line shown above the error message.
 
-\todo{More common error messages}
+\future{More common error messages}
 
 
 
@@ -1038,7 +1035,6 @@ For example, you can find the (very extensive!) documentation of \pkg{hyperref}
 at \url{www.ctan.org/pkg/hyperref}.
 They are also available at \url{www.texdoc.org}.
 
-\todo{Other common packages}
 \begin{description}
 \item[babel] Support for languages other than English.
     See \Cref{sec:babel}.
@@ -1410,5 +1406,5 @@ The new system is documented in ``\emph{\LaTeX{} for authors}'' distributed with
 It can be accessed by the name \texttt{usrguide} at \url{www.texdoc.org}
 or with the \verb|texdoc| command-line utility.
 
-\todo{Adding options to own packages}
+\future{Adding options to own packages}
 

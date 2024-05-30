@@ -1,10 +1,19 @@
 \NeedsTeXFormat{LaTeX2e}[2020/02/02]
 \ProvidesPackage{latexcourse}[2024/03/05 latexcourse]
 
-% A simple TODO command, available only when the 'draft' option is set
+% The TODO command is available only when the 'draft' option is set
+% The FUTURE command does nothing in final mode, and acts like TODO in draft mode
+\newcommand{\future}[1]{}
+\newcommand{\futurechapter}[1]{}
+\newcommand{\futuresection}[1]{}
+\newcommand{\futuresubsection}[1]{}
 \DeclareOption{draft}{
     \newcommand{\todo}[1]{\textcolor{red}{\textbf{[TODO: #1]}}}
     \newcommand{\quiettodo}[1]{}
+    \renewcommand{\future}[1]{\textcolor{blue}{\textbf{[FUTURE: #1]}}}
+    \renewcommand{\futurechapter}[1]{\chapter{\future{#1}}}
+    \renewcommand{\futuresection}[1]{\section{\future{#1}}}
+    \renewcommand{\futuresubsection}[1]{\subsection{\future{#1}}}
 }
 \ProcessOptions\relax
 
