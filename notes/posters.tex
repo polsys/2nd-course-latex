@@ -44,7 +44,12 @@ The title is set with \cmd[tikzposter]{maketitle} as usual;
 you can set \cmd{title}, \cmd{author}, and \cmd{institute} in the preamble.
 You can also put graphical (or rather, any) commands inside \cmd{titlegraphic}.
 By default these elements are set on top of each other.
-The customization is briefly discussed in \Cref{sec:poster style}
+The customization is briefly discussed in \Cref{sec:poster style}.
+The \cmd[tikzposter]{maketitle} command also accepts some optional arguments like
+%
+\begin{ExampleCode}
+\maketitle[width=40cm]
+\end{ExampleCode}
 
 
 
@@ -165,7 +170,7 @@ and then e.g.\ the colour and background styles can be customized.
 Individual colours can be changed with \cmd[tikzposter]{colorlet}
 (unlike in Beamer, colours are not separated into foreground and background colours).
 
-For example, this code produces \Cref{fig:poster styled}:
+For example, this code selects the theme in \Cref{fig:poster styled}:
 \begin{ExampleCode}
 \usetheme{Envelope} % Block and title style set by this
 \usecolorstyle{Denmark} % Red-white colour scheme
