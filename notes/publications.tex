@@ -65,6 +65,19 @@ suppress the display of keys at \verb|\ref| and \verb|\cite| commands respective
 %
 \subsection{Keeping them correct}\label{sec:cleveref}
 
+\begin{warning}
+Some good things do not last.
+
+Unfortunately \pkg[maintenance]{cleveref} has not seen an update since~2018,
+whereas \LaTeX{} core developers have been revamping the entire cross-referencing mechanism.
+The late~2024 \LaTeX{} update broke \pkg[issues with theorems]{cleveref} theorem labels
+defined with \pkg[issue with cleveref]{amsthm}.
+
+A workaround is to load the \pkg{thmtools} package after \pkg{amsthm}.
+Note that you don't need to use \pkg{thmtools} commands;
+just the existence of the package is enough to fix the issue.
+\end{warning}
+
 So you go about writing, adding references to Theorem~4.1 or something similar.
 Then near the end of your writing process,
 you decide to call it a Lemma instead.
@@ -81,9 +94,6 @@ Enter the little package called \pkg{cleveref}.
 \begin{practices}
 If the preceding paragraph sounded like a true story that has happened to the present author,
 you are absolutely right.
-
-Almost all journal styles are compatible with \pkg{cleveref}.
-Use it.
 \end{practices}
 
 This package adds two more commands: \cmd{cref} and \verb|\Cref|.

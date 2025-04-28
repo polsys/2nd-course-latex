@@ -23,10 +23,11 @@
 \RequirePackage[finnish,french,english]{babel}
 \RequirePackage[hidelinks]{hyperref}
 \RequirePackage[backend=bibtex, backref=true]{biblatex}
+\RequirePackage{amsthm}
+\RequirePackage{thmtools}
 \RequirePackage{cleveref}
 \RequirePackage[svgnames]{xcolor}
 \RequirePackage{framed}
-\RequirePackage[hyperref,framed,amsmath,thmmarks,amsthm]{ntheorem}
 \RequirePackage{footmisc}
 \RequirePackage{enumitem}
 \RequirePackage{tikz}
@@ -55,31 +56,36 @@
 \usetikzlibrary{cd}
 \RequirePackage{lastpage}
 
-% Remark environments have a shaded margin
-\theoremstyle{nonumberbreak}
-\theorembodyfont{\upshape}
-\theoremprework{
-    % Shade the left margin
-    \renewcommand{\FrameCommand}{{\color{lightgray}{\hspace{-10pt}\vrule width 4pt\hspace{6pt}}}}
-    \MakeFramed{\advance\hsize-\width \FrameRestore}
-}
-\theorempostwork{\endMakeFramed}
-\newtheorem{latexthree}{New in \LaTeX3}[section]
-
-\newcommand{\anothertheorem}[2]{
-    \theoremclass{latexthree}
-    \newtheorem{#1}[latexthree]{#2}
-}
-\anothertheorem{warning}{Warning}
-\anothertheorem{gotcha}{Gotcha!}
-\anothertheorem{overleaf}{Note to Overleaf users}
-\anothertheorem{practices}{Good practices}
-\anothertheorem{technote}{Technical side note}
-\anothertheorem{remark}{Remark}
+% Note: The 'overleaf' style is included as an example in the fancythm section.
+%       Keep in sync!
+\declaretheoremstyle[
+    headpunct={\\},
+    spaceabove=8pt,
+    spacebelow=8pt,
+    shaded={textwidth=352pt,margin=4pt,rulewidth=2pt,rulecolor=lightgray,bgcolor={gray}{0.95}}
+]{boxed}
+\declaretheoremstyle[
+    headpunct={\\},
+    spaceabove=8pt,
+    spacebelow=8pt,
+    shaded={textwidth=352pt,margin=4pt,rulewidth=2pt,rulecolor=Green,bgcolor=Green!10}
+]{overleaf}
+\declaretheoremstyle[
+    headpunct={\\},
+    spaceabove=8pt,
+    spacebelow=8pt,
+    shaded={textwidth=352pt,margin=4pt,rulewidth=2pt,rulecolor=DarkOrange,bgcolor=Orange!8}
+]{warning}
+\declaretheorem[numbered=no, style=boxed, name={New in \LaTeX3}]{latexthree}
+\declaretheorem[numbered=no, style=boxed, name={Good practices}]{practices}
+\declaretheorem[numbered=no, style=boxed, name={Technical side note}]{technote}
+\declaretheorem[numbered=no, style=boxed, name={Remark}]{remark}
+\declaretheorem[numbered=no, style=warning, name={Gotcha!}]{gotcha}
+\declaretheorem[numbered=no, style=warning, name={Warning}]{warning}
+\declaretheorem[numbered=no, style=overleaf, name={Note to Overleaf users}]{overleaf}
 
 % There are also theorem environments for the examples; these use plain style
-\theoremstyle{plain}
-\newtheorem{theorem}{Theorem}
+\declaretheorem{theorem}
 
 % Macros for referencing commands and environments
 % These automatically add the corresponding index entries

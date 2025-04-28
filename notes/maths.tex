@@ -1216,7 +1216,9 @@ See \Cref{sec:tikz-cd} for a solution based on TikZ.
 %
 %
 %
-\section{Theorem environments}\label{sec:amsthm}
+\section{Theorem environments}
+
+\subsection{The common way with \pkg{amsthm}}\label{sec:amsthm}
 
 Basic theorem/definition/etc.\ environments are usually done with the \pkg{amsthm} package.
 The operative command is \cmd{newtheorem}, which takes two required arguments:
@@ -1234,7 +1236,7 @@ It also takes one optional argument, whose location is significant:
 \begin{practices}
 This is now more of a personal opinion,
 but I strongly believe that all theorem-like environments should share the same numbering.
-It is infuriating to find Theorem~5 in a document like
+It is infuriating to search for Theorem~5 in a document like
 \begin{quote}
     \dots, Definition~3, Lemma~3, Theorem~3, Lemma~4, Lemma~5, Lemma~6, Theorem~4,
     Definition~4, \dots
@@ -1300,17 +1302,9 @@ The \pkg{amsthm} package automatically defines a \env{proof} environment.
 The ``Proof'' heading can be customized with the optional argument,
 and the environment automatically put a QED symbol at the end.
 The symbol can be changed by redefining \cmd{qedsymbol}
-(either in the preamble or locally within the environment):\label{ex:nasty qed hack}
+(either in the preamble or locally within the environment):
 %
 \begin{VerbatimOut}{\jobname.tmp}
-% We need to fake things a bit since the notes use ntheorem instead of amsthm
-% To use a customized symbol, we need to call \qed at the closing of of the environment
-% Moreover, instead of \renewcommand\qedsymbol{...} we need to CALL \qedsymbol{...}
-% Instead of showing and executing different code, we use a nasty hook here
-\DeclareCommandCopy{\oldqedsymbol}{\qedsymbol}
-\AddToHook{env/proof/end}[qed-hack]{%
-\renewcommand{\qedsymbol}{\oldqedsymbol}\qedsymbol{$\heartsuit$}\qed}
-
 \begin{theorem}
 \LaTeX{} course participants are fantastic.
 \end{theorem}
@@ -1319,18 +1313,21 @@ Just look at them.
 \renewcommand{\qedsymbol}{$\heartsuit$}
 \end{proof}
 \end{VerbatimOut}
-\ShowExampleBelow[9]
-\RemoveFromHook{env/proof/end}[qed-hack]
+\ShowExampleBelow
 
 If the environment ends with a list or display equation,
 the QED symbol is placed on a new line.
 Since this is not very pretty, we can give \LaTeX{} a hint with the \cmd{qedhere} command.
 %
 \begin{VerbatimOut}{\jobname.tmp}
-% Again a hack, since ntheorem automatically puts the QED mark in the correct position
-\newcommand{\qedhere}{}
+\begin{proof}[Ugly proof]
+It remains to notice that
+\[
+a^2 - b^2 = (a+b)(a-b).
+\]
+\end{proof}
 
-\begin{proof}[Remainder of a long proof]
+\begin{proof}[Nice proof]
 It remains to notice that
 \[
 a^2 - b^2 = (a+b)(a-b).
@@ -1338,19 +1335,47 @@ a^2 - b^2 = (a+b)(a-b).
 \]
 \end{proof}
 \end{VerbatimOut}
-\ShowExampleBelow[3]
+\ShowExampleBelow
 
+
+%
+%
+\subsection{Fancier alternatives}
 
 There are also some fancier theorem environments,
 such as those produced by \pkg{ntheorem}.
 However, \pkg{ntheorem} does have some subtly surprising behaviors at times,
 and it might have compatibility issues with some other packages.%
 \footnote{This observation sponsored by: using \pkg{ntheorem} in quite a few projects,
-including these notes.
-Since the examples use \pkg{amsthm} syntax and \pkg{ntheorem} is at times very incompatible with it,
-there are some nasty hacks involved.}
+including Version~1.0 of these notes.
+Just one example: with \pkg{amsthm} you are supposed to renew \cmd{qedsymbol},
+whereas with \pkg[causing trouble]{ntheorem} you are supposed to call it.}
 
-\emph{The \LaTeX{} Companion} \cite[Section~4.1.5]{TLC} suggests using the \pkg{thmtools}
-package to iron out some differences between \pkg{amsthm} and \pkg{ntheorem},
-but I have no personal experience of it.
+A much more compatible way to make your theorems slightly fancier is the \pkg{thmtools} package.
+It provides an easier syntax in the preamble.
+It is maybe best illustrated by example:
+%
+\begin{ExampleCode}
+\usepackage{thmtools}
 
+\declaretheorem[numberwithin=section]{theorem}
+\declaretheorem[sibling=theorem]{lemma}
+\declaretheorem[sibling=theorem, style=definition]{definition}
+\end{ExampleCode}
+
+There are also some basic styling options.
+The ``Note to Overleaf users'' boxes in these notes are set with the following code:
+\begin{ExampleCode}
+\declaretheoremstyle[
+    headpunct={\\},
+    spaceabove=8pt,
+    spacebelow=8pt,
+    shaded={textwidth=352pt,margin=4pt,rulewidth=2pt,
+        rulecolor=Green,bgcolor=Green!10}
+]{overleaf}
+\declaretheorem[numbered=no, style=overleaf,
+    name={Note to Overleaf users}]{overleaf}
+\end{ExampleCode}
+
+The package documentation is really nice and illustrative,
+so there is no point in repeating more of it here.
