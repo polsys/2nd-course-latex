@@ -6,23 +6,43 @@
 What really is \LaTeX?
 
 It all starts with \TeX, the typesetting system designed by Donald Knuth in late 70s and 80s.
+It had just become possible to use computers to control the chunky machines
+whose output could be fed into a printing press.
+Nowadays the machines are less chunkier and everybody just reads PDFs on screen,
+but the principles are the same.
+
+The chunky machines take in sequences of instructions:
+move down one inch from top of page, select the 12-point Computer Modern font,
+write ``Hello'', move 5~points right, write ``world''\dots{}
+
+The original \TeX{} is a language that expresses these instructions in a machine-independent way,
+and automates layout tasks like line breaking.
+Moreover, \TeX{} is a powerful macro language.
+It is possible to implement very complex algorithms with it
+and to redefine any part of the language.
+
 \TeX{} is a powerful system for laying out text,
 but it puts a lot of responsibility on the writer.
+It will break lines and paragraphs for you,
+but you still need to handle the overall layout.
 Essentially, you are responsible for both the content and its presentation.
 
+\bigskip\noindent%
 \LaTeX{} (originally by Leslie Lamport, now maintained by several people)
 extends this core by introducing commands like \cmd{section}:
 this command not only lays out the section title in a bigger font,
-but also adds some vertical whitespace around it, updates the current section number,
-adds an entry to the table of contents, and so on.
-This \emph{separates the content from how it is presented}.
+but also adds some vertical whitespace around it, updates the current section number, and so on.
 
-We will try to emphasize this philosophy on this course.
+If you want to add a table of contents, you just add \cmd{tableofcontents} in a suitable spot.
+\LaTeX{} fills in the contents it gathered from your sectioning commands
+and makes sure the page numbers are right.
+
+\LaTeX{} \emph{separates the content from how it is presented}.
+We will emphasize this philosophy on this course.
 By using standard constructs, packages, and our own custom commands,
 we can make the \verb|.tex| source code \emph{semantically} meaningful:
 something that you could read aloud.
-The system then makes sure that the output looks great on paper
--- isn't that why we ever wanted computers to exist!
+Any customization to the style is done in a separate place.
 
 
 \begin{warning}
@@ -44,10 +64,13 @@ Examples of the latter include the obsolete \obscmd{bf} and \obscmd{it} commands
 
 \begin{latexthree}
 The ``standard'' \LaTeX{} version is $2\varepsilon$, released in 1994.
+The core commands have not changed since then.
+Evolution of the system happens in extension packages.
+
 \LaTeX3 is a long-running project (started already before $2\varepsilon$, and reactivated around 2018)
 on rewriting the internals of \LaTeX{} to be more extensible.
 
-\LaTeX3 introduces new commands for defining commands and environments.
+\LaTeX3 introduces new commands for defining custom commands and environments.
 We will only discuss the version $2\varepsilon$ methods (which are still valid) here,
 but if you find yourself writing a package, you should consider learning about the new methods.%
 \footnotemark
@@ -65,29 +88,38 @@ starting already in \Cref{sec:document structure}.
 \section{How \LaTeX{} processes files}
 
 The design of the \TeX{} compiler is limited by the era it was conceived in.
-Computer memory was a scarce resource in the 1980s,
-so the compiler remembers as little as possible.
+In the 1980s computer memory was measured in kilobytes,
+so the compiler stores as little information as possible.
 
-In particular, \TeX{} reads its source files from top to bottom.
-It never backtracks,
-which makes it impossible to reference things that have not yet been defined.
+In particular, \TeX{} reads source files from top to bottom.
+Commands are evaluated immediately as they are encountered.
+\TeX{} keeps track of text and content only for the current page.
+Once the page is full, it is ``shipped out'' as printing commands and cannot be changed anymore.
+We talk about the layout algorithm in \Cref{sec:layout}.
 
-How is it then possible to create cross-references to upcoming sections?
-Whenever a \cmd{label} command is encountered,
+As \TeX{} never backtracks,
+how it is possible to create a table of contents,
+or any cross-references to upcoming sections at all?
+The table of contents is shipped out before \TeX{} has a chance to know what to put there!
+
+The trick is simple:
+Whenever a \cmd{section} or \cmd{label} command is encountered,
 its name and position is recorded to an \verb|.aux| file.\index{aux file@.aux file}
 \LaTeX{} reads in this file before it starts processing the \verb|.tex| file.
+This way it knows about what to expect.
 
 Consequently:
 \begin{enumerate}
-\item On the first compilation, an \verb|.aux| file is generated.
-\item On subsequent compilations, cross-references are resolved
+\item On the first compilation, \LaTeX{} does not know about upcoming references.
+    An \verb|.aux| file is generated.
+\item On the next compilation, cross-references are resolved
     using the \verb|.aux| file from the preceding compilation.
 \item This means that all page number references point to \emph{the state of the previous compilation}.
 \item Since the resolution might change page numbering,
     it might be necessary to iterate.
     \LaTeX{} gives the
     ``\texttt{Label(s) may have changed. Rerun to get cross-references right.}''
-    warning if this is the case.
+    warning in this case.
 \item For well-behaved documents, at most three compilations should give convergence.
 \end{enumerate}
 
@@ -134,10 +166,9 @@ They generally share the file name of the main \verb|.tex| file.
 
 \begin{technote}
 These notes also use this mechanism.
-Code examples are written inside the \verb|.tex| source files.
-Some special commands write the example to a temporary file,
-which is then read twice:
-once to print out the code, and then again to evaluate the results.
+Code examples are written inside a special environment within the chapter \verb|.tex| file.
+\TeX{} outputs the example to a temporary file so that it can be read back \emph{twice}:
+once to print out the code, and then again to show the results.
 \end{technote}
 
 These auxiliary files can also be read and written by other programs.
@@ -146,7 +177,7 @@ Processing a database of bibliographic entries is too complicated to do
 inside the \TeX{} programming environment.
 Therefore, a separate program is used.%
 \footnote{The newer \prg{biber} compiler used by \pkg{biblatex} package works
-in a similar way to that described here.}
+in the same way.}
 It works like this:
 \begin{enumerate}
 \item You write bibliographic data in a \verb|.bib| file.\index{bib file@.bib file}
@@ -168,8 +199,8 @@ In fact, arXiv does not run any bibliographic compilers at all.
 They require you to submit the \verb|.bbl| file created by your preferred compiler.
 (This probably has to do with two facts:
 1. There is more than one bibliography compiler in wide use.
-2. The bibliographic databases can contain a lot of data,
-also including uncited works.)
+2. Some people use the same massive \verb|.bib| database for all their articles,
+and probably don't want to share it.)
 
 
 
@@ -181,30 +212,36 @@ The \cmd{input} and \cmd{include} commands can be used to include additional \ve
 This makes it possible to e.g.\ write each chapter of a long document in a separate file.
 
 \begin{practices}
-While it would sound reasonable to split even articles into section-specific files,
-there are two reasons not to do so:
+While it would sound reasonable to split an article into smaller files,
+there are at least three reasons not to do so:
 \begin{itemize}
 \item If you are sharing files with collaborators,
     the complexity of keeping files in sync grows faster than linear in the number of files.
 \item Many journals prefer to have the submission in one \verb|.tex| file
     for similar logistical reasons.
+\item There can also be some complexity in setting up your editor.
 \end{itemize}
-%
-As we see below, there can also be some complexity in setting up the editor.
 
 Therefore my recommendation is:
 only split the document if you are preparing a book.
-This advice might be extended to theses, and lecture notes
-edited by a limited amount of people simultaneously.
+It is up to your pain-tolerance whether a thesis counts as one.
 These very notes are split into one file per chapter.\footnotemark
 
 When I started preparing this course,
-this was the piece of advice I got the most from other \TeX{}nicians.
+I asked some other \TeX{}nicians for important pieces of advice to give.
+This was the piece of advice I got the most.
 Consider yourself warned.
 \end{practices}
 \footnotetext{And suffer from some associated problems.
 The ``main file detection'' heuristics of my editor do get confused by this chapter
-where several \texttt{\textbackslash documentclass} commands appear.}
+and the Beamer chapter where several \texttt{\textbackslash documentclass} commands appear.
+It tries to compile the chapters as standalone files, failing spectacularly with 1000+ errors.}
+
+\begin{practices}
+If you separate chapter contents into their own files,
+I highly recommend keeping the ``main file'' very short
+-- consisting only of the preamble and \cmd{include} commands.
+\end{practices}
 
 There is a minor difference in the two commands.
 When \cmd{input} is called with the name of a \verb|.tex| file,
@@ -224,9 +261,10 @@ Since each file has its own \verb|.aux| file,
 cross-references to uncompiled chapters might work (but be outdated!).
 
 \begin{ExampleCode}
-% Preamble
+% In the preamble
 \includeonly{intro,discussion}
 
+% In the document body
 \include{intro} % Input intro.tex
 \include{methods} % Input methods.tex
 \include{results} % Input results.tex
@@ -234,20 +272,22 @@ cross-references to uncompiled chapters might work (but be outdated!).
 \end{ExampleCode}
 
 \begin{gotcha}
-\cmd{include} only produces a warning if it cannot find the specified file.
+\cmd{include} produces only a warning and not an error if it cannot find the specified file.
 Also, some packages work unreliably with \cmd{include}.
 
 Do not use \cmd{includeonly} when preparing the final copy of your document,
 since some of the \verb|.aux| files could be outdated.
 \end{gotcha}
 
-\begin{practices}
-If you separate chapter contents into their own files,
-I highly recommend keeping the ``main file'' very short
--- consisting only of the preamble and \cmd{include} commands.
-\end{practices}
+\begin{gotcha}
+If you define commands, counters, or float types inside \cmd[gotchas]{include}'d files,
+you will probably end up in pain whenever you use \cmd{includeonly}.
+Define those things in the preamble.\footnotemark
+\end{gotcha}
+\footnotetext{Again an observation sponsored by these notes,
+since there are examples defining all of those objects.}
 
-In either case,
+Regardless of which command you use to include files,
 the included \verb|.tex| file must not contain a preamble --
 there already was one in the main file.
 Conversely, this means that the separated files cannot be compiled on their own.
@@ -294,7 +334,6 @@ that are \emph{expanded} into sequences of more tokens
 The core system includes only a few commands for manipulating internal state and putting out text,
 and the rest is achieved via macro expansion.
 
-That was a mouthful, so let us see an example.
 In \LaTeX{} macros are defined with the \cmd{newcommand} command.
 
 \begin{VerbatimOut}{\jobname.tmp}
@@ -444,8 +483,8 @@ If a word space is actually needed, you can feed the command an empty group \ver
 \index{group}\index{scope}
 \label{ex:font scope}
 More precisely, the braces delimit a \emph{group}.
-A group is handled as a single argument to a command.
-Additionally, they serve as a \emph{scope} for commands that change
+A group is handled as a single entity.
+Additionally, it serves as a \emph{scope} for commands that change
 how all the following text is output.
 For example, the font-sizing commands like \cmd{tiny} and \cmd{Large}
 affect the size of all text that follows them.
@@ -459,7 +498,7 @@ and {\Large I am large}
 \ShowExample
 
 If you forget about this and just write \cmd{tiny} without any scoping,
-you will have tiny text until the end of document (or the next font size command).
+you will have tiny text until the end of document (or next size command).
 
 \begin{VerbatimOut}{\jobname.tmp}
 \tiny I am small and
@@ -511,31 +550,6 @@ $\sqrt[3]{7}$.
 \end{VerbatimOut}
 \ShowExample
 
-Another example is the optional argument to \cmd{cite} command,
-which indicates a precise position within the cited work:
-\verb|\cite[Page 40]{TLC}| produces \cite[Page 40]{TLC}.
-(Here \verb|TLC| is the bibliography key for \emph{The \LaTeX{} Companion};
-we will discuss this more in \Cref{sec:bibliography})
-
-\begin{gotcha}
-Inside an optional argument, \LaTeX{} interprets the first \verb|]| it sees as the closing bracket.
-This means that if you need to use \verb|[]| \emph{inside} an optional argument
-(say, as an optional argument to an inner command), you need to wrap things in braces.
-Quite often, you might need even \emph{two sets of braces}.
-Compare the two citations:
-%
-\begin{VerbatimOut}{\jobname.tmp}
-\cite[{{Page [40] maybe?}}]{TLC}\\
-\cite[Page [40] maybe?]{TLC}
-\end{VerbatimOut}
-\ShowExample
-%
-The first citation is shown correctly.
-In the second, the optional argument is interpreted to be ``\verb|Page [40|''
-and the citation name then ``\verb|m|'' (only a single letter since it was not wrapped in braces).
-The remaining ``\verb|aybe?]{TLC}|'' is then normal body text.
-\end{gotcha}
-
 \begin{gotcha}
 \LaTeX{} ignores whitespace between a command and its optional argument.
 This might sometimes lead to surprising behaviour.
@@ -550,6 +564,38 @@ Here the second list item is interpreted as an optional argument that replaces t
 \end{itemize}
 \end{VerbatimOut}
 \ShowExample
+\end{gotcha}
+
+Another example is the optional argument to \cmd{cite} command,
+which indicates a precise position within the cited work:
+\verb|\cite[Page 40]{TLC}| produces \cite[Page 40]{TLC}.
+(Here \verb|TLC| is the bibliography key for \emph{The \LaTeX{} Companion};
+we will discuss this more in \Cref{sec:bibliography}.)
+
+\begin{gotcha}
+\LaTeX{} does not keep track of \verb|[]| nesting.
+Inside an optional argument, \LaTeX{} interprets the first \verb|]| it sees as the closing bracket.
+This means that if you need to use \verb|[]| \emph{inside} an optional argument
+(say, as an optional argument to an inner command), you need to protect it with braces.
+Quite often, you might need even \emph{two sets of braces}.
+Compare the two citations:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\cite[{{Page [40] maybe?}}]{TLC}\\
+\cite[Page [40] maybe?]{TLC}
+\end{VerbatimOut}
+\ShowExample
+%
+The first citation is shown correctly.
+In the second:
+\begin{itemize}
+    \item the optional argument is interpreted to be ``\verb|Page [40|'',
+    \item the first \verb|]| already closes the optional argument,
+    \item the citation key is taken to be ``\verb|m|''
+        (only a single letter since there are no braces),
+    \item such a key does not exist so \textsf{biblatex} prints it as ``[\textbf{m}]'',
+    \item the remaining ``\verb|aybe?]{TLC}|'' is then normal body text.
+\end{itemize}
 \end{gotcha}
 
 
@@ -586,11 +632,13 @@ you need to call \cmd{renewcommand} in the document preamble.
 
 Here is an example of \cmd{newcommand} and \cmd{renewcommand} with arguments.
 The two commands have matching syntax.
-Note that the new definition is free to have a different number of arguments.
+Note that the new definition is \emph{allowed} to have a different number of arguments,
+but it might be confusing!
 
 \begin{VerbatimOut}{\jobname.tmp}
 \newcommand{\dual}[2]{(#1 \mid #2)}
-Mathematicians: $\dual{a}{b}$.\\
+Mathematicians: $\dual{a}{b}$.
+
 \renewcommand{\dual}[2]
   {\langle#2 \mid #1\rangle}
 Physicists: $\dual{a}{b}$.
@@ -598,7 +646,7 @@ Physicists: $\dual{a}{b}$.
 \ShowExample
 
 The \cmd{DeclareCommandCopy} robustly copies the current definition of a command.%
-\footnote{This can also be done with raw \TeX{} primitives, which are to be avoided.}
+\footnote{Do not use raw \TeX{} primitives to do this.}
 It is then possible to renew the definition, and still access the previous version.
 Let us illustrate this by swapping the meanings of \verb|\epsilon| and \verb|\varepsilon|:
 %
@@ -681,14 +729,16 @@ the font properties are reset automatically as the group ends.
 \begin{gotcha}
 If the begin/end code of your environment spans multiple lines,
 you need to be careful with line breaks.
+\TeX{} happily copy-pastes things including whitespace characters,
+and whitespace is meaningful.
 The extra whitespace might cause \LaTeX{} to output an unintended empty space
 or even a paragraph break.
+
 To avoid line breaks to be interpreted as line breaks,
 you can end each line in the environment definition with \verb|%|
 -- the comment character shallows the line break.
 
-This same thing applies to empty lines before and after environment usage
--- the usual paragraph-breaking rules apply.
+This same thing applies to empty lines before and after environments.
 If you don't want to start a new paragraph after the environment ends,
 do not leave an empty line between \verb|\end{...}| and the following text.
 (For visual separation in the code, I prefer a line containing just \verb|%|.)
@@ -702,14 +752,15 @@ do not leave an empty line between \verb|\end{...}| and the following text.
 %
 \section{Diagnosing errors}
 
-Macro languages were popular in the 1980s, back when 640 kilobytes was enough memory for anyone.
+Macro languages were popular in the 1980s, when 640 kilobytes was enough memory for anyone.
 An unfortunate consequence of \TeX's stability is that the compiler still operates under this worldview.
-The source code is read exactly once from top to bottom,
-and if the code is not correct, error messages can be extremely cryptic.
+It does not see any meaning in commands, it just expands them into more primitive commands.
+If your code is not correct, error messages can be extremely cryptic.
 
 \begin{overleaf}
 Some \LaTeX{} distributions are set up to ignore some errors.
 For example, Overleaf is quite good at ignoring missing \verb|$| signs and other small typos.
+ArXiv and publishers are not as relaxed.
 You should really pay attention to red symbols in the source code margin
 and next to the \emph{Recompile} button!
 \end{overleaf}
@@ -1112,7 +1163,7 @@ Ideally, you would define your favourite commands here.
 One change is that loading packages is done with \cmd{RequirePackage}.
 
 As a complete example, here is a heavily shortened version of the style file for these notes.%
-\footnote{As the source code is openly available, you can read the full file as well!}
+\footnote{See the introduction for a link to the full source code!}
 %
 \begin{ExampleCode}
 \NeedsTeXFormat{LaTeX2e}[2020/02/02]
@@ -1130,9 +1181,9 @@ As a complete example, here is a heavily shortened version of the style file for
 \RequirePackage[hidelinks]{hyperref}
 
 % Theorem styles for examples
-\RequirePackage[hyperref,framed,amsmath,thmmarks,amsthm]{ntheorem}
-\theoremstyle{plain}
-\newtheorem{theorem}{Theorem}
+\RequirePackage{amsthm}
+\RequirePackage{thmtools}
+\declaretheorem{theorem}
 \end{ExampleCode}
 
 In this example, you could also see how a simple boolean option can be declared.
@@ -1146,7 +1197,7 @@ We do not discuss further package development topics here.
 %
 \section{Counters}\label{sec:counters}
 
-\LaTeX{} keeps a lot of internal state in variables called \emph{counters}\index{counters}.
+\LaTeX{} keeps a lot of internal state in integer variables called \emph{counters}\index{counters}.
 
 \begin{VerbatimOut}{\jobname.tmp}
 We are in Chapter~\arabic{chapter}
