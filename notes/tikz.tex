@@ -11,7 +11,7 @@ One such package is \pkg{pgfplots}, which provides much more tools for plotting 
 TikZ has bit of a learning curve
 and its documentation spreads over no less than 1321~pages (as of April~2024).
 We are able to only cover the essentials here.
-An unofficial web version of the manual can be accessed at \url{tikz.dev/}.
+An unofficial web version of the manual can be accessed at \url{tikz.dev}.
 
 \begin{technote}
 TikZ is an acronym for \emph{TikZ ist kein Zeichenprogramm}
@@ -223,7 +223,6 @@ It takes a colour name as its argument;
 \pkg[with TikZ]{xcolor} extensions and custom colours are supported.
 It is possible to blend the color with white with the \verb|!| specifier
 (see page~\pageref{ex:color blending}).
-Be careful with the colour name; the error message can be confusing.
 %
 \begin{VerbatimOut}{\jobname.tmp}
 \definecolor{Sciency}{cmyk}{0,0.46,1,0}
@@ -363,6 +362,22 @@ the order of which you can probably guess.
 \end{tikzpicture}
 \end{VerbatimOut}
 \ShowExample
+
+To draw a curved path between two points, you can use the \verb|to| operation
+with optional arguments.
+The \verb|in| and \verb|out| arguments take an angle in degrees (clockwise).
+There are also the \verb|bend left| and \verb|bend right| options
+for automatic control.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\centering
+\begin{tikzpicture}
+  \draw (0,0) to[out=0,in=180] (2,1);
+  \draw (3,0) to[bend left] (5,1);
+  \draw[red,dashed] (3,0) to[bend right] (5,1);
+\end{tikzpicture}
+\end{VerbatimOut}
+\ShowExampleBelow[2]
 
 To draw rectangles, there is the \verb|rectangle| shorthand
 that is put between coordinates of the two opposite corners.
@@ -512,6 +527,7 @@ For this, the \cmd{useasboundingbox} command is useful.%
 TikZ certainly has many ways to do common operations.}
 (This is especially useful in a Beamer slide where you gradually reveal parts of the picture.
 You can use this command to reserve enough space for the full picture.)
+\label{ex:tikz useasboundingbox}
 
 Here we instead shrink the bounding box
 so that the picture contents extend beyond the reserved space.
@@ -669,9 +685,97 @@ Not only is the code semantically meaningful, but also easier to change.
 TikZ comes with several extension libraries that are not loaded by default.
 They can be enabled with \cmd{usetikzlibrary}.
 Their full documentation fills \cite[Section~V]{tikz},
-but let us briefly show some of the more useful packages.
+but let us briefly show a couple illustrative examples.
 
-\future{Think about what to cover here: angles, decorations, graphs, trees, spy?}
+\begin{practices}
+TikZ has a lot of features,
+\emph{aber es ist kein Zeichenprogramm}.
+Some of the features are total overkill to do as part of \TeX{} compilation.
+Also remember that simplicity is often better in scientific illustration!
+\end{practices}
+
+
+%
+\subsection{Pattern fills}
+
+The \verb|patterns| extension library allows filling shapes with a pattern.
+In some cases it might be a visually appealing alternative to colour.
+
+\begin{VerbatimOut}{\jobname.tmp}
+\centering
+% In the preamble:
+% \usetikzlibrary{patterns}
+
+\begin{tikzpicture}
+\fill[pattern=north east lines] (-1,-1) rectangle (1,1);
+\fill[pattern=dots, draw] (3,0) circle[radius=1];
+\end{tikzpicture}
+\end{VerbatimOut}
+\ShowExampleBelow[2]
+
+
+%
+\subsection{Path decorations}
+
+If straight and curved lines are not enough for you,
+it is possible to add some visual extravaganza.
+There are a couple basic types of decorations
+(and quite a few less basic ones -- see the documentation if you dare),
+separated into their own libraries.
+
+First, the decoration can change the shape of the path.
+Some of the decoration types can be further customized with parameters (see the documentation):
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\centering
+% \usetikzlibrary{decorations.pathmorphing}
+
+\begin{tikzpicture}
+\draw[decorate,decoration=zigzag] (0,0)--++(3,0);
+\draw[decorate,decoration={coil,segment length=0.38cm}]
+  (4,0) to[bend right] ++(3,1);
+\end{tikzpicture}
+\end{VerbatimOut}
+\ShowExampleBelow[2]
+
+Second, the decoration can replace the path with symbols.
+The easiest way is the following.
+Note how the markings rotate with the path:
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\centering
+% \usetikzlibrary{decorations.shapes}
+
+\begin{tikzpicture}
+\draw[decorate,decoration=crosses] (0,0) to[bend right] ++(3,1);
+\draw[decorate,decoration=triangles] (4,0) to[bend right] ++(3,1);
+\end{tikzpicture}
+\end{VerbatimOut}
+\ShowExampleBelow[2]
+%
+This replaces the whole path.
+To add markings on top of a path, you can either draw the path and markings separately,
+or use the more powerful marking extension.
+
+The super-generic marking library already has quite a lot of syntax,
+which can be referenced from \cite[Section~50.6]{tikz}.
+The important part is that the \verb|postaction={decorate}|
+argument preserves the path instead of replacing it.
+%
+\begin{VerbatimOut}{\jobname.tmp}
+\centering
+% \usetikzlibrary{decorations.markings}
+
+\begin{tikzpicture}
+\draw[postaction={decorate}, decoration={markings,
+	mark=between positions 0.1 and 1.0 step 4mm with {\arrow{stealth}}
+	}] (4,0) to[bend right] ++(3,1);
+\end{tikzpicture}
+\end{VerbatimOut}
+\ShowExampleBelow[2]
+
+
+
 
 %
 \subsection{Commutative diagrams}\label{sec:tikz-cd}
