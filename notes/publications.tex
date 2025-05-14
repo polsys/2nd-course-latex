@@ -19,6 +19,11 @@ Put the \cmd{label} command immediately after the numbered thing.
 This is both for readability and for maintainability.
 \end{practices}
 
+\begin{technote}
+\LaTeX{} recognizes the ``latest numbered thing''
+by the \cmd{refstepcounter} command mentioned on page~\pageref{rem:refstepcounter}.
+\end{technote}
+
 The \cmd{ref} command reproduces the number that the label was associated to.
 There is also a \cmd{pageref} command that outputs the page number instead.
 Finally, \cmd{eqref} puts the number inside parentheses just like in the equation tag.

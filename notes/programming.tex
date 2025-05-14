@@ -1338,11 +1338,12 @@ If you like your equations in Roman numbers within section (like 1.iv), then you
 %
 The \cmd{counterwithin} command does essentially something like
 \begin{ExampleCode}
-% \counterwithin[\Roman]{equation}{section}
-  \renewcommand{\theequation}{\thesection.\Roman{equation}}
+% \counterwithin[\Roman]{equation}{section} =
+\counterwithin*{equation}{section}
+\renewcommand{\theequation}{\thesection.\Roman{equation}}
 \end{ExampleCode}
 If you'd prefer not to have the within-counter as prefix (\verb|\thesection.|),
-you can renew the counter format again.
+you can use the starred \cmd{counterwithin*} form, or renew the format.
 This code numbers equations like (1), (2), \dots, and resets the numbering in each section:
 %
 \begin{ExampleCode}
@@ -1354,9 +1355,16 @@ This code numbers equations like (1), (2), \dots, and resets the numbering in ea
 Counters are always in a global scope.\index{scope!counters}
 That is, the definition of a counter does not disappear as the group is closed.
 If you would like to use the same counter name again in a later context,
-you can (or rather, must) reset and reuse the previous counter.
+you must reset and reuse the previous counter.
 
 Due to this, you should probably define your counters in the preamble.
+\end{technote}
+
+\begin{technote}\label{rem:refstepcounter}
+The \cmd{label} command creates a label referring to the ``latest'' updated counter.
+The usual \cmd{stepcounter} command does not update this tag;
+instead, the \LaTeX{} sectioning commands etc.\ use the \cmd{refstepcounter} command.
+This command steps the counter and updates the ``last stepped counter'' tag.
 \end{technote}
 
 
