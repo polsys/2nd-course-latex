@@ -560,7 +560,7 @@ Bibliography styles are customized with package options.
 you should also remove any references to \pkg[do not use with BibLaTeX]{natbib} and friends.)
 To use the author-year style, you only need to pass \verb|style=authoryear|.
 The \pkg[do not use with BibLaTeX]{natbib} commands like \cmd{citep}
-are also implemented by BibLaTeX.
+are also implemented by BibLaTeX when \verb|natbib=true| is passed to the package.
 
 There are quite a few built-in styles \cite[Section~3.3]{biblatex},
 and even more can be found in extension packages.
@@ -631,7 +631,10 @@ For example:
 \end{ExampleCode}
 
 By default, the bibliography does not appear in the table of contents.
-The easiest way to fix this is to load the \pkg{tocbibind} package.
+If you have made the bibliography manually or with \prg[to table of contents]{bibtex},
+you can load the \pkg{tocbibind} package or use \cmd{addcontentsline}.
+If you use \pkg[to table of contents]{biblatex},
+you can add the \verb|[heading=bibintoc]| optional argument to \cmd{printbibliography}.
 
 It is also possible to create lists of tables and figures.
 These are produced by the \cmd{listoftables} and \cmd{listoffigures} commands.
@@ -703,7 +706,6 @@ The manually created part of the index has not received the love it would deserv
 \subsection{Line numbers}
 
 Some journals require line numbers for the referee copy of a submitted work.
-\future{Also double spacing.}
 This is usually achieved with the \pkg{lineno} package.
 
 The syntax is very simple.
@@ -731,6 +733,16 @@ it might require two \LaTeX{} runs to be correct.
 This package needs to do some deep magic,
 since line numbers get fixed very late in the typesetting process.
 \end{technote}
+
+
+%
+\subsection{Line spacing}
+
+Some journals also require some extra space between lines,
+typically so-called 1.5~spacing.
+The \LaTeX{} internal parameters are a bit complicated, so it is easiest to load the
+\pkg{setspace} package and use its commands
+\cmd{singlespacing}, \cmd{onehalfspacing}, and \cmd{doublespacing} (possibly in the preamble).
 
 
 %

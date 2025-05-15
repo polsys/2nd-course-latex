@@ -897,7 +897,9 @@ The two might not be equal if several page numbering schemes have been in use.
 If the output of \cmd{maketitle} is not sufficient for your artistic tastes,
 you can of course set the title page by yourself.
 The \env{titlepage} environment creates an empty page with no decorations.%
-\footnote{It also sets the page number to 1, which is usually correct but sometimes surprising.}
+\footnote{It also sets the page number to 1, which is usually correct.
+If you intend the title page to be on left-hand side in twoside mode,
+then this gets you in trouble.}
 The title page of these notes was created with the following code:\label{ex:titlepage}
 %
 \begin{ExampleCode}
