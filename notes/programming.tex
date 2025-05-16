@@ -765,6 +765,14 @@ You should really pay attention to red symbols in the source code margin
 and next to the \emph{Recompile} button!
 \end{overleaf}
 
+\begin{gotcha}
+Pay attention to warnings!
+Some packages are incompatible with each other,
+and might need to be loaded in a certain order.
+Often these packages give a warning when loaded in wrong order.
+The warning might be buried under error messages caused by the said incompatibility.
+\end{gotcha}
+
 The compiler gives three forms of output: information, warnings and errors.
 Graphical \LaTeX{} editors usually only show the latter two.
 (Information is printed in the console output.
@@ -1109,14 +1117,15 @@ They are also available at \url{www.texdoc.org}.
 \begin{gotcha}\index{packages!loading order}
 Quite a few packages modify the standard \LaTeX{} commands
 and even the commands defined by each other.
-This means that sometimes it is important to load packages in the correct order,
-so that the modifications are applied sensibly.
+Sometimes it is important to load packages in the correct order.
 The core packages are usually compatible with each other,
 but you should always check the package documentation for possible conflicts.
 
-For example, it is important to load \pkg{ntheorem} before \pkg{hyperref},
-since the former modifies the label commands that are also touched by the latter.
-Otherwise, you might get non-functioning hyperlinks.
+Two notorious examples:
+\begin{itemize}
+\item \pkg{babel} should be loaded very early,
+\item \pkg{cleveref} must be loaded after \pkg{hyperref} and theorem packages.
+\end{itemize}
 \end{gotcha}
 
 
