@@ -104,15 +104,18 @@ Ef\/f\/icient
 \subsection{Dingbats and logos}
 
 There are several packages providing symbol characters.
-One notable example is \pkg{fontawesome5},
-which packages the version~5 of the Font~Awesome symbol font.%
-\footnote{As of May~2024, Font Awesome is in version 6.5,
-but there does not seem to be a corresponding \LaTeX{} package yet.}
+One notable example is \pkg{fontawesome6},
+which packages the version~6 of the Font~Awesome symbol font.%
+\footnote{As of May~2025 this is the newest version.
+There are also \LaTeX{} packages corresponding to versions~5 (\textsf{fontawesome5})
+and~4 (\textsf{fontawesome}).
+Note that some icons have been renamed between versions.
+}
 Once the package is loaded, symbols can be set with names prefixed with \verb|\fa|:
 %
 \begin{VerbatimOut}{\jobname.tmp}
 \faBook{} Reading suggestions\\
-\faCoffee{} (Have a cup at hand)\\
+\faMugSaucer{} (Have a cup at hand)\\
 
 There are also brand logos like
 \faGit*~Git and \faLinux~Linux,
