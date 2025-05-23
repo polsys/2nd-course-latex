@@ -10,6 +10,17 @@ However, the package has not been actively maintained since~2014,
 and it appears to have some bugs.
 The other packages use fairly similar principles.
 
+\begin{remark}
+In particular, I would like to highlight \pkg{tcolorbox} for its good documentation.
+You should definitely check it out.
+
+Note that its poster template does not handle large paper sizes.
+You can either configure the paper and font sizes by yourself,
+or scale up the A3-size output in the printing phase.
+The latter may be frowned upon by typography enthusiasts,
+since a 12-point font scaled 4$\times$ is \emph{very much not the same} as a 48-point font.
+\end{remark}
+
 
 %
 %
@@ -71,7 +82,7 @@ Contents can be any material (except floats).
 If the title is empty, the ``block header'' disappears.
 
 To set several blocks side by side, it is possible to use columns
-specified inside a \env{tikzposter}{columns} environment.
+specified inside a \env[tikzposter]{columns} environment.
 A new column is started with the \cmd[tikzposter]{column} command.
 As its argument it takes the fraction of text area width.%
 \footnote{You need to ensure that they sum to at most $1$.
@@ -188,9 +199,9 @@ The following code is also used in \Cref{fig:poster styled}:
 %
 \begin{ExampleCode}
 \settitle{
-    \makebox[8cm][c]{\@titlegraphic}
-    \parbox[b]{20cm}{
-        \color{titlefgcolor} {\bfseries \Huge \sc \@title \par}
+    \makebox[6cm][c]{\@titlegraphic}
+    \parbox[b]{22cm}{
+        \color{titlefgcolor} {\bfseries \Huge \@title \par}
         \vspace*{1em}
         {\huge \@author{} \Large (\@institute)}
     }
@@ -202,4 +213,9 @@ The following code is also used in \Cref{fig:poster styled}:
 \includegraphics[height=0.85\textheight]{examples/tikzposter-style.pdf}
 \caption{A styled version of the previous example.}\label{fig:poster styled}
 \end{figure}
+
+\begin{technote}
+It appears that \verb|\title| as defined by the package
+does not permit automatic line breaking of the title.
+\end{technote}
 
