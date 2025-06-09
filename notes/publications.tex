@@ -73,14 +73,18 @@ suppress the display of keys at \verb|\ref| and \verb|\cite| commands respective
 \begin{warning}
 Some good things do not last.
 
-Unfortunately \pkg[maintenance]{cleveref} has not seen an update since~2018,
-whereas \LaTeX{} core developers have been revamping the entire cross-referencing mechanism.
-The late~2024 \LaTeX{} update broke \pkg[issues with theorems]{cleveref} theorem labels
-defined with \pkg[issue with cleveref]{amsthm}.
+The first version of these notes advocated for the \obspkg{cleveref} package,
+which provided a simple and powerful interface.
+However, the package needed to patch things deep inside the cross-referencing mechanism.
+The package has not seen an update since~2018,
+whereas \LaTeX{} core developers have been revamping the internals heavily.
 
-A workaround is to load the \pkg{thmtools} package after \pkg{amsthm}.
-Note that you don't need to use \pkg{thmtools} commands;
-just the existence of the package is enough to fix the issue.
+The November~2024 \LaTeX~kernel update broke theorem references,
+which could still be worked around with \pkg[with cleveref]{thmtools}.
+Then the June~2025 kernel update broke even further references.
+
+My recommendation is to replace \obspkg{cleveref} with \pkg{zref-clever}
+and the define workaround commands (see below).
 \end{warning}
 
 So you go about writing, adding references to Theorem~4.1 or something similar.
@@ -94,68 +98,68 @@ and get referee feedback regarding non-existent results\dots%
 
 Shouldn't \LaTeX{} also take care of the reference types?
 Isn't that exactly the kind of problem computers are supposed to solve?
-Enter the little package called \pkg{cleveref}.
+Luckily, there are some packages that do just it.
 
 \begin{practices}
 If the preceding paragraph sounded like a true story that has happened to the present author,
 you are absolutely right.
 \end{practices}
 
-This package adds two more commands: \cmd{cref} and \verb|\Cref|.
-They do exactly what you would expect them to:
-you write \verb|\Cref{thm:pythagoras}| or \verb|\cref{...}|,
-and it outputs ``Theorem~4.1'' or respectively ``theorem~4.1''.
-That is, the two commands differ on the casing of the first letter.
+One of them is \pkg{zref-clever}.
+It is marked as experimental but seems to be quite stable and regularly updated.
 
+This package adds a \cmd{zcref} command
+that does exactly what you would expect it to:
+\verb|\zcref{thm:pythagoras}|,
+and it outputs ``Theorem~4.1''.
 The command automatically supports all standard \LaTeX{} labels.
 Theorem types are recognized if you define theorems with
-\pkg[with cleveref]{amsthm} or \pkg[with cleveref]{ntheorem} (as you should).
-See the package documentation for extension options.
+\pkg[cross-references]{amsthm} or \pkg[cross-references]{thmtools}.
+
+Reference style can be customized by quite a lot
+with the \cmd{zcsetup} command.
+For example, \verb|\zcsetup{cap}| would capitalize the references, which is usually desired.
+These can also be passed as an optional argument to \cmd{zcref}.
+See the package documentation for all options.
 
 A nice feature of this package is that you can also pass several references,
 and \pkg{cleveref} sorts out how to present them.
 That is,
 \begin{ExampleCode}
-\Cref{thm:first,thm:second,thm:third}
+\zcref{thm:first,thm:second,thm:third}
 \end{ExampleCode}
 might produce something like ``Theorems~4.1 to~4.3''
 or ``Theorems~4.1, 4.7, and~5.1''.
 Again, see the package documentation for how to customize this.
 
-There are also the \cmd{cpageref} and \verb|\Cpageref|
-commands to produce page references (with the same support for ranges),
-and a few other more specialized commands.
-
-\begin{gotcha}
-Do not put spaces around the commas in the argument to \verb|\Cref|.
-\end{gotcha}
-
+There is also the \cmd{zcpageref}
+command to produce page references (with the same support for ranges).
 
 The package does have predefined names for many common theorem environments,
 but in some cases you need to define the name by yourself.
-This is done with the \cmd{crefname} command.
-It takes three arguments: name of the environment, singular form, and plural form.
-Capitalization is handled automatically.
-%
+See the how-to section in the package documentation.
+
+\begin{remark}
+The \pkg{zref-clever} package has some support for non-English languages,
+even those that have declension.
+See the package documentation for more.
+\end{remark}
+
+
+\begin{practices}
+If you have used \obspkg{cleveref}, you may be able to convert to \pkg{zref-clever} by something like
 \begin{ExampleCode}
-\newtheorem{assumption}{Assumption}
-\crefname{assumption}{assumption}{assumptions}
+% Old
+\usepackage[capitalize]{cleveref}
+
+% New
+\usepackage{zref-clever}
+\zcsetup{cap} % etc.
+\newcommand{\Cref}{\zcref}
 \end{ExampleCode}
-
-
-
-\begin{gotcha}
-Since \pkg[should be loaded last]{cleveref} modifies the referencing mechanism,
-it should be loaded after any other packages that do so,
-but before any theorem environments are defined.
-\end{gotcha}
-
-\begin{gotcha}
-The \pkg{cleveref} package has some support for non-English languages;
-you can pass a language name as an option when you load the package.
-However, label names are always output in the nominative case,
-so the usefulness of the package may be limited for most other languages.
-\end{gotcha}
+Make sure that your document still compiles with no warnings and that the references look correct.
+You might need to do some adjustments to package setup.
+\end{practices}
 
 
 

@@ -25,7 +25,10 @@
 \RequirePackage[backend=bibtex, backref=true]{biblatex}
 \RequirePackage{amsthm}
 \RequirePackage{thmtools}
-\RequirePackage{cleveref}
+\RequirePackage{zref-clever}
+\newcommand\cref[1]{\zcref[]{#1}}
+\newcommand\Cref[1]{\zcref[cap]{#1}}
+
 \RequirePackage[svgnames]{xcolor}
 \RequirePackage{framed}
 \RequirePackage{footmisc}
