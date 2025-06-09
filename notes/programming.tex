@@ -301,6 +301,64 @@ You can set the main file in the settings menu at top left of the editor.
 \end{overleaf}
 
 
+\subsection{\emph{Standalone files*}}
+
+There is also a \pkg{standalone} document class.
+This is an odd beast that can be used for some advanced workflows.
+See its documentation on CTAN before proceeding further.
+
+When loaded as a document class,
+it creates a page just large enough to contain its contents.
+For example, you could use it to output a TikZ picture or an equation to its own PDF.
+(If the content is just a TikZ picture, pass the \verb|[tikz]| option to the class.)
+
+When loaded as an ordinary package (\verb|\usepackage{standalone}|),
+it instead provides the \cmd{includestandalone} command.
+This can be used to include standalone .tex files like with \cmd{input}.
+
+The real power comes from the \verb|mode| parameter to the package.
+Let's consider the following code:
+%
+\begin{ExampleCode}
+% Preamble
+\usepackage[mode=buildmissing]{standalone}
+
+% Document
+\begin{figure}
+\includestandalone{complicated-picture}
+\caption{A very complicated picture.}
+\end{figure}
+\end{ExampleCode}
+%
+The \verb|mode=buildmissing| option does the following:
+\begin{itemize}
+    \item If \verb|complicated.pdf| exists,
+        it includes it with \cmd{includegraphics}.
+    \item If the PDF does not exist,
+        it instead \emph{compiles} \verb|complicated.tex| into a PDF,
+        and then includes the produced PDF.
+\end{itemize}
+%
+That is, the picture and the rest of the document are compiled separately.
+(There is also \verb|mode=buildnew| that can be useful for development.)
+
+This can be useful for reducing compile times on complicated TikZ pictures,
+or a very specialized workflow:
+Some TikZ extension packages require \prg{lualatex},
+which is not supported by arXiv or many journals.
+With this trick, you can use \prg{lualatex} for your writing flow,
+but send the pictures as PDFs for the journal.
+No code changes needed!
+
+
+\begin{technote}
+For this to work, your \LaTeX{} compiler must be permitted to call external programs
+(namely, itself).
+Overleaf permits this by default, but otherwise you might need to tweak some editor settings
+or command line options.
+\end{technote}
+
+
 
 
 %
