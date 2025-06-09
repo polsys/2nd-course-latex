@@ -97,6 +97,14 @@ Thus a basic presentation with just a title page is set with:
 (The \cmd{maketitle} command can be inside or outside a \verb|frame| environment.
 The command is synonymous with \cmd{titlepage}.)
 
+\begin{technote}
+If you want to customize the look of the title page, there are basically two options:
+One is to modify the template used by \cmd{maketitle} (see page~\pageref{sec:beamer templates}).
+The easier one is to just set the title manually on an usual frame.
+You can use \cmd{inserttitle} and friends to insert the contents
+specified in \cmd{title} command and friends.
+\end{technote}
+
 New slides are created with the \env{frame} environments.
 Each slide acts like a page, so the basic typesetting commands are available.
 The title for the frame can be set with \cmd{frametitle};
@@ -742,11 +750,13 @@ we modify the frame title to be in bold, sans-serif font:
 
 %
 %
-\subsection{Templates}
+\subsection{Templates}\label{sec:beamer templates}
 
 Finally, the appearance of repeated elements like titles can be controlled by \emph{templates}.
 Since this goes deeper into the internals of Beamer,
 we only refer to the documentation \cite[Section~16.3]{beamer}.
+
+\future{This would be interesting to expand on.}
 
 
 %
