@@ -1374,3 +1374,11 @@ The ``Note to Overleaf users'' boxes in these notes are set with the following c
 
 The package documentation is really nice and illustrative,
 so there is no point in repeating more of it here.
+
+\begin{gotcha}
+As of June~2025, there seems to be a bug where hyperlink targets can sometimes be wrong:
+a link to Lemma~3.4 might lead to Lemma~1.4,
+because only the ``.4'' part is recorded.
+This can be worked around by passing \verb|hypertexnames=false| to \pkg{hyperref},
+either as a package option or via \cmd{hypersetup}.
+\end{gotcha}
