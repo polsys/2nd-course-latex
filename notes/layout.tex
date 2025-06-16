@@ -864,11 +864,18 @@ We do not discuss it here, but its brief documentation does give the essential d
 %
 \subsection{Page numbering}
 
-To customize just the page numbering, you can use \cmd{pagenumbering}.
+To customize just the page numbering, you can renew \cmd{thepage}.
+For example, \verb|\renewcommand{\thepage}{\roman{page}}| would print page numbers in Roman numerals.
+
+\begin{gotcha}
+There is also a \cmd{pagenumbering} command.
 It takes a formatting style as its sole argument, for example \verb|Roman|
 for uppercase Roman numerals or \verb|arabic| for the usual numbers.
 You can also pass \verb|gobble| to suppress page numbering.
-Note that the command also resets the page numbering!
+
+But here's the catch: the command also resets the page numbering!
+If you are use this command after the first page of a two-side layout, this might cause confusion.
+\end{gotcha}
 
 If you want to write something like ``Page $m$ of $n$'', where $n$ is the total number of pages,
 the easiest way is to load the \pkg{lastpage} package.

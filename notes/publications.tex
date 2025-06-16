@@ -73,7 +73,7 @@ suppress the display of keys at \verb|\ref| and \verb|\cite| commands respective
 \begin{warning}
 Some good things do not last.
 
-The first version of these notes advocated for the \obspkg{cleveref} package,
+The first version of these notes advocated for the \pkg{cleveref} package,
 which provided a simple and powerful interface.
 However, the package needed to patch things deep inside the cross-referencing mechanism.
 The package has not seen an update since~2018,
@@ -82,9 +82,11 @@ whereas \LaTeX{} core developers have been revamping the internals heavily.
 The November~2024 \LaTeX~kernel update broke theorem references,
 which could still be worked around with \pkg[with cleveref]{thmtools}.
 Then the June~2025 kernel update broke even further references.
+In this case a patch was added to the kernel to fix the issue,
+but this does not fix the underlying incompatibility.
 
-My recommendation is to replace \obspkg{cleveref} with \pkg{zref-clever}
-and the define workaround commands (see below).
+My recommendation is to replace \pkg{cleveref} with \pkg{zref-clever} in new projects.
+One can define workaround commands (see below) to make the syntax similar.
 \end{warning}
 
 So you go about writing, adding references to Theorem~4.1 or something similar.
@@ -107,23 +109,29 @@ you are absolutely right.
 
 One of them is \pkg{zref-clever}.
 It is marked as experimental but seems to be quite stable and regularly updated.
+It also contains some advanced features missing from \pkg{cleveref}.
 
 This package adds a \cmd{zcref} command
-that does exactly what you would expect it to:
-\verb|\zcref{thm:pythagoras}|,
-and it outputs ``Theorem~4.1''.
+that does exactly what you would expect:
+you write \verb|\zcref{thm:pythagoras}|,
+and it outputs ``theorem~4.1''.
 The command automatically supports all standard \LaTeX{} labels.
 Theorem types are recognized if you define theorems with
 \pkg[cross-references]{amsthm} or \pkg[cross-references]{thmtools}.
 
+In the beginning of sentence, you can write \verb|\zcref[S]{...}|.
+The optional argument tells the package to capitalize and not abbreviate the first reference.
+In \pkg{cleveref} the operative command is \cmd{cref} or \verb|\Cref|,
+depending on capitalization.
+
 Reference style can be customized by quite a lot
 with the \cmd{zcsetup} command.
-For example, \verb|\zcsetup{cap}| would capitalize the references, which is usually desired.
+For example, \verb|\zcsetup{cap}| would capitalize all references, which is often desired.
 These can also be passed as an optional argument to \cmd{zcref}.
 See the package documentation for all options.
 
-A nice feature of this package is that you can also pass several references,
-and \pkg{cleveref} sorts out how to present them.
+A nice feature of these packages is that you can also pass several references,
+and they sort out how to present them.
 That is,
 \begin{ExampleCode}
 \zcref{thm:first,thm:second,thm:third}
@@ -147,7 +155,7 @@ See the package documentation for more.
 
 
 \begin{practices}
-If you have used \obspkg{cleveref}, you may be able to convert to \pkg{zref-clever} by something like
+If you have used \pkg{cleveref}, you may be able to convert to \pkg{zref-clever} by something like
 \begin{ExampleCode}
 % Old
 \usepackage[capitalize]{cleveref}
@@ -155,7 +163,8 @@ If you have used \obspkg{cleveref}, you may be able to convert to \pkg{zref-clev
 % New
 \usepackage{zref-clever}
 \zcsetup{cap} % etc.
-\newcommand{\Cref}{\zcref}
+\newcommand{\cref}{\zcref}
+\newcommand{\Cref}{\zcref[S]}
 \end{ExampleCode}
 Make sure that your document still compiles with no warnings and that the references look correct.
 You might need to do some adjustments to package setup.
